@@ -33,7 +33,8 @@ dependencies {
             project(path: ':fineract-provider', configuration: 'runtimeElements'),
             project(path: ':fineract-avro-schemas', configuration: 'runtimeElements'),
             project(path: ':fineract-client', configuration: 'runtimeElements'),
-            project(path: ':fineract-progressive-loan', configuration: 'runtimeElements')
+            project(path: ':fineract-progressive-loan', configuration: 'runtimeElements'),
+            project(path: ':fineract-local', configuration: 'runtimeElements')
             )
     testImplementation ('org.mock-server:mockserver-junit-jupiter') {
         exclude group: 'com.sun.mail', module: 'mailapi'
