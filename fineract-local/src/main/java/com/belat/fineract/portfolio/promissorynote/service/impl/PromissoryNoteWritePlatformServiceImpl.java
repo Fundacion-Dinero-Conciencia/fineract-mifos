@@ -45,6 +45,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuild
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
 import org.springframework.stereotype.Service;
@@ -176,7 +177,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
         if (totalFund == null || totalFund.compareTo(BigDecimal.ZERO) <= 0) {
             throw new PlatformApiDataValidationException("error.msg.resource.amount", "The amount of the fund should be greater than 0", null);
         }
-        return (totalInvestment.divide(totalFund, 2, RoundingMode.HALF_UP))
+        return (totalInvestment.divide(totalFund, 2, MoneyHelper.getRoundingMode()))
                 .multiply(BigDecimal.valueOf(100));
 
     }
