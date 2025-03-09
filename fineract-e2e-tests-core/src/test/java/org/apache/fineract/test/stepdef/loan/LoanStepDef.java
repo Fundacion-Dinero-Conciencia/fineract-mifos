@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.Gson;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -124,6 +126,7 @@ import org.apache.fineract.test.messaging.event.loan.LoanRescheduledDueAdjustSch
 import org.apache.fineract.test.messaging.event.loan.LoanStatusChangedEvent;
 import org.apache.fineract.test.messaging.event.loan.transaction.LoanAccrualAdjustmentTransactionBusinessEvent;
 import org.apache.fineract.test.messaging.event.loan.transaction.LoanAccrualTransactionCreatedBusinessEvent;
+import org.apache.fineract.test.messaging.event.loan.transaction.LoanAdjustTransactionBusinessEvent;
 import org.apache.fineract.test.messaging.event.loan.transaction.LoanChargeAdjustmentPostBusinessEvent;
 import org.apache.fineract.test.messaging.event.loan.transaction.LoanChargeOffEvent;
 import org.apache.fineract.test.messaging.event.loan.transaction.LoanChargeOffUndoEvent;
@@ -2382,6 +2385,88 @@ public class LoanStepDef extends AbstractStepDef {
 
         assertThat(transactions).as("Unexpected Accrual activity transaction found on %s", date)
                 .noneMatch(t -> date.equals(FORMATTER.format(t.getDate())) && "Accrual Activity".equals(t.getType().getValue()));
+    }
+
+    @Then("{string} transaction on {string} got reverse-replayed on {string}")
+    public void checkLoanAdjustTransactionBusinessEvent(String transactionType, String transactionDate, String submittedOnDate)
+            throws IOException {
+        Response<PostLoansResponse> loanCreateResponse = testContext().get(TestContextKey.LOAN_CREATE_RESPONSE);
+        long loanId = loanCreateResponse.body().getLoanId();
+
+        Response<GetLoansLoanIdResponse> loanDetailsResponse = loansApi.retrieveLoan(loanId, false, "transactions", "", "").execute();
+        ErrorHelper.checkSuccessfulApiCall(loanDetailsResponse);
+
+        List<GetLoansLoanIdTransactions> transactions = loanDetailsResponse.body().getTransactions();
+
+        GetLoansLoanIdTransactions loadTransaction = transactions.stream()
+                .filter(t -> transactionDate.equals(FORMATTER.format(t.getDate())) && transactionType.equals(t.getType().getValue()))
+                .findFirst().orElseThrow(
+                        () -> new IllegalStateException(String.format("No %s transaction found on %s", transactionType, transactionDate)));
+
+        Set<GetLoansLoanIdLoanTransactionRelation> transactionRelations = loadTransaction.getTransactionRelations();
+        Long originalTransactionId = transactionRelations.stream().map(GetLoansLoanIdLoanTransactionRelation::getToLoanTransaction)
+                .filter(Objects::nonNull).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Transaction was reversed, but not replayed!"));
+
+        // Check whether reverse-replay event got occurred
+        eventAssertion.assertEvent(LoanAdjustTransactionBusinessEvent.class, originalTransactionId).extractingData(
+                e -> e.getNewTransactionDetail() != null && e.getNewTransactionDetail().getId().equals(loadTransaction.getId()));
+        // Check whether there was just ONE event related to this transaction
+        eventAssertion.assertEventNotRaised(LoanAdjustTransactionBusinessEvent.class, originalTransactionId);
+        assertThat(FORMATTER.format(loadTransaction.getSubmittedOnDate()))
+                .as("Loan got replayed on %s", loadTransaction.getSubmittedOnDate()).isEqualTo(submittedOnDate);
+    }
+
+    @When("Save external ID of {string} transaction made on {string} as {string}")
+    public void saveExternalIdForTransaction(String transactionName, String transactionDate, String externalIdKey) throws IOException {
+        Response<PostLoansResponse> loanCreateResponse = testContext().get(TestContextKey.LOAN_CREATE_RESPONSE);
+        long loanId = loanCreateResponse.body().getLoanId();
+
+        Response<GetLoansLoanIdResponse> loanDetailsResponse = loansApi.retrieveLoan(loanId, false, "transactions", "", "").execute();
+        ErrorHelper.checkSuccessfulApiCall(loanDetailsResponse);
+
+        List<GetLoansLoanIdTransactions> transactions = loanDetailsResponse.body().getTransactions();
+
+        GetLoansLoanIdTransactions loadTransaction = transactions.stream()
+                .filter(t -> transactionDate.equals(FORMATTER.format(t.getDate())) && transactionName.equals(t.getType().getValue()))
+                .findFirst().orElseThrow(
+                        () -> new IllegalStateException(String.format("No %s transaction found on %s", transactionName, transactionDate)));
+
+        String externalId = loadTransaction.getExternalId();
+        testContext().set(externalIdKey, externalId);
+        log.debug("Transaction external ID: {} saved to testContext", externalId);
+    }
+
+    @Then("External ID of replayed {string} on {string} is matching with {string}")
+    public void checkExternalIdForReplayedAccrualActivity(String transactionType, String transactionDate, String savedExternalIdKey)
+            throws IOException {
+        Response<PostLoansResponse> loanCreateResponse = testContext().get(TestContextKey.LOAN_CREATE_RESPONSE);
+        long loanId = loanCreateResponse.body().getLoanId();
+
+        Response<GetLoansLoanIdResponse> loanDetailsResponse = loansApi.retrieveLoan(loanId, false, "transactions", "", "").execute();
+        ErrorHelper.checkSuccessfulApiCall(loanDetailsResponse);
+
+        List<GetLoansLoanIdTransactions> transactions = loanDetailsResponse.body().getTransactions();
+
+        GetLoansLoanIdTransactions transactionDetails = transactions.stream()
+                .filter(t -> transactionDate.equals(FORMATTER.format(t.getDate())) && transactionType.equals(t.getType().getValue()))
+                .findFirst().orElseThrow(
+                        () -> new IllegalStateException(String.format("No %s transaction found on %s", transactionType, transactionDate)));
+
+        Set<GetLoansLoanIdLoanTransactionRelation> transactionRelations = transactionDetails.getTransactionRelations();
+        Long originalTransactionId = transactionRelations.stream().map(GetLoansLoanIdLoanTransactionRelation::getToLoanTransaction)
+                .filter(Objects::nonNull).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Transaction was reversed, but not replayed!"));
+
+        String externalIdExpected = testContext().get(savedExternalIdKey).toString();
+        String externalIdActual = transactionDetails.getExternalId();
+        assertThat(externalIdActual).as(ErrorMessageHelper.wrongExternalID(externalIdActual, externalIdExpected))
+                .isEqualTo(externalIdExpected);
+
+        Response<GetLoansLoanIdTransactionsTransactionIdResponse> originalTransaction = loanTransactionsApi
+                .retrieveTransaction(loanId, originalTransactionId, "").execute();
+        assertNull(String.format("Original transaction external id is not null %n%s", originalTransaction.body()),
+                originalTransaction.body().getExternalId());
     }
 
     @Then("LoanTransactionAccrualActivityPostBusinessEvent is raised on {string}")

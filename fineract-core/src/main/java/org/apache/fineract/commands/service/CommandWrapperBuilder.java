@@ -3661,6 +3661,14 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder intermediarySaleLoanToExternalAssetOwner(final Long loanId) {
+        this.actionName = "INTERMEDIARYSALE";
+        this.entityName = "LOAN";
+        this.loanId = loanId;
+        this.href = "/external-asset-owners/transfers/loans/" + loanId;
+        return this;
+    }
+
     public CommandWrapperBuilder saleLoanToExternalAssetOwner(final Long loanId) {
         this.actionName = "SALE";
         this.entityName = "LOAN";
@@ -3785,4 +3793,13 @@ public class CommandWrapperBuilder {
         this.href = "/v1/loans/external-id/" + loanExternalId + "/interest-pauses/" + variationId;
         return this;
     }
+
+    public CommandWrapperBuilder createPromissoryNote() {
+        this.actionName = "CREATE";
+        this.entityName = "PROMISSORY_NOTE";
+        this.entityId = null;
+        this.href = "/v1/promissorynote";
+        return this;
+    }
+
 }
