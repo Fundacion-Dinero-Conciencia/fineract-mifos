@@ -460,7 +460,7 @@ public class InteropServiceImpl implements InteropService {
         } else {
             transaction = savingsAccountService.handleDeposit(savingsAccount, fmt, transactionDate, request.getAmount().getAmount(),
                     instance(findPaymentType(), savingsAccount.getExternalId().getValue(), null, getRoutingCode(), transferCode, null),
-                    false, true, backdatedTxnsAllowedTill);
+                    false, true, backdatedTxnsAllowedTill, false);
         }
 
         String note = request.getNote();
