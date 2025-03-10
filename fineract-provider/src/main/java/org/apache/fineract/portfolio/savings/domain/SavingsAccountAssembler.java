@@ -33,6 +33,7 @@ import static org.apache.fineract.portfolio.savings.SavingsApiConstants.interest
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.lienAllowedParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.lockinPeriodFrequencyParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.lockinPeriodFrequencyTypeParamName;
+import static org.apache.fineract.portfolio.savings.SavingsApiConstants.maxAllowedDepositLimitParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.maxAllowedLienLimitParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.minOverdraftForInterestCalculationParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.minRequiredBalanceParamName;
@@ -324,6 +325,11 @@ public class SavingsAccountAssembler {
             }
         }
 
+        BigDecimal maxAllowedDepositLimit = null;
+        if (command.parameterExists(maxAllowedDepositLimitParamName)) {
+            maxAllowedDepositLimit = command.bigDecimalValueOfParameterNamed(maxAllowedDepositLimitParamName);
+        }
+
         final SavingsAccount account = SavingsAccount.createNewApplicationForSubmittal(client, group, product, fieldOfficer, accountNo,
                 externalIdFactory.create(externalId), accountType, submittedOnDate, submittedBy, interestRate,
                 interestCompoundingPeriodType, interestPostingPeriodType, interestCalculationType, interestCalculationDaysInYearType,
@@ -335,6 +341,8 @@ public class SavingsAccountAssembler {
         account.validateNewApplicationState(SAVINGS_ACCOUNT_RESOURCE_NAME);
 
         account.validateAccountValuesWithProduct();
+
+        account.setMaxAllowedDepositLimit(maxAllowedDepositLimit);
 
         return account;
     }
