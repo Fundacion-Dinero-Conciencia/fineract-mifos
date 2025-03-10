@@ -114,6 +114,7 @@ public class SavingsApiConstants {
     public static final String interestCalculationTypeParamName = "interestCalculationType";
     public static final String interestCalculationDaysInYearTypeParamName = "interestCalculationDaysInYearType";
     public static final String minRequiredOpeningBalanceParamName = "minRequiredOpeningBalance";
+    public static final String maxAllowedDepositLimit = "maxAllowedDepositLimit";
     public static final String lockinPeriodFrequencyParamName = "lockinPeriodFrequency";
     public static final String lockinPeriodFrequencyTypeParamName = "lockinPeriodFrequencyType";
     public static final String withdrawalFeeAmountParamName = "withdrawalFeeAmount";
