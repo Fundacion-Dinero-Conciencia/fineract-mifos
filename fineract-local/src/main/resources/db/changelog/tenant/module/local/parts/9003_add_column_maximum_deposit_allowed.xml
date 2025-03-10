@@ -20,9 +20,15 @@
 
 -->
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
-  <include relativeToChangelogFile="true" file="parts/9001_add_table_promissory_note.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9002_add_permissions_create_promissory_note.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9003_add_column_maximum_deposit_allowed.xml"/>
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="1" author="fineract">
+        <addColumn tableName="m_savings_account">
+            <column name="max_allowed_deposit_limit" type="DECIMAL(19,6)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

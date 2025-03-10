@@ -50,7 +50,8 @@ public enum SavingsAccountTransactionType {
     WITHHOLD_TAX(18, "savingsAccountTransactionType.withholdTax", TransactionEntryType.DEBIT), //
     ESCHEAT(19, "savingsAccountTransactionType.escheat", TransactionEntryType.DEBIT), //
     AMOUNT_HOLD(20, "savingsAccountTransactionType.onHold", TransactionEntryType.DEBIT), //
-    AMOUNT_RELEASE(21, "savingsAccountTransactionType.release", TransactionEntryType.CREDIT); //
+    AMOUNT_RELEASE(21, "savingsAccountTransactionType.release", TransactionEntryType.CREDIT), //
+    INVESTMENT(22, "savingsAccountTransactionType.investment", TransactionEntryType.CREDIT); //
 
     private static final Map<Integer, SavingsAccountTransactionType> BY_ID = Arrays.stream(values())
             .collect(Collectors.toMap(SavingsAccountTransactionType::getValue, v -> v));
@@ -185,6 +186,8 @@ public enum SavingsAccountTransactionType {
     public boolean isAccrual() {
         return this == ACCRUAL;
     }
+
+    public boolean isInvestment(){ return this == INVESTMENT; }
 
     public boolean isCredit() {
         // AMOUNT_RELEASE is not credit, because the account balance is not changed

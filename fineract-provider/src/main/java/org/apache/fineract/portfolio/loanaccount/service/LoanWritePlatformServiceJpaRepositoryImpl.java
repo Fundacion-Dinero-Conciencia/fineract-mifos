@@ -470,7 +470,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                                     + " Standing instruction transfer ",
                             locale, fmt, null, null, LoanTransactionType.DOWN_PAYMENT.getValue(), null, null,
                             AccountTransferType.LOAN_DOWN_PAYMENT.getValue(), null, null, ExternalId.empty(), null, null,
-                            fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                            fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false);
                     this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
                 } else {
                     loanDownPaymentHandlerService.handleDownPayment(scheduleGeneratorDTO, command, disbursementTransaction, loan);
@@ -508,7 +508,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                     PortfolioAccountType.SAVINGS, PortfolioAccountType.LOAN, savingAccountData.getId(), loanId, "Loan Charge Payment",
                     locale, fmt, null, null, LoanTransactionType.REPAYMENT_AT_DISBURSEMENT.getValue(), entrySet.getKey(), null,
                     AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, ExternalId.empty(), null, null, fromSavingsAccount,
-                    isRegularTransaction, isExceptionForBalanceCheck);
+                    isRegularTransaction, isExceptionForBalanceCheck, false);
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         }
         updateRecurringCalendarDatesForInterestRecalculation(loan);
@@ -842,7 +842,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                         PortfolioAccountType.SAVINGS, PortfolioAccountType.LOAN, savingAccountData.getId(), loan.getId(),
                         "Loan Charge Payment", locale, fmt, null, null, LoanTransactionType.REPAYMENT_AT_DISBURSEMENT.getValue(),
                         entrySet.getKey(), null, AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, ExternalId.empty(), null, null,
-                        fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                        fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false);
                 this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
             }
             updateRecurringCalendarDatesForInterestRecalculation(loan);
@@ -1809,7 +1809,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
         final AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, amount, PortfolioAccountType.LOAN,
                 PortfolioAccountType.LOAN, loan.getId(), loan.getTopupLoanDetails().getLoanIdToClose(), "Loan Topup", locale, fmt,
-                LoanTransactionType.DISBURSEMENT.getValue(), LoanTransactionType.REPAYMENT.getValue(), txnExternalId, loan, null);
+                LoanTransactionType.DISBURSEMENT.getValue(), LoanTransactionType.REPAYMENT.getValue(), txnExternalId, loan, null, false);
         AccountTransferDetails accountTransferDetails = this.accountTransfersWritePlatformService.repayLoanWithTopup(accountTransferDTO);
         loan.getTopupLoanDetails().setAccountTransferDetails(accountTransferDetails.getId());
         loan.getTopupLoanDetails().setTopupAmount(amount);
@@ -1833,7 +1833,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         final AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, amount.getAmount(), PortfolioAccountType.LOAN,
                 PortfolioAccountType.SAVINGS, loan.getId(), portfolioAccountData.getId(), "Loan Disbursement", locale, fmt, paymentDetail,
                 LoanTransactionType.DISBURSEMENT.getValue(), null, null, null, AccountTransferType.ACCOUNT_TRANSFER.getValue(), null, null,
-                txnExternalId, loan, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                txnExternalId, loan, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false);
         this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
     }
 

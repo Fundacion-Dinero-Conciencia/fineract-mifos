@@ -244,7 +244,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         if (amountForDeposit.isGreaterThanZero()) {
             boolean isAccountTransfer = false;
             this.savingsAccountDomainService.handleDeposit(account, fmt, account.getActivationDate(), amountForDeposit.getAmount(), null,
-                    isAccountTransfer, isRegularTransaction, false);
+                    isAccountTransfer, isRegularTransaction, false, false);
 
             updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
         }
@@ -304,7 +304,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         boolean isAccountTransfer = false;
         boolean isRegularTransaction = true;
         final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(account, fmt, transactionDate,
-                transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill);
+                transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, false);
 
         if (isGsim && (deposit.getId() != null)) {
 

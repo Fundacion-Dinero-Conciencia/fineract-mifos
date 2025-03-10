@@ -1673,7 +1673,7 @@ public class DepositAccountReadPlatformServiceImpl implements DepositAccountRead
             return new AccountTransferDTO(transactionDate, transactionAmount, PortfolioAccountType.SAVINGS, PortfolioAccountType.SAVINGS,
                     fromAccountId, toAccountId, TRANSFER_INTEREST_TO_SAVINGS, null, null, null, null, null, null, null,
                     AccountTransferType.INTEREST_TRANSFER.getValue(), null, null, ExternalId.empty(), null, null, null,
-                    isRegularTransaction, isExceptionForBalanceCheck);
+                    isRegularTransaction, isExceptionForBalanceCheck, false);
         }
 
     }
