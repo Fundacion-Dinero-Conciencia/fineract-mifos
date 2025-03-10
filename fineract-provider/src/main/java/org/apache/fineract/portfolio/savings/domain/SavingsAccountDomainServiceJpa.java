@@ -150,8 +150,10 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
     @Override
     public SavingsAccountTransaction handleDeposit(final SavingsAccount account, final DateTimeFormatter fmt,
             final LocalDate transactionDate, final BigDecimal transactionAmount, final PaymentDetail paymentDetail,
-            final boolean isAccountTransfer, final boolean isRegularTransaction, final boolean backdatedTxnsAllowedTill) {
-        final SavingsAccountTransactionType savingsAccountTransactionType = SavingsAccountTransactionType.DEPOSIT;
+            final boolean isAccountTransfer, final boolean isRegularTransaction, final boolean backdatedTxnsAllowedTill,
+            boolean isInvestment) {
+        final SavingsAccountTransactionType savingsAccountTransactionType = isInvestment ? SavingsAccountTransactionType.INVESTMENT
+                : SavingsAccountTransactionType.DEPOSIT;
         return handleDeposit(account, fmt, transactionDate, transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction,
                 savingsAccountTransactionType, backdatedTxnsAllowedTill);
     }
@@ -207,7 +209,11 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
             // Update transactions separately
             saveUpdatedTransactionsOfSavingsAccount(account.getSavingsAccountTransactionsWithPivotConfig());
         }
-
+        if (savingsAccountTransactionType.isInvestment()) {
+            if (deposit.getRunningBalance().compareTo(account.getMaxAllowedDepositLimit()) == 0) {
+                account.setStatus(SavingsAccountStatusType.ACTIVE.getValue());
+            }
+        }
         this.savingsAccountRepository.saveAndFlush(account);
 
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer, backdatedTxnsAllowedTill);
