@@ -210,7 +210,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
             saveUpdatedTransactionsOfSavingsAccount(account.getSavingsAccountTransactionsWithPivotConfig());
         }
         if (savingsAccountTransactionType.isInvestment()) {
-            if (deposit.getRunningBalance().compareTo(account.getMaxAllowedDepositLimit()) == 0) {
+            if (account.getMaxAllowedDepositLimit().compareTo(deposit.getRunningBalance()) == 0) {
                 account.setStatus(SavingsAccountStatusType.ACTIVE.getValue());
             }
         }
