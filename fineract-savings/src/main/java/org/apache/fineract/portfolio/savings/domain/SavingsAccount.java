@@ -849,9 +849,14 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
             if (postInterestOnDate != null) {
                 postedAsOnDates.add(postInterestOnDate);
             }
-            final List<LocalDateInterval> postingPeriodIntervals = this.savingsHelper.determineInterestPostingPeriods(
-                    getStartInterestCalculationDate(), upToInterestCalculationDate, postingPeriodType, financialYearBeginningMonth,
-                    postedAsOnDates);
+            List<LocalDateInterval> postingPeriodIntervalsCurrent = new ArrayList<>();
+            if (getStartInterestCalculationDate() != null) {
+                postingPeriodIntervalsCurrent = this.savingsHelper.determineInterestPostingPeriods(
+                        getStartInterestCalculationDate(), upToInterestCalculationDate, postingPeriodType, financialYearBeginningMonth,
+                        postedAsOnDates);
+            }
+
+            final List<LocalDateInterval> postingPeriodIntervals = postingPeriodIntervalsCurrent;
 
             Money periodStartingBalance;
             if (this.startInterestCalculationDate != null && !this.getStartInterestCalculationDate().equals(this.getActivationDate())) {
@@ -1155,8 +1160,10 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
 
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
 
+        SavingsAccountTransactionType transactionType = savingsAccountTransactionType.isInvestment() ? SavingsAccountTransactionType.DEPOSIT : savingsAccountTransactionType;
+
         final SavingsAccountTransaction transaction = SavingsAccountTransaction.deposit(this, office(), transactionDTO.getPaymentDetail(),
-                transactionDTO.getTransactionDate(), amount, savingsAccountTransactionType, refNo);
+                transactionDTO.getTransactionDate(), amount, transactionType, refNo);
 
         if (backdatedTxnsAllowedTill) {
             addTransactionToExisting(transaction);
