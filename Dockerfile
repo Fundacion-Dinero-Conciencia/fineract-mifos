@@ -39,6 +39,8 @@ RUN mkdir -p /app/libs
 
 COPY --from=builder /fineract/fineract-provider/build/libs/fineract-provider*.jar /app/fineract-provider.jar
 
+COPY --from=builder /fineract/target/BOOT-INF/lib /app/libs
+
 WORKDIR /
 
 COPY ./entrypoint.sh /entrypoint.sh
