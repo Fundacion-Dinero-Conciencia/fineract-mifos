@@ -37,9 +37,12 @@ FROM azul/zulu-openjdk-debian:17 as fineract
 
 RUN mkdir -p /app/libs
 
-COPY --from=builder /fineract/fineract-provider/build/libs/fineract-provider*.jar /app/fineract-provider.jar
+COPY --from=builder /fineract/target/BOOT-INF/lib /app/lib
+COPY --from=builder /fineract/target/META-INF /app/META-INF
+COPY --from=builder /fineract/target/BOOT-INF/classes /app
 
-COPY --from=builder /fineract/target/BOOT-INF/lib /app/libs
+#COPY --from=builder /fineract/fineract-provider/build/libs/fineract-provider*.jar /app/fineract-provider.jar
+#COPY --from=builder /fineract/target/BOOT-INF/lib /app/libs
 
 WORKDIR /
 
