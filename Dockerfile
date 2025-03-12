@@ -41,6 +41,9 @@ COPY --from=builder /fineract/target/BOOT-INF/lib /app/lib
 COPY --from=builder /fineract/target/META-INF /app/META-INF
 COPY --from=builder /fineract/target/BOOT-INF/classes /app
 
+COPY --from=builder /fineract/fineract-provider/build/libs/fineract-provider*.jar /app/fineract-provider.jar
+#COPY --from=builder /fineract/target/BOOT-INF/lib /app/libs
+
 WORKDIR /
 
 COPY ./entrypoint.sh /entrypoint.sh
