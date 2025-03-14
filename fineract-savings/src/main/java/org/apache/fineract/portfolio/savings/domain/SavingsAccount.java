@@ -302,6 +302,9 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
     @Column(name = "start_interest_calculation_date")
     protected LocalDate startInterestCalculationDate;
 
+    @Column(name = "max_allowed_deposit_limit", scale = 6, precision = 19, nullable = true)
+    private BigDecimal maxAllowedDepositLimit;
+
     @Embedded
     protected SavingsAccountSummary summary;
 
@@ -846,9 +849,14 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
             if (postInterestOnDate != null) {
                 postedAsOnDates.add(postInterestOnDate);
             }
-            final List<LocalDateInterval> postingPeriodIntervals = this.savingsHelper.determineInterestPostingPeriods(
-                    getStartInterestCalculationDate(), upToInterestCalculationDate, postingPeriodType, financialYearBeginningMonth,
-                    postedAsOnDates);
+            List<LocalDateInterval> postingPeriodIntervalsCurrent = new ArrayList<>();
+            if (getStartInterestCalculationDate() != null) {
+                postingPeriodIntervalsCurrent = this.savingsHelper.determineInterestPostingPeriods(
+                        getStartInterestCalculationDate(), upToInterestCalculationDate, postingPeriodType, financialYearBeginningMonth,
+                        postedAsOnDates);
+            }
+
+            final List<LocalDateInterval> postingPeriodIntervals = postingPeriodIntervalsCurrent;
 
             Money periodStartingBalance;
             if (this.startInterestCalculationDate != null && !this.getStartInterestCalculationDate().equals(this.getActivationDate())) {
@@ -1109,7 +1117,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
             final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill,
             final Long relaxingDaysConfigForPivotDate, final String refNo) {
         final String resourceTypeName = depositAccountType().resourceName();
-        if (isNotActive()) {
+        if (isNotActive() && !savingsAccountTransactionType.isInvestment()) {
             final String defaultUserMessage = "Transaction is not allowed. Account is not active.";
             final ApiParameterError error = ApiParameterError.parameterError(
                     "error.msg." + resourceTypeName + ".transaction.account.is.not.active", defaultUserMessage, "transactionDate",
@@ -1132,7 +1140,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
 
-        if (DateUtils.isBefore(transactionDTO.getTransactionDate(), getActivationDate())) {
+        if (DateUtils.isBefore(transactionDTO.getTransactionDate(), getActivationDate()) && !savingsAccountTransactionType.isInvestment()) {
             final Object[] defaultUserArgs = Arrays.asList(transactionDTO.getTransactionDate().format(transactionDTO.getFormatter()),
                     getActivationDate().format(transactionDTO.getFormatter())).toArray();
             final String defaultUserMessage = "Transaction date cannot be before accounts activation date.";
@@ -1152,8 +1160,10 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
 
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
 
+        SavingsAccountTransactionType transactionType = savingsAccountTransactionType.isInvestment() ? SavingsAccountTransactionType.DEPOSIT : savingsAccountTransactionType;
+
         final SavingsAccountTransaction transaction = SavingsAccountTransaction.deposit(this, office(), transactionDTO.getPaymentDetail(),
-                transactionDTO.getTransactionDate(), amount, savingsAccountTransactionType, refNo);
+                transactionDTO.getTransactionDate(), amount, transactionType, refNo);
 
         if (backdatedTxnsAllowedTill) {
             addTransactionToExisting(transaction);
@@ -3825,6 +3835,10 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         return this.maxAllowedLienLimit;
     }
 
+    public BigDecimal getMaxAllowedDepositLimit() {
+        return this.maxAllowedDepositLimit;
+    }
+
     public boolean isLienAllowed() {
         return this.lienAllowed;
     }
@@ -3846,5 +3860,9 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         return transactions.stream()
                 .map(transaction -> transaction.toSavingsAccountTransactionDetailsForPostingPeriod(this.currency, this.allowOverdraft))
                 .toList();
+    }
+
+    public void setMaxAllowedDepositLimit(BigDecimal maxAllowedDepositLimit) {
+        this.maxAllowedDepositLimit = maxAllowedDepositLimit;
     }
 }

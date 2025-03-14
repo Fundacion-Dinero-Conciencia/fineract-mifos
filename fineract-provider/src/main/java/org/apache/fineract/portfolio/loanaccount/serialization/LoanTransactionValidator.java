@@ -24,6 +24,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,9 @@ import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.exception.CurrencyNotFoundException;
 import org.apache.fineract.organisation.workingdays.domain.WorkingDays;
 import org.apache.fineract.organisation.workingdays.service.WorkingDaysUtil;
+import org.apache.fineract.portfolio.account.domain.AccountAssociationType;
+import org.apache.fineract.portfolio.account.domain.AccountAssociations;
+import org.apache.fineract.portfolio.account.domain.AccountAssociationsRepository;
 import org.apache.fineract.portfolio.calendar.domain.Calendar;
 import org.apache.fineract.portfolio.calendar.domain.CalendarEntityType;
 import org.apache.fineract.portfolio.calendar.domain.CalendarInstance;
@@ -89,6 +93,7 @@ import org.apache.fineract.portfolio.loanaccount.exception.LoanRepaymentSchedule
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleType;
 import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -105,6 +110,7 @@ public final class LoanTransactionValidator {
     private final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService;
     private final CalendarInstanceRepository calendarInstanceRepository;
     private final LoanDownPaymentTransactionValidator loanDownPaymentTransactionValidator;
+    private final AccountAssociationsRepository accountAssociationsRepository;
 
     private void throwExceptionIfValidationWarningsExist(final List<ApiParameterError> dataValidationErrors) {
         if (!dataValidationErrors.isEmpty()) {
@@ -232,6 +238,23 @@ public final class LoanTransactionValidator {
                 final String errorMessage = "The date on which a loan is disbursed cannot be before its approval date: " + approvedOnDate;
                 throw new InvalidLoanStateTransitionException("disbursal", "cannot.be.before.approval.date", errorMessage,
                         actualDisbursementDate, approvedOnDate);
+            }
+
+            // Validate savings fund status
+            AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loanId,
+                    AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue());
+            if (accountAssociations != null) {
+                SavingsAccount linkedSavingAccount = accountAssociations.linkedSavingsAccount();
+                if (linkedSavingAccount != null && !linkedSavingAccount.isActive()) {
+                    // Just disburse when saving fund is complete
+                    final String message = MessageFormat.format("Saving [id: {0}] fund is not complete to disburse",
+                            linkedSavingAccount.getId());
+                    throw new PlatformDataIntegrityException("error.msg.fund.is.not.complete", message);
+                }
+
+            } else {
+                // Loan does not have a linked fund to disburse
+                throw new PlatformDataIntegrityException("error.msg.loan.not.have.linked.fund", "Loan does not have a linked fund");
             }
         });
     }

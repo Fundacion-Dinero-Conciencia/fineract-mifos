@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.resilience4j.retry.annotation.Retry;
 import java.math.BigDecimal;
@@ -216,8 +217,10 @@ import org.apache.fineract.portfolio.repaymentwithpostdatedchecks.domain.PostDat
 import org.apache.fineract.portfolio.repaymentwithpostdatedchecks.domain.PostDatedChecksRepository;
 import org.apache.fineract.portfolio.repaymentwithpostdatedchecks.service.RepaymentWithPostDatedChecksAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.apache.fineract.portfolio.transfer.api.TransferApiConstants;
 import org.apache.fineract.useradministration.domain.AppUser;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.transaction.annotation.Transactional;
@@ -281,6 +284,9 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     private final LoanAccountService loanAccountService;
     private final LoanJournalEntryPoster journalEntryPoster;
     private final LoanAdjustmentService loanAdjustmentService;
+    private final AccountAssociationsRepository accountAssociationsRepository;
+    private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
+    private final ApplicationContext applicationContext;
 
     @Transactional
     @Override
@@ -470,7 +476,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                                     + " Standing instruction transfer ",
                             locale, fmt, null, null, LoanTransactionType.DOWN_PAYMENT.getValue(), null, null,
                             AccountTransferType.LOAN_DOWN_PAYMENT.getValue(), null, null, ExternalId.empty(), null, null,
-                            fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                            fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false);
                     this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
                 } else {
                     loanDownPaymentHandlerService.handleDownPayment(scheduleGeneratorDTO, command, disbursementTransaction, loan);
@@ -508,7 +514,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                     PortfolioAccountType.SAVINGS, PortfolioAccountType.LOAN, savingAccountData.getId(), loanId, "Loan Charge Payment",
                     locale, fmt, null, null, LoanTransactionType.REPAYMENT_AT_DISBURSEMENT.getValue(), entrySet.getKey(), null,
                     AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, ExternalId.empty(), null, null, fromSavingsAccount,
-                    isRegularTransaction, isExceptionForBalanceCheck);
+                    isRegularTransaction, isExceptionForBalanceCheck, false);
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         }
         updateRecurringCalendarDatesForInterestRecalculation(loan);
@@ -538,6 +544,10 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         }
 
         journalEntryPoster.postJournalEntries(loan, existingTransactionIds, existingReversedTransactionIds);
+
+        // Make withdraw to saving fund
+        createSavingWithdrawTransaction(loan, command.getFromApiJsonHelper());
+
         loanAccrualTransactionBusinessEventService.raiseBusinessEventForAccrualTransactions(loan, existingTransactionIds);
 
         return new CommandProcessingResultBuilder() //
@@ -552,6 +562,28 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 .withLoanId(loanId) //
                 .with(changes) //
                 .build();
+    }
+
+    private void createSavingWithdrawTransaction(final Loan loan, final FromJsonHelper jsonHelper) {
+        AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loan.getId(),
+                AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue());
+
+        // Build saving withdraw data
+        JsonObject savingJson = createSavingWithdrawData(loan.getDisbursedAmount());
+
+        JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()), jsonHelper);
+
+        savingsAccountWritePlatformService.withdrawal(accountAssociations.linkedSavingsAccount().getId(), savingCommand);
+    }
+
+    private JsonObject createSavingWithdrawData(final BigDecimal amount) {
+        JsonObject accountJson = new JsonObject();
+        accountJson.addProperty("transactionDate", DateUtils.getBusinessLocalDate().format(DateUtils.DEFAULT_DATE_FORMATTER));
+        accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
+        accountJson.addProperty("locale", Locale.ENGLISH.toString());
+        accountJson.addProperty("transactionAmount", amount);
+        accountJson.addProperty("paymentTypeId", applicationContext.getEnvironment().getProperty("fineract.transaction.payment.type.id"));
+        return accountJson;
     }
 
     private void createNote(Loan loan, JsonCommand command, Map<String, Object> changes) {
@@ -842,7 +874,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                         PortfolioAccountType.SAVINGS, PortfolioAccountType.LOAN, savingAccountData.getId(), loan.getId(),
                         "Loan Charge Payment", locale, fmt, null, null, LoanTransactionType.REPAYMENT_AT_DISBURSEMENT.getValue(),
                         entrySet.getKey(), null, AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, ExternalId.empty(), null, null,
-                        fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                        fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false);
                 this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
             }
             updateRecurringCalendarDatesForInterestRecalculation(loan);
@@ -1809,7 +1841,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
         final AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, amount, PortfolioAccountType.LOAN,
                 PortfolioAccountType.LOAN, loan.getId(), loan.getTopupLoanDetails().getLoanIdToClose(), "Loan Topup", locale, fmt,
-                LoanTransactionType.DISBURSEMENT.getValue(), LoanTransactionType.REPAYMENT.getValue(), txnExternalId, loan, null);
+                LoanTransactionType.DISBURSEMENT.getValue(), LoanTransactionType.REPAYMENT.getValue(), txnExternalId, loan, null, false);
         AccountTransferDetails accountTransferDetails = this.accountTransfersWritePlatformService.repayLoanWithTopup(accountTransferDTO);
         loan.getTopupLoanDetails().setAccountTransferDetails(accountTransferDetails.getId());
         loan.getTopupLoanDetails().setTopupAmount(amount);
@@ -1833,7 +1865,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         final AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, amount.getAmount(), PortfolioAccountType.LOAN,
                 PortfolioAccountType.SAVINGS, loan.getId(), portfolioAccountData.getId(), "Loan Disbursement", locale, fmt, paymentDetail,
                 LoanTransactionType.DISBURSEMENT.getValue(), null, null, null, AccountTransferType.ACCOUNT_TRANSFER.getValue(), null, null,
-                txnExternalId, loan, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck);
+                txnExternalId, loan, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false);
         this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
     }
 
