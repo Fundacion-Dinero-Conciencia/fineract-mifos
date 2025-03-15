@@ -33,6 +33,7 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -1860,27 +1861,42 @@ public class AdvancedPaymentScheduleTransactionProcessor extends AbstractLoanRep
             // allocation rule is NEXT_INSTALLMENT or LAST_INSTALLMENT hence the list has only one element.
             List<LoanRepaymentScheduleInstallment> inAdvanceInstallments = new ArrayList<>();
             if (FutureInstallmentAllocationRule.REAMORTIZATION.equals(futureInstallmentAllocationRule)) {
-                inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff)
-                        .filter(e -> loanTransaction.isBefore(e.getDueDate())).toList();
+                inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff) //
+                        .filter(e -> loanTransaction.isBefore(e.getDueDate())) //
+                        .toList(); //
             } else if (FutureInstallmentAllocationRule.NEXT_INSTALLMENT.equals(futureInstallmentAllocationRule)) {
-                inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff)
-                        .filter(e -> loanTransaction.isBefore(e.getDueDate()))
-                        .min(Comparator.comparing(LoanRepaymentScheduleInstallment::getInstallmentNumber)).stream().toList();
+                inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff) //
+                        .filter(e -> loanTransaction.isBefore(e.getDueDate())) //
+                        .min(Comparator.comparing(LoanRepaymentScheduleInstallment::getInstallmentNumber)).stream() //
+                        .toList(); //
             } else if (FutureInstallmentAllocationRule.LAST_INSTALLMENT.equals(futureInstallmentAllocationRule)) {
-                inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff)
-                        .filter(e -> loanTransaction.isBefore(e.getDueDate()))
-                        .max(Comparator.comparing(LoanRepaymentScheduleInstallment::getInstallmentNumber)).stream().toList();
+                inAdvanceInstallments = installments.stream()
+                        // In case of Last installment strategy it could occur the projected EMI of an installment is
+                        // zero,
+                        // but we should still involve this period to allocated further amounts and pushing this till we
+                        // run ouf of unallocated amounts
+                        .filter(i -> i.isNotFullyPaidOff() || i.isDueBalanceZero()) //
+                        .filter(e -> loanTransaction.isBefore(e.getDueDate())) //
+                        .max(Comparator.comparing(LoanRepaymentScheduleInstallment::getInstallmentNumber)).stream() //
+                        .toList(); //
             } else if (FutureInstallmentAllocationRule.NEXT_LAST_INSTALLMENT.equals(futureInstallmentAllocationRule)) {
                 // try to resolve as current installment ( not due )
-                inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff)
-                        .filter(e -> loanTransaction.isBefore(e.getDueDate())).filter(f -> loanTransaction.isAfter(f.getFromDate())
-                                || (loanTransaction.isOn(f.getFromDate()) && f.getInstallmentNumber() == 1))
-                        .toList();
+                inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff) //
+                        .filter(e -> loanTransaction.isBefore(e.getDueDate())) //
+                        .filter(f -> loanTransaction.isAfter(f.getFromDate())
+                                || (loanTransaction.isOn(f.getFromDate()) && f.getInstallmentNumber() == 1)) //
+                        .toList(); //
                 // if there is no current installment, resolve similar to LAST_INSTALLMENT
                 if (inAdvanceInstallments.isEmpty()) {
-                    inAdvanceInstallments = installments.stream().filter(LoanRepaymentScheduleInstallment::isNotFullyPaidOff)
-                            .filter(e -> loanTransaction.isBefore(e.getDueDate()))
-                            .max(Comparator.comparing(LoanRepaymentScheduleInstallment::getInstallmentNumber)).stream().toList();
+                    inAdvanceInstallments = installments.stream()
+                            // In case of Last installment strategy it could occur the projected EMI of an installment
+                            // is zero,
+                            // but we should still involve this period to allocated further amounts and pushing this
+                            // till we run ouf of unallocated amounts
+                            .filter(i -> i.isNotFullyPaidOff() || i.isDueBalanceZero()) //
+                            .filter(e -> loanTransaction.isBefore(e.getDueDate())) //
+                            .max(Comparator.comparing(LoanRepaymentScheduleInstallment::getInstallmentNumber)).stream() //
+                            .toList(); //
                 }
             }
 
@@ -1940,6 +1956,14 @@ public class AdvancedPaymentScheduleTransactionProcessor extends AbstractLoanRep
                             Money evenPortion = transactionAmountUnprocessed.dividedBy(numberOfInstallments, MoneyHelper.getMathContext());
                             // Adjustment might be needed due to the divide operation and the rounding mode
                             Money balanceAdjustment = transactionAmountUnprocessed.minus(evenPortion.multipliedBy(numberOfInstallments));
+                            if (evenPortion.add(balanceAdjustment).isLessThanZero()) {
+                                // Note: Rounding mode DOWN grants that evenPortion cant pay more than unprocessed
+                                // transaction amount.
+                                evenPortion = transactionAmountUnprocessed.dividedBy(numberOfInstallments,
+                                        new MathContext(MoneyHelper.getMathContext().getPrecision(), RoundingMode.DOWN));
+                                balanceAdjustment = transactionAmountUnprocessed.minus(evenPortion.multipliedBy(numberOfInstallments));
+                            }
+
                             for (LoanRepaymentScheduleInstallment inAdvanceInstallment : inAdvanceInstallments) {
                                 Set<LoanCharge> inAdvanceInstallmentCharges = getLoanChargesOfInstallment(charges, inAdvanceInstallment,
                                         firstNormalInstallmentNumber);
