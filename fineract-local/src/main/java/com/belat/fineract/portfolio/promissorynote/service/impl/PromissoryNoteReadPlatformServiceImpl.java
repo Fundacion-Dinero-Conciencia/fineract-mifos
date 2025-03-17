@@ -45,6 +45,11 @@ public class PromissoryNoteReadPlatformServiceImpl implements PromissoryNoteRead
     }
 
     @Override
+    public List<PromissoryNote> retrieveAllPromissoryNote() {
+        return promissoryNoteRepository.findAll();
+    }
+
+    @Override
     public PromissoryNoteData retrieveOne(Long id) {
         PromissoryNote promissory = promissoryNoteRepository.findById(id).orElseThrow(() -> new PromissoryNoteNotFoundException(id));
 
@@ -56,5 +61,10 @@ public class PromissoryNoteReadPlatformServiceImpl implements PromissoryNoteRead
     public PromissoryNoteData retrieveOneByPromissoryNoteNumber(String promissoryNoteNumber) {
         PromissoryNote promissory = promissoryNoteRepository.retrieveOneByPromissoryNoteNumber(promissoryNoteNumber);
         return promissoryNoteMapper.map(promissory);
+    }
+
+    @Override
+    public List<PromissoryNote> retrieveByFundAccountId(Long fundAccountId) {
+        return promissoryNoteRepository.retrieveByFundAccountId(fundAccountId);
     }
 }

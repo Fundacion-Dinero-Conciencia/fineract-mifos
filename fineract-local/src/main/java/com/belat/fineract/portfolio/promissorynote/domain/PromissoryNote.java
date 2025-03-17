@@ -58,6 +58,9 @@ public class PromissoryNote extends AbstractAuditableWithUTCDateTimeCustom<Long>
     @Column(name = "investment_amount", nullable = false)
     private BigDecimal investmentAmount;
 
+    @Column(name = "percentage_share", nullable = false)
+    private BigDecimal percentageShare;
+
     @Column(name = "promissory_note_number", length = 20, unique = true, nullable = false)
     private String promissoryNoteNumber;
 
