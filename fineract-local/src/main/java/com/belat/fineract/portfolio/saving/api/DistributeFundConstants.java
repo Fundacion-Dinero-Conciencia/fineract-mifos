@@ -16,20 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.belat.fineract.portfolio.promissorynote.domain;
+package com.belat.fineract.portfolio.saving.api;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+public final class DistributeFundConstants {
 
-import java.util.List;
+    private DistributeFundConstants() {}
 
-public interface PromissoryNoteRepository extends JpaRepository<PromissoryNote, Long> {
-
-    @Query("SELECT p FROM PromissoryNote p WHERE p.promissoryNoteNumber = :promissoryNoteNumber")
-    PromissoryNote retrieveOneByPromissoryNoteNumber(@Param("promissoryNoteNumber") String promissoryNoteNumber);
-
-    @Query("SELECT p FROM PromissoryNote p WHERE p.fundSavingsAccount.id = :fundId")
-    List<PromissoryNote> retrieveByFundAccountId(@Param("fundId") Long fundId);
+    public static final String fundSavingsAccountIdParamName = "fundSavingsAccountId";
 
 }
