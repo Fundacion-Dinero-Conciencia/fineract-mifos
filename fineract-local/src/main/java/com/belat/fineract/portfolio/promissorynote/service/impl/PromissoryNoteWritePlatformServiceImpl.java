@@ -27,6 +27,7 @@ import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePl
 import com.google.gson.JsonElement;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,11 +63,16 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
     public CommandProcessingResult addPromissoryNote(JsonCommand command) {
 
         validatePromissoryNoteRequestBody(command);
+
         PromissoryNote promissoryNote = createPromissoryNote(fromApiJsonHelper.parse(command.json()));
+
         String promissoryNumberFund = promissoryNote.getFundSavingsAccount().getClient().getDisplayName();
         promissoryNumberFund = promissoryNumberFund.substring(promissoryNumberFund.indexOf("_") + 1);
+
         String promissoryNumberInvestor = String.valueOf(promissoryNote.getInvestorSavingsAccount().getClient().getId());
+
         promissoryNote.setPromissoryNoteNumber(paddingNumberPromissory(promissoryNumberInvestor, promissoryNumberFund));
+        promissoryNote.setPercentageShare(calculateParticipationPercentage(promissoryNote.getFundSavingsAccount().getMaxAllowedDepositLimit(), promissoryNote.getInvestmentAmount()));
 
         promissoryNote = noteRepository.save(promissoryNote);
 
@@ -157,8 +163,21 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
 
     private void validatePromissoryNoteNumber(String number) {
         PromissoryNote promissoryNote = noteRepository.retrieveOneByPromissoryNoteNumber(number);
+        
         if (promissoryNote != null) {
             throw new PlatformApiDataValidationException("error.msg.resource.has.assigned", "The promissory note already exists", number);
         }
+    }
+
+    private BigDecimal calculateParticipationPercentage(BigDecimal totalFund, BigDecimal totalInvestment) {
+        if (totalInvestment == null || totalInvestment.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new PlatformApiDataValidationException("error.msg.resource.amount", "The amount of the investment should be greater than 0", null);
+        }
+        if (totalFund == null || totalFund.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new PlatformApiDataValidationException("error.msg.resource.amount", "The amount of the fund should be greater than 0", null);
+        }
+        return (totalInvestment.divide(totalFund, 2, RoundingMode.HALF_UP))
+                .multiply(BigDecimal.valueOf(100));
+
     }
 }

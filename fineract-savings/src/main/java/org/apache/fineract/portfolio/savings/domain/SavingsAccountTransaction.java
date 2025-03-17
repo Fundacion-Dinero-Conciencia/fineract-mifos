@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
 import org.apache.fineract.infrastructure.core.domain.LocalDateInterval;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -137,6 +140,16 @@ public final class SavingsAccountTransaction extends AbstractAuditableWithUTCDat
 
     @Column(name = "ref_no", nullable = true)
     private String refNo;
+
+    @Getter
+    @Setter
+    @Column(name = "was_distribute")
+    private Boolean wasDistribute;
+
+    @Getter
+    @Setter
+    @Column(name = "distribute_date")
+    private LocalDate distributeDate;
 
     SavingsAccountTransaction() {}
 
