@@ -211,7 +211,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         }
         if (savingsAccountTransactionType.isInvestment()) {
             if (account.getMaxAllowedDepositLimit().compareTo(deposit.getRunningBalance()) == 0) {
-                account.setStatus(SavingsAccountStatusType.ACTIVE.getValue());
+                account.approveAndActivateApplication(DateUtils.getBusinessLocalDate(), context.authenticatedUser());
             }
         }
         this.savingsAccountRepository.saveAndFlush(account);

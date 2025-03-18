@@ -127,6 +127,7 @@ import org.apache.fineract.portfolio.loanaccount.service.LoanDisbursementDetails
 import org.apache.fineract.portfolio.loanaccount.service.LoanDisbursementService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanDownPaymentHandlerService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanDownPaymentHandlerServiceImpl;
+import org.apache.fineract.portfolio.loanaccount.service.LoanJournalEntryPoster;
 import org.apache.fineract.portfolio.loanaccount.service.LoanOfficerService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformServiceImpl;
@@ -142,6 +143,7 @@ import org.apache.fineract.portfolio.loanaccount.service.LoanWritePlatformServic
 import org.apache.fineract.portfolio.loanaccount.service.ReplayedTransactionBusinessEventService;
 import org.apache.fineract.portfolio.loanaccount.service.ReplayedTransactionBusinessEventServiceImpl;
 import org.apache.fineract.portfolio.loanaccount.service.ReprocessLoanTransactionsService;
+import org.apache.fineract.portfolio.loanaccount.service.adjustment.LoanAdjustmentService;
 import org.apache.fineract.portfolio.loanaccount.service.fund.LoanFundServiceImpl;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductRepository;
 import org.apache.fineract.portfolio.loanproduct.service.LoanDropdownReadPlatformService;
@@ -300,7 +302,7 @@ public class LoanAccountConfiguration {
             LoanAccrualsProcessingService loanAccrualsProcessingService,
             LoanDownPaymentTransactionValidator loanDownPaymentTransactionValidator, LoanChargeValidator loanChargeValidator,
             LoanScheduleService loanScheduleService, ReprocessLoanTransactionsService reprocessLoanTransactionsService,
-            LoanAccountService loanAccountService) {
+            LoanAccountService loanAccountService, LoanAdjustmentService loanAdjustmentService) {
         return new LoanChargeWritePlatformServiceImpl(loanChargeApiJsonValidator, loanAssembler, chargeRepository,
                 businessEventNotifierService, loanTransactionRepository, accountTransfersWritePlatformService, loanRepositoryWrapper,
                 journalEntryWritePlatformService, loanAccountDomainService, loanChargeRepository, loanWritePlatformService, loanUtilService,
@@ -308,7 +310,7 @@ public class LoanAccountConfiguration {
                 configurationDomainService, loanRepaymentScheduleTransactionProcessorFactory, externalIdFactory,
                 accountTransferDetailRepository, loanChargeAssembler, paymentDetailWritePlatformService, noteRepository,
                 loanAccrualTransactionBusinessEventService, loanAccrualsProcessingService, loanDownPaymentTransactionValidator,
-                loanChargeValidator, loanScheduleService, reprocessLoanTransactionsService, loanAccountService);
+                loanChargeValidator, loanScheduleService, reprocessLoanTransactionsService, loanAccountService, loanAdjustmentService);
     }
 
     @Bean
@@ -397,6 +399,7 @@ public class LoanAccountConfiguration {
             LoanDisbursementService loanDisbursementService, LoanScheduleService loanScheduleService,
             LoanChargeValidator loanChargeValidator, LoanOfficerService loanOfficerService,
             ReprocessLoanTransactionsService reprocessLoanTransactionsService, LoanAccountService loanAccountService,
+            LoanJournalEntryPoster journalEntryPoster, LoanAdjustmentService loanAdjustmentService,
             AccountAssociationsRepository accountAssociationsRepository,
             SavingsAccountWritePlatformService savingsAccountWritePlatformService, ApplicationContext applicationContext) {
         return new LoanWritePlatformServiceJpaRepositoryImpl(context, loanTransactionValidator, loanUpdateCommandFromApiJsonDeserializer,
@@ -412,8 +415,8 @@ public class LoanAccountConfiguration {
                 loanAccountLockService, externalIdFactory, loanAccrualTransactionBusinessEventService, errorHandler,
                 loanDownPaymentHandlerService, loanTransactionAssembler, loanAccrualsProcessingService, loanOfficerValidator,
                 loanDownPaymentTransactionValidator, loanDisbursementService, loanScheduleService, loanChargeValidator, loanOfficerService,
-                reprocessLoanTransactionsService, loanAccountService, accountAssociationsRepository, savingsAccountWritePlatformService,
-                applicationContext);
+                reprocessLoanTransactionsService, loanAccountService, journalEntryPoster, loanAdjustmentService,
+                accountAssociationsRepository, savingsAccountWritePlatformService, applicationContext);
     }
 
     @Bean

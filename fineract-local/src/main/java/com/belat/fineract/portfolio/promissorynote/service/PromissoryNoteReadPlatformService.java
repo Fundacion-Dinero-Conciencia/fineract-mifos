@@ -19,13 +19,19 @@
 package com.belat.fineract.portfolio.promissorynote.service;
 
 import com.belat.fineract.portfolio.promissorynote.data.PromissoryNoteData;
+import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote;
+
 import java.util.List;
 
 public interface PromissoryNoteReadPlatformService {
 
     List<PromissoryNoteData> retrieveAll();
 
+    List<PromissoryNote> retrieveAllPromissoryNote();
+
     PromissoryNoteData retrieveOne(Long id);
 
     PromissoryNoteData retrieveOneByPromissoryNoteNumber(String promissoryNoteNumber);
+
+    List<PromissoryNote> retrieveByFundAccountId(Long fundAccountId);
 }

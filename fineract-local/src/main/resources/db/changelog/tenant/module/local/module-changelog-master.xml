@@ -25,4 +25,7 @@
   <include relativeToChangelogFile="true" file="parts/9001_add_table_promissory_note.xml"/>
   <include relativeToChangelogFile="true" file="parts/9002_add_permissions_create_promissory_note.xml"/>
   <include relativeToChangelogFile="true" file="parts/9003_add_column_maximum_deposit_allowed.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9004_add_columns_to_saving_account_transaction.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9005_add_permissions_distribute_fund.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9006_add_colum_percentage_promissory_note.xml"/>
 </databaseChangeLog>
