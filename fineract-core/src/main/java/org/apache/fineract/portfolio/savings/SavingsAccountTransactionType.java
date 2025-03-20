@@ -187,7 +187,9 @@ public enum SavingsAccountTransactionType {
         return this == ACCRUAL;
     }
 
-    public boolean isInvestment(){ return this == INVESTMENT; }
+    public boolean isInvestment() {
+        return this == INVESTMENT;
+    }
 
     public boolean isCredit() {
         // AMOUNT_RELEASE is not credit, because the account balance is not changed

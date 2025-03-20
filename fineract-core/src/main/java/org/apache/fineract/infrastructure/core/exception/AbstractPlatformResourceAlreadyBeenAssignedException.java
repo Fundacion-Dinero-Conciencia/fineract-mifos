@@ -24,7 +24,7 @@ package org.apache.fineract.infrastructure.core.exception;
 public abstract class AbstractPlatformResourceAlreadyBeenAssignedException extends AbstractPlatformException {
 
     protected AbstractPlatformResourceAlreadyBeenAssignedException(String globalisationMessageCode, String defaultUserMessage,
-                                                                   Object... defaultUserMessageArgs) {
+            Object... defaultUserMessageArgs) {
         super(globalisationMessageCode, defaultUserMessage, defaultUserMessageArgs);
     }
 }
