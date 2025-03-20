@@ -20,13 +20,12 @@
 
 -->
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
-  <include relativeToChangelogFile="true" file="parts/9001_add_table_promissory_note.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9002_add_permissions_create_promissory_note.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9003_add_column_maximum_deposit_allowed.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9004_add_columns_to_saving_account_transaction.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9005_add_permissions_distribute_fund.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9006_add_colum_percentage_promissory_note.xml"/>
-  <include relativeToChangelogFile="true" file="parts/9007_add_colum_client_loan_limit_balance.xml"/>
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="1" author="fineract">
+        <addColumn tableName="m_client">
+            <column name="loan_limit_balance" type="DECIMAL(19, 6)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
