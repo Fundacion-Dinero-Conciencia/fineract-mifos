@@ -31,6 +31,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -212,6 +213,9 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
     @Column(name = "proposed_transfer_date")
     private LocalDate proposedTransferDate;
 
+    @Column(name = "loan_limit_balance")
+    private BigDecimal loanLimitBalance;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true, fetch = FetchType.LAZY)
     protected Set<ClientIdentifier> identifiers = new HashSet<>();
 
@@ -220,10 +224,10 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
             final LocalDate activationDate, final LocalDate officeJoiningDate, final ExternalId externalId, final String mobileNo,
             final String emailAddress, final Staff staff, final LocalDate submittedOnDate, final Long savingsProductId,
             final Long savingsAccountId, final LocalDate dateOfBirth, final CodeValue gender, final CodeValue clientType,
-            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff) {
+            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff, final BigDecimal loanLimitBalance) {
         return new Client(currentUser, status, office, clientParentGroup, accountNo, firstname, middlename, lastname, fullname,
                 activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate, savingsProductId,
-                savingsAccountId, dateOfBirth, gender, clientType, clientClassification, legalForm, isStaff);
+                savingsAccountId, dateOfBirth, gender, clientType, clientClassification, legalForm, isStaff, loanLimitBalance);
     }
 
     protected Client() {}
@@ -233,7 +237,7 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
             final LocalDate activationDate, final LocalDate officeJoiningDate, final ExternalId externalId, final String mobileNo,
             final String emailAddress, final Staff staff, final LocalDate submittedOnDate, final Long savingsProductId,
             final Long savingsAccountId, final LocalDate dateOfBirth, final CodeValue gender, final CodeValue clientType,
-            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff) {
+            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff, BigDecimal loanLimitBalance) {
 
         if (StringUtils.isBlank(accountNo)) {
             this.accountNumber = new RandomPasswordGenerator(19).generate();
@@ -297,6 +301,8 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
         this.clientType = clientType;
         this.clientClassification = clientClassification;
         this.setLegalForm(legalForm);
+
+        this.loanLimitBalance = loanLimitBalance;
 
         deriveDisplayName();
         validate();
@@ -684,6 +690,10 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
 
     public LocalDate dateOfBirthLocalDate() {
         return this.dateOfBirth;
+    }
+
+    public BigDecimal loanLimitBalance() {
+        return this.loanLimitBalance;
     }
 
     public void reject(AppUser currentUser, CodeValue rejectionReason, LocalDate rejectionDate) {
