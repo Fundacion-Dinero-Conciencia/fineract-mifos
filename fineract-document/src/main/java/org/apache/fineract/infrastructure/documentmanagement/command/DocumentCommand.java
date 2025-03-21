@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.infrastructure.documentmanagement.command;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 /**
@@ -36,6 +37,7 @@ public class DocumentCommand {
     private String type;
     private String location;
     private Integer storageType;
+    private LocalDate expirationDate;
 
     private final Set<String> modifiedParameters;
 
@@ -115,6 +117,14 @@ public class DocumentCommand {
 
     public void setStorageType(final Integer storageType) {
         this.storageType = storageType;
+    }
+
+    public void setExpirationDate(final LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    public LocalDate getExpirationDate() {
+        return this.expirationDate;
     }
 
     public boolean isNameChanged() {
