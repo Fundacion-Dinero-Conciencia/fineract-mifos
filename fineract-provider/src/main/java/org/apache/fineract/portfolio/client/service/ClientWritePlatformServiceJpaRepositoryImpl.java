@@ -20,6 +20,7 @@ package org.apache.fineract.portfolio.client.service;
 
 import com.google.gson.JsonElement;
 import jakarta.persistence.PersistenceException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -257,6 +258,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final String fullname = command.stringValueOfParameterNamed(ClientApiConstants.fullnameParamName);
             final boolean isStaff = command.booleanPrimitiveValueOfParameterNamed(ClientApiConstants.isStaffParamName);
             final LocalDate dataOfBirth = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
+            final BigDecimal loanLimitBalance = command.bigDecimalValueOfParameterNamed(ClientApiConstants.loanLimitBalanceParamName);
 
             ClientStatus status = ClientStatus.PENDING;
             boolean active = false;
@@ -286,7 +288,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final Client newClient = Client.instance(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename,
                     lastname, fullname, activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate,
                     savingsProductId, savingsAccountId, dataOfBirth, gender, clientType, clientClassification, legalForm.getValue(),
-                    isStaff);
+                    isStaff, loanLimitBalance);
 
             this.clientRepository.saveAndFlush(newClient);
             boolean rollbackTransaction = false;

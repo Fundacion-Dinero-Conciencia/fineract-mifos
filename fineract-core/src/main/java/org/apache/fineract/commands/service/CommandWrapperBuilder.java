@@ -3810,7 +3810,7 @@ public class CommandWrapperBuilder {
         this.href = "/v1/promissorynote";
         return this;
     }
-    
+
     public CommandWrapperBuilder distributeFund() {
         this.actionName = "DISTRIBUTE_FUND";
         this.entityName = "SAVINGACCOUNT";
@@ -3818,4 +3818,5 @@ public class CommandWrapperBuilder {
         this.href = "/v1/distributefund";
         return this;
     }
+
 }
