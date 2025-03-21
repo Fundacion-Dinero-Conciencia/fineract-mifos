@@ -38,6 +38,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,7 +91,7 @@ public class DocumentManagementApiResource {
     @Operation(summary = "Create a Document", description = "Note: A document is created using a Multi-part form upload \n" + "\n"
             + "Body Parts\n" + "\n" + "name : \n" + "Name or summary of the document\n" + "\n" + "description : \n"
             + "Description of the document\n" + "\n" + "file : \n" + "The file to be uploaded\n" + "\n" + "Mandatory Fields : \n"
-            + "file and description")
+            + "file and description" + "\n" + "expirationDate: \n" + "Object expiration date")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Not Shown (multi-part form data)", content = @Content(schema = @Schema(implementation = DocumentManagementApiResourceSwagger.PostEntityTypeEntityIdDocumentsResponse.class))) })
     public CommandProcessingResult createDocument(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
@@ -98,7 +99,7 @@ public class DocumentManagementApiResource {
             @HeaderParam("Content-Length") @Parameter(description = "Content-Length") final Long fileSize,
             @FormDataParam("file") final InputStream inputStream, @FormDataParam("file") final FormDataContentDisposition fileDetails,
             @FormDataParam("file") final FormDataBodyPart bodyPart, @FormDataParam("name") final String name,
-            @FormDataParam("description") final String description) {
+            @FormDataParam("description") final String description, @FormDataParam("expirationDate") final LocalDate expirationDate) {
 
         // TODO: stop reading from stream after max size is reached to protect against malicious clients
         // TODO: need to extract the actual file type and determine if they are permissible
@@ -106,6 +107,7 @@ public class DocumentManagementApiResource {
         fileUploadValidator.validate(fileSize, inputStream, fileDetails, bodyPart);
         final DocumentCommand documentCommand = new DocumentCommand(null, null, entityType, entityId, name, fileDetails.getFileName(),
                 fileSize, bodyPart.getMediaType().toString(), description, null);
+        documentCommand.setExpirationDate(expirationDate);
         final Long documentId = documentWritePlatformService.createDocument(documentCommand, inputStream);
         return CommandProcessingResult.resourceResult(documentId);
     }
@@ -118,7 +120,7 @@ public class DocumentManagementApiResource {
             @Content(mediaType = MediaType.MULTIPART_FORM_DATA, schema = @Schema(implementation = DocumentManagementApiResourceSwagger.DocumentUploadRequest.class)) })
     @Operation(summary = "Update a Document", description = "Note: A document is updated using a Multi-part form upload \n" + "Body Parts\n"
             + "name\n" + "Name or summary of the document\n" + "description\n" + "Description of the document\n" + "file\n"
-            + "The file to be uploaded")
+            + "The file to be uploaded" + "\n" + "expirationDate: \n" + "Object date expiration")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Not Shown (multi-part form data)", content = @Content(schema = @Schema(implementation = DocumentManagementApiResourceSwagger.PutEntityTypeEntityIdDocumentsResponse.class))) })
     public CommandProcessingResult updateDocument(@PathParam("entityType") @Parameter(description = "entityType") final String entityType,
@@ -127,7 +129,7 @@ public class DocumentManagementApiResource {
             @HeaderParam("Content-Length") @Parameter(description = "Content-Length") final Long fileSize,
             @FormDataParam("file") final InputStream inputStream, @FormDataParam("file") final FormDataContentDisposition fileDetails,
             @FormDataParam("file") final FormDataBodyPart bodyPart, @FormDataParam("name") final String name,
-            @FormDataParam("description") final String description) {
+            @FormDataParam("description") final String description, @FormDataParam("expirationDate") final LocalDate expirationDate) {
 
         final Set<String> modifiedParams = new HashSet<>();
         modifiedParams.add("name");
@@ -149,6 +151,9 @@ public class DocumentManagementApiResource {
             documentCommand = new DocumentCommand(modifiedParams, documentId, entityType, entityId, name, null, null, null, description,
                     null);
         }
+
+        documentCommand.setExpirationDate(expirationDate);
+
         /***
          * TODO: does not return list of changes, should be done for consistency with rest of API
          **/

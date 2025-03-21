@@ -21,6 +21,7 @@ package org.apache.fineract.infrastructure.documentmanagement.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.documentmanagement.command.DocumentCommand;
@@ -56,15 +57,21 @@ public class Document extends AbstractPersistableCustom<Long> {
     @Column(name = "storage_type_enum")
     private Integer storageType;
 
+    @Column(name = "expiration_date")
+    private LocalDate expirationDate;
+
     public Document() {}
 
     public static Document createNew(final String parentEntityType, final Long parentEntityId, final String name, final String fileName,
-            final Long size, final String type, final String description, final String location, final StorageType storageType) {
-        return new Document(parentEntityType, parentEntityId, name, fileName, size, type, description, location, storageType);
+            final Long size, final String type, final String description, final String location, final StorageType storageType,
+            final LocalDate expirationDate) {
+        return new Document(parentEntityType, parentEntityId, name, fileName, size, type, description, location, storageType,
+                expirationDate);
     }
 
     private Document(final String parentEntityType, final Long parentEntityId, final String name, final String fileName, final Long size,
-            final String type, final String description, final String location, final StorageType storageType) {
+            final String type, final String description, final String location, final StorageType storageType,
+            final LocalDate expirationDate) {
         this.parentEntityType = StringUtils.defaultIfEmpty(parentEntityType, null);
         this.parentEntityId = parentEntityId;
         this.name = StringUtils.defaultIfEmpty(name, null);
@@ -74,6 +81,7 @@ public class Document extends AbstractPersistableCustom<Long> {
         this.description = StringUtils.defaultIfEmpty(description, null);
         this.location = StringUtils.defaultIfEmpty(location, null);
         this.storageType = storageType.getValue();
+        this.expirationDate = expirationDate;
     }
 
     public void update(final DocumentCommand command) {
@@ -163,5 +171,9 @@ public class Document extends AbstractPersistableCustom<Long> {
 
     public StorageType storageType() {
         return StorageType.fromInt(this.storageType);
+    }
+
+    public LocalDate getExpirationDate() {
+        return this.expirationDate;
     }
 }
