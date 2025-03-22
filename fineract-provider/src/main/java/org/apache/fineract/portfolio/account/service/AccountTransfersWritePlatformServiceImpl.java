@@ -46,6 +46,7 @@ import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
+import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
 import org.apache.fineract.portfolio.account.data.AccountTransfersDataValidator;
@@ -139,6 +140,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             final Long toSavingsId = command.longValueOfParameterNamed(toAccountIdParamName);
             final SavingsAccount toSavingsAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, backdatedTxnsAllowedTill);
 
+            validateCurrencyAccounts(fromSavingsAccount.getCurrency(), toSavingsAccount.getCurrency());
             if (isInvestment) {
                 validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
             }
@@ -597,6 +599,19 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             final String defaultUserMessage = "Transaction is not allowed, the accumulated value exceeds the maximum amount allowed in the account.";
             final ApiParameterError error = ApiParameterError.parameterError("error.msg.transaction.amount", defaultUserMessage,
                     "maxAllowedDepositLimit", maxLimitedAmountAvailable);
+
+            final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+            dataValidationErrors.add(error);
+
+            throw new PlatformApiDataValidationException(dataValidationErrors);
+        }
+    }
+
+    private void validateCurrencyAccounts(MonetaryCurrency currencyFrom, MonetaryCurrency currencyTo) {
+        if (!currencyFrom.getCode().equals(currencyTo.getCode())) {
+            final String defaultUserMessage = "Transaction is not allowed, the currency code must be the same in the accounts.";
+            final ApiParameterError error = ApiParameterError.parameterError("error.msg.transaction.currency", defaultUserMessage,
+                    "currencies", currencyFrom.getCode(), currencyTo.getCode());
 
             final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
             dataValidationErrors.add(error);

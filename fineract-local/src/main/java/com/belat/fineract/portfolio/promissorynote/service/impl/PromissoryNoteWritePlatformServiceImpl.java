@@ -22,7 +22,6 @@ import com.belat.fineract.portfolio.promissorynote.api.PromissoryNoteConstants;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNoteRepository;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNoteStatus;
-import com.belat.fineract.portfolio.promissorynote.exception.PromissoryAlreadyBeenAssignedException;
 import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
 import com.google.gson.JsonElement;
 import jakarta.transaction.Transactional;
@@ -73,7 +72,16 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
         String promissoryNumberInvestor = String.valueOf(promissoryNote.getInvestorSavingsAccount().getClient().getId());
 
         promissoryNote.setPromissoryNoteNumber(paddingNumberPromissory(promissoryNumberInvestor, promissoryNumberFund));
-        promissoryNote.setPercentageShare(calculateParticipationPercentage(promissoryNote.getFundSavingsAccount().getMaxAllowedDepositLimit(), promissoryNote.getInvestmentAmount()));
+        BigDecimal acumulatePercentage = noteRepository.retrieveByFundAccountIdAndStatus(promissoryNote.getFundSavingsAccount().getId(), PromissoryNoteStatus.ACTIVE)
+                .stream()
+                .map(PromissoryNote::getPercentageShare)
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
+        BigDecimal percentageCalculated = calculateParticipationPercentage(promissoryNote.getFundSavingsAccount().getMaxAllowedDepositLimit(), promissoryNote.getInvestmentAmount());
+
+        if (acumulatePercentage.add(percentageCalculated).compareTo(BigDecimal.valueOf(100)) > 0) {
+            throw new PlatformApiDataValidationException("error.msg.amount.fund", "The fund exceeds the percentage available", "available", BigDecimal.valueOf(100).subtract(acumulatePercentage));
+        }
+        promissoryNote.setPercentageShare(percentageCalculated);
 
         promissoryNote = noteRepository.save(promissoryNote);
 
@@ -151,23 +159,28 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
     }
 
     private String paddingNumberPromissory(String clientId, String numberFund) {
-        int number = 19 - (clientId.length() + numberFund.length());
+        int number = 19 - (clientId.length() + numberFund.length())-3;
         String newNumber = "";
         for (int i = 0; i < number; i++) {
             newNumber = newNumber.concat("0");
         }
 
         String promissoryNoteNumber = numberFund.concat("_" + newNumber.concat(clientId));
-        validatePromissoryNoteNumber(promissoryNoteNumber);
-        return promissoryNoteNumber;
+        return promissoryNoteNumber.concat(validateAndGenerateConsecutiveNumber(promissoryNoteNumber));
     }
 
-    private void validatePromissoryNoteNumber(String number) {
-        PromissoryNote promissoryNote = noteRepository.retrieveOneByPromissoryNoteNumber(number);
-        
-        if (promissoryNote != null) {
-            throw new PlatformApiDataValidationException("error.msg.resource.has.assigned", "The promissory note already exists", number);
+    private String validateAndGenerateConsecutiveNumber(String number) {
+        PromissoryNote promissoryNote = noteRepository.retrieveOneByPromissoryNoteNumber(number.concat("%"));
+        String consecutive = "";
+        if (promissoryNote != null && promissoryNote.getPromissoryNoteNumber().contains(".")) {
+            consecutive = promissoryNote.getPromissoryNoteNumber().substring(promissoryNote.getPromissoryNoteNumber().indexOf(".") + 1);
+            int n = Integer.parseInt(consecutive) + 1 ;
+            consecutive = n < 10 ? ".0".concat(String.valueOf(n)) : ".".concat(String.valueOf(n));
+        } else {
+            consecutive = ".00";
         }
+
+        return consecutive;
     }
 
     private BigDecimal calculateParticipationPercentage(BigDecimal totalFund, BigDecimal totalInvestment) {
