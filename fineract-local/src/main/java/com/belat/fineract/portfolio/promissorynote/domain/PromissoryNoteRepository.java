@@ -26,10 +26,19 @@ import java.util.List;
 
 public interface PromissoryNoteRepository extends JpaRepository<PromissoryNote, Long> {
 
-    @Query("SELECT p FROM PromissoryNote p WHERE p.promissoryNoteNumber = :promissoryNoteNumber")
-    PromissoryNote retrieveOneByPromissoryNoteNumber(@Param("promissoryNoteNumber") String promissoryNoteNumber);
+
+    @Query(value = "SELECT * FROM public.e_promissory_note " +
+            "WHERE promissory_note_number LIKE ?1 " +
+            "ORDER BY promissory_note_number DESC " +
+            "LIMIT 1",
+            nativeQuery = true)
+    PromissoryNote retrieveOneByPromissoryNoteNumber(String number);
+
 
     @Query("SELECT p FROM PromissoryNote p WHERE p.fundSavingsAccount.id = :fundId")
     List<PromissoryNote> retrieveByFundAccountId(@Param("fundId") Long fundId);
+
+    @Query("SELECT p FROM PromissoryNote p WHERE p.fundSavingsAccount.id = :fundId AND p.status = :status")
+    List<PromissoryNote> retrieveByFundAccountIdAndStatus(@Param("fundId") Long fundId, @Param("status") PromissoryNoteStatus status);
 
 }
