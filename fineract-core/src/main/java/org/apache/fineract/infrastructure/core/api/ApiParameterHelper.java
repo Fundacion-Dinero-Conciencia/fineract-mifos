@@ -88,6 +88,14 @@ public final class ApiParameterHelper {
         return locale;
     }
 
+    public static String extractDateFormat(final MultivaluedMap<String, String> queryParams) {
+        String dateFormat = "dd MMMM yyyy";
+        if (queryParams.getFirst("dateFormat") != null) {
+            dateFormat = queryParams.getFirst("dateFormat");
+        }
+        return dateFormat;
+    }
+
     public static boolean parameterType(final MultivaluedMap<String, String> queryParams) {
         boolean parameterType = false;
         if (queryParams.getFirst("parameterType") != null) {
