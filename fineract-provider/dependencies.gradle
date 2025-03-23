@@ -30,6 +30,7 @@ dependencies {
     implementation(project(path: ':fineract-rates'))
     implementation(project(path: ':fineract-charge'))
     implementation(project(path: ':fineract-loan'))
+    implementation(project(path: ':fineract-pentaho'))
     implementation(project(path: ':fineract-savings'))
     implementation(project(path: ':fineract-branch'))
     implementation(project(path: ':fineract-document'))
@@ -89,7 +90,7 @@ dependencies {
             'org.apache.commons:commons-lang3',
             'commons-io:commons-io',
             'org.apache.poi:poi',
-            'org.apache.poi:poi-ooxml',
+            'org.apache.poi:poi-ooxml-full:5.2.3',
             'org.apache.tika:tika-core',
             'org.apache.tika:tika-parser-microsoft-module',
             'org.apache.tika:tika-parser-miscoffice-module',

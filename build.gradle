@@ -48,6 +48,7 @@ buildscript {
                 'fineract-e2e-tests-runner',
                 'fineract-progressive-loan',
                 'fineract-progressive-loan-embeddable-schedule-generator',
+                'fineract-pentaho',
                 'fineract-local'
             ].contains(it.name)
         }
@@ -70,12 +71,14 @@ buildscript {
                 'fineract-document',
                 'fineract-progressive-loan',
                 'fineract-progressive-loan-embeddable-schedule-generator',
+                'fineract-pentaho',
                 'fineract-local'
             ].contains(it.name)
         }
         npmRepository = 'https://npm.pkg.github.com'
     }
     repositories {
+        maven { url "${rootProject.projectDir}/libs" }
         maven { url 'https://plugins.gradle.org/m2/' }
     }
 
@@ -149,6 +152,7 @@ allprojects  {
     group = 'org.apache.fineract'
 
     repositories {
+        maven { url "${rootProject.projectDir}/libs" }
         mavenCentral()
     }
 
@@ -329,7 +333,8 @@ allprojects  {
             "**/generated/**/*MapperImpl.java",
             '**/META-INF/fineract-test.config',
             // Apache-specific GitHub metadata settings file
-            '/.asf.yaml'
+            '/.asf.yaml',
+            '**/fineract-pentaho/**',
         ]
     }
 }
