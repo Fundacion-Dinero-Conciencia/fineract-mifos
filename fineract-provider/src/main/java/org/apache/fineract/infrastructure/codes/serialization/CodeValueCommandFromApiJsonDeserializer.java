@@ -20,11 +20,6 @@ package org.apache.fineract.infrastructure.codes.serialization;
 
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.CodeConstants.CodevalueJSONinputParams;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
@@ -34,6 +29,12 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Deserializer for code JSON to validate API request.
@@ -84,6 +85,10 @@ public final class CodeValueCommandFromApiJsonDeserializer {
             baseDataValidator.reset().parameter(CodevalueJSONinputParams.IS_ACTIVE.getValue()).value(isActive).validateForBooleanValue();
         }
 
+        if (this.fromApiJsonHelper.parameterExists(CodevalueJSONinputParams.CODE_SCORE.getValue(), element)) {
+            this.fromApiJsonHelper.extractIntegerSansLocaleNamed(CodevalueJSONinputParams.CODE_SCORE.getValue(), element);
+        }
+
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
 
@@ -118,6 +123,10 @@ public final class CodeValueCommandFromApiJsonDeserializer {
         if (this.fromApiJsonHelper.parameterExists(CodevalueJSONinputParams.IS_ACTIVE.getValue(), element)) {
             final Boolean isActive = this.fromApiJsonHelper.extractBooleanNamed(CodevalueJSONinputParams.IS_ACTIVE.getValue(), element);
             baseDataValidator.reset().parameter(CodevalueJSONinputParams.IS_ACTIVE.getValue()).value(isActive).validateForBooleanValue();
+        }
+
+        if (this.fromApiJsonHelper.parameterExists(CodevalueJSONinputParams.CODE_SCORE.getValue(), element)) {
+            this.fromApiJsonHelper.extractIntegerSansLocaleNamed(CodevalueJSONinputParams.CODE_SCORE.getValue(), element);
         }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
