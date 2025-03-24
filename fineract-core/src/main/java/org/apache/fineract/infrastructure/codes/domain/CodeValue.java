@@ -61,13 +61,16 @@ public class CodeValue extends AbstractPersistableCustom<Long> {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Column(name = "code_score")
+    private Integer codeScore;
+
     @Column(name = "is_mandatory")
     private boolean mandatory;
 
     public static CodeValue createNew(final Code code, final String label, final int position, final String description,
-            final boolean isActive, final boolean mandatory) {
+                                      final boolean isActive, final boolean mandatory, int codeScore) {
         return new CodeValue().setCode(code).setLabel(StringUtils.defaultIfEmpty(label, null)).setPosition(position)
-                .setDescription(description).setActive(isActive).setMandatory(mandatory);
+                .setDescription(description).setActive(isActive).setMandatory(mandatory).setCodeScore(codeScore);
     }
 
     public static CodeValue fromJson(final Code code, final JsonCommand command) {
@@ -76,6 +79,7 @@ public class CodeValue extends AbstractPersistableCustom<Long> {
         Integer position = command.integerValueSansLocaleOfParameterNamed(CodevalueJSONinputParams.POSITION.getValue());
         String description = command.stringValueOfParameterNamed(CodevalueJSONinputParams.DESCRIPTION.getValue());
         Boolean isActiveObj = command.booleanObjectValueOfParameterNamed(CodevalueJSONinputParams.IS_ACTIVE.getValue());
+        Integer codeScore = command.integerValueSansLocaleOfParameterNamed(CodevalueJSONinputParams.CODE_SCORE.getValue());
         boolean isActive = true;
         if (isActiveObj != null) {
             isActive = isActiveObj;
@@ -87,7 +91,7 @@ public class CodeValue extends AbstractPersistableCustom<Long> {
         Boolean mandatory = command.booleanPrimitiveValueOfParameterNamed(CodevalueJSONinputParams.IS_MANDATORY.getValue());
 
         return new CodeValue().setCode(code).setLabel(StringUtils.defaultIfEmpty(label, null)).setPosition(position)
-                .setDescription(description).setActive(isActive).setMandatory(mandatory);
+                .setDescription(description).setActive(isActive).setMandatory(mandatory).setCodeScore(codeScore);
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -120,6 +124,13 @@ public class CodeValue extends AbstractPersistableCustom<Long> {
             final Boolean newValue = command.booleanPrimitiveValueOfParameterNamed(isActiveParamName);
             actualChanges.put(isActiveParamName, newValue);
             this.isActive = newValue;
+        }
+
+        final String codeScoreParamName = CodevalueJSONinputParams.CODE_SCORE.getValue();
+        if (command.isChangeInIntegerSansLocaleParameterNamed(codeScoreParamName, this.codeScore)) {
+            final Integer newValue = command.integerValueSansLocaleOfParameterNamed(codeScoreParamName);
+            actualChanges.put(codeScoreParamName, newValue);
+            this.codeScore = newValue;
         }
 
         return actualChanges;
