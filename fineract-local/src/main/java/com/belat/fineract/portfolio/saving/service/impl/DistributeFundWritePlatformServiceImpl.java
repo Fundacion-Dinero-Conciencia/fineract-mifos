@@ -6,23 +6,28 @@ import com.belat.fineract.portfolio.promissorynote.service.impl.PromissoryNoteRe
 import com.belat.fineract.portfolio.saving.service.DistributeFundWritePlatformService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransactionRepository;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,9 +38,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-@Service
+@Component
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Slf4j
+@Transactional()
 public class DistributeFundWritePlatformServiceImpl implements DistributeFundWritePlatformService {
 
     private final SavingsAccountRepository savingsAccountRepository;
@@ -44,10 +50,16 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
     private final PromissoryNoteReadPlatformServiceImpl promissoryNoteReadPlatformService;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final String PAYMENT_INVERSION = "Payment inversion";
+    private final ConfigurationDomainService configurationService;
 
 
     @Override
+    @Transactional
     public Map<String, Object> distributeFunds(Long accountId) {
+
+        final BigDecimal percentageInvestmentReturn = configurationService.retrievePercentageInvestmentFeeReturn();
+        final SavingsAccount savingBelat = savingsAccountRepository.findById(configurationService.getDefaultAccountId()).orElseThrow();
+        final MathContext mc = MoneyHelper.getMathContext();
 
         final Map<String, Object> changes = new LinkedHashMap<>(7);
 
@@ -79,10 +91,21 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         for (SavingsAccountTransaction tr : transactions) {
             BigDecimal transactionAmount = tr.getAmount();
 
+            if (percentageInvestmentReturn.doubleValue() > 0) {
+                BigDecimal amountEarned = transactionAmount
+                        .subtract(transactionAmount.multiply(percentageInvestmentReturn.divide(BigDecimal.valueOf(100), mc)));
+                transactionAmount = transactionAmount.subtract(amountEarned);
+
+                if (amountEarned.doubleValue() > 0) {
+                    Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned);
+                    transactionsList.add(transactionPercentage);
+                }
+            }
+
             for (PromissoryNote item : accountsToDistribute) {
 
                 // amount = amountTransaction * percentage
-                BigDecimal amountToSend = transactionAmount.multiply(item.getPercentageShare().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+                BigDecimal amountToSend = transactionAmount.multiply(item.getPercentageShare().divide(BigDecimal.valueOf(100), mc));
 
                 Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend);
                 transactionsList.add(transactionId);
@@ -96,7 +119,8 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         return changes;
     }
 
-    private Long sendTransaction(SavingsAccount accountFund, SavingsAccount accountInvestor, BigDecimal amount) {
+    @Transactional
+    public Long sendTransaction(SavingsAccount accountFund, SavingsAccount accountInvestor, BigDecimal amount) {
 
         Map<String, Object> transferData = new HashMap<>();
 
