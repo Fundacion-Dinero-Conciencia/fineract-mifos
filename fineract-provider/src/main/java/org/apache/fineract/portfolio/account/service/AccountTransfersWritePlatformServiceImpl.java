@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,16 +26,28 @@ import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConst
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferIsInvestmentParamName;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.config.FineractProperties;
@@ -45,8 +57,11 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuild
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
 import org.apache.fineract.portfolio.account.data.AccountTransfersDataValidator;
@@ -93,16 +108,17 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private final ConfigurationDomainService configurationDomainService;
     private final ExternalIdFactory externalIdFactory;
     private final FineractProperties fineractProperties;
+    private FromJsonHelper fromJsonHelper = new FromJsonHelper();
 
     @Transactional
     @Override
     public CommandProcessingResult create(final JsonCommand command) {
         boolean isRegularTransaction = true;
-
+        final MathContext mc = MoneyHelper.getMathContext();
         this.accountTransfersDataValidator.validate(command);
 
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(transferDateParamName);
-        final BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed(transferAmountParamName);
+        BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed(transferAmountParamName);
 
         final Locale locale = command.extractLocale();
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
@@ -132,18 +148,33 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             final SavingsAccount fromSavingsAccount = this.savingsAccountAssembler.assembleFrom(fromSavingsAccountId,
                     backdatedTxnsAllowedTill);
 
+            final Long toSavingsId = command.longValueOfParameterNamed(toAccountIdParamName);
+            final SavingsAccount toSavingsAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, backdatedTxnsAllowedTill);
+
+            if (isInvestment) {
+
+                final BigDecimal feePercentage = configurationDomainService.retrievePercentageInvestmentFee();
+                if (feePercentage.doubleValue() > 0) {
+                    BigDecimal feeAmount = transactionAmount
+                            .subtract(transactionAmount.multiply(feePercentage.divide(BigDecimal.valueOf(100), mc)));
+                    validateLimitAmountToInvestment(toSavingsAccount, feeAmount);
+                    transactionAmount = transactionAmount.subtract(feeAmount);
+
+                    SavingsAccount belatAccount = this.savingsAccountAssembler.assembleFrom(configurationDomainService.getDefaultAccountId(), false);
+                    sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount, transactionAmount);
+
+                    transactionAmount = feeAmount;
+                } else {
+                    validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
+                }
+            }
+
             final SavingsTransactionBooleanValues transactionBooleanValues = new SavingsTransactionBooleanValues(isAccountTransfer,
                     isRegularTransaction, fromSavingsAccount.isWithdrawalFeeApplicableForTransfer(), isInterestTransfer, isWithdrawBalance);
             final SavingsAccountTransaction withdrawal = this.savingsAccountDomainService.handleWithdrawal(fromSavingsAccount, fmt,
                     transactionDate, transactionAmount, paymentDetail, transactionBooleanValues, backdatedTxnsAllowedTill);
 
-            final Long toSavingsId = command.longValueOfParameterNamed(toAccountIdParamName);
-            final SavingsAccount toSavingsAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, backdatedTxnsAllowedTill);
-
             validateCurrencyAccounts(fromSavingsAccount.getCurrency(), toSavingsAccount.getCurrency());
-            if (isInvestment) {
-                validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
-            }
 
             final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(toSavingsAccount, fmt, transactionDate,
                     transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, isInvestment);
@@ -222,6 +253,71 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         return builder.build();
     }
 
+    @Transactional
+    public void sendTransactionFeeToBelatAccount(SavingsAccount belatAccount, SavingsAccount investorAccount, BigDecimal amount) {
+
+        Map<String, Object> transferData = new HashMap<>();
+
+        transferData.put("toAccountId", belatAccount.getId());
+        transferData.put("toClientId", belatAccount.getClient().getId());
+        transferData.put("toAccountType", 2);
+        transferData.put("toOfficeId", belatAccount.officeId());
+
+        transferData.put("transferAmount", amount);
+        transferData.put("transferDate", DateUtils.getBusinessLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
+        transferData.put("transferDescription", "investment commission of investor ".concat(investorAccount.getClient().getAccountNumber()));
+        transferData.put("dateFormat", "dd MMMM yyyy");
+        transferData.put("locale", "es");
+
+        transferData.put("fromAccountId", investorAccount.getId());
+        transferData.put("fromClientId", investorAccount.getClient().getId());
+        transferData.put("fromAccountType", "2");
+        transferData.put("fromOfficeId", investorAccount.officeId());
+
+        boolean isRegularTransaction = true;
+
+        final LocalDate transactionDate = DateUtils.getBusinessLocalDate();
+
+        final Locale locale = Locale.forLanguageTag("es");
+        final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy").withLocale(locale);
+
+        boolean isInvestment = false;
+        final PaymentDetail paymentDetail = null;
+        boolean isInterestTransfer = false;
+        boolean isAccountTransfer = true;
+        boolean isWithdrawBalance = false;
+        final boolean backdatedTxnsAllowedTill = false;
+
+        final SavingsTransactionBooleanValues transactionBooleanValues = new SavingsTransactionBooleanValues(isAccountTransfer,
+                isRegularTransaction, investorAccount.isWithdrawalFeeApplicableForTransfer(), isInterestTransfer, isWithdrawBalance);
+        final SavingsAccountTransaction withdrawal = this.savingsAccountDomainService.handleWithdrawal(investorAccount, fmt,
+                transactionDate, amount, paymentDetail, transactionBooleanValues, backdatedTxnsAllowedTill);
+
+        final Long toSavingsId = configurationDomainService.getDefaultAccountId();
+        final SavingsAccount toSavingsAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, backdatedTxnsAllowedTill);
+
+        validateCurrencyAccounts(investorAccount.getCurrency(), toSavingsAccount.getCurrency());
+
+        final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(toSavingsAccount, fmt, transactionDate,
+                amount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, isInvestment);
+
+        if (!investorAccount.getCurrency().getCode().equals(toSavingsAccount.getCurrency().getCode())) {
+            throw new DifferentCurrenciesException(investorAccount.getCurrency().getCode(),
+                    toSavingsAccount.getCurrency().getCode());
+        }
+        JsonCommand jsonCommand = null;
+        try {
+            jsonCommand = createJsonCommand(transferData);
+
+        } catch (Exception e) {
+            throw new PlatformApiDataValidationException("error.msg.validation", "Information for the incoming investment commission could not be constructed.", null);
+        }
+
+        final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(jsonCommand,
+                investorAccount, toSavingsAccount, withdrawal, deposit);
+        this.accountTransferDetailRepository.saveAndFlush(accountTransferDetails);
+    }
+
     @Override
     @Transactional
     public void reverseTransfersWithFromAccountType(final Long accountNumber, final PortfolioAccountType accountTypeId) {
@@ -238,7 +334,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     @Override
     @Transactional
     public void reverseTransfersWithFromAccountTransactions(final Collection<Long> fromTransactionIds,
-            final PortfolioAccountType accountTypeId) {
+                                                            final PortfolioAccountType accountTypeId) {
         List<AccountTransferTransaction> acccountTransfers = new ArrayList<>();
         if (accountTypeId.isLoanAccount()) {
             List<List<Long>> partitions = Lists.partition(fromTransactionIds.stream().toList(),
@@ -526,7 +622,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     }
 
     private boolean isSavingsToSavingsAccountTransfer(final PortfolioAccountType fromAccountType,
-            final PortfolioAccountType toAccountType) {
+                                                      final PortfolioAccountType toAccountType) {
         return fromAccountType.isSavingsAccount() && toAccountType.isSavingsAccount();
     }
 
@@ -618,5 +714,14 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
+    }
+
+    @NotNull
+    private JsonCommand createJsonCommand(Map<String, Object> jsonMap) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMap);
+        JsonCommand command = JsonCommand.from(json, JsonParser.parseString(json), fromJsonHelper, null, 1L, 2L, 3L, 4L, null, null, null,
+                null, null, null, null, null, null);
+        return command;
     }
 }

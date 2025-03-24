@@ -19,6 +19,8 @@
 package org.apache.fineract.infrastructure.configuration.domain;
 
 import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import org.apache.fineract.infrastructure.cache.domain.PlatformCache;
 import org.apache.fineract.infrastructure.cache.domain.PlatformCacheRepository;
 import org.apache.fineract.infrastructure.configuration.api.GlobalConfigurationConstants;
 import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.useradministration.domain.Permission;
 import org.apache.fineract.useradministration.domain.PermissionRepository;
 import org.apache.fineract.useradministration.exception.PermissionNotFoundException;
@@ -526,5 +529,48 @@ public class ConfigurationDomainServiceJpa implements ConfigurationDomainService
     @Override
     public boolean isImmediateChargeAccrualPostMaturityEnabled() {
         return getGlobalConfigurationPropertyData(GlobalConfigurationConstants.ENABLE_IMMEDIATE_CHARGE_ACCRUAL_POST_MATURITY).isEnabled();
+    }
+
+    @Override
+    public boolean isThereActiveDefaultAccount() {
+        final GlobalConfigurationPropertyData property = getGlobalConfigurationPropertyData(
+                GlobalConfigurationConstants.BELAT_ACCOUNT);
+        return property != null && property.isEnabled();
+    }
+
+    @Override
+    public BigDecimal retrievePercentageInvestmentFee() {
+        GlobalConfigurationPropertyData propertyData = getGlobalConfigurationPropertyData(
+                GlobalConfigurationConstants.INVESTMENT_FEE);
+
+        if (propertyData != null && propertyData.isEnabled() && Double.parseDouble(propertyData.getStringValue().replaceAll(",", ".")) > 0) {
+            return BigDecimal.valueOf(Double.parseDouble(propertyData.getStringValue().replaceAll(",", ".")));
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    @Override
+    public BigDecimal retrievePercentageInvestmentFeeReturn() {
+        GlobalConfigurationPropertyData propertyData = getGlobalConfigurationPropertyData(
+                GlobalConfigurationConstants.RETURN_INVESTMENT_FEE);
+
+        if (propertyData != null && propertyData.isEnabled() && Double.parseDouble(propertyData.getStringValue().replaceAll(",", ".")) > 0) {
+            return BigDecimal.valueOf(Double.parseDouble(propertyData.getStringValue().replaceAll(",", ".")));
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    @Override
+    public Long getDefaultAccountId() {
+        GlobalConfigurationPropertyData propertyData = getGlobalConfigurationPropertyData(
+                GlobalConfigurationConstants.BELAT_ACCOUNT);
+
+        if (propertyData != null && propertyData.isEnabled() && propertyData.getValue() > 0) {
+            return propertyData.getValue();
+        } else {
+            throw new PlatformApiDataValidationException("error.msg.configuration", "Could not get the account assigned by default, check that it is enabled and configured.","belat-account");
+        }
     }
 }

@@ -76,6 +76,9 @@ public final class GlobalConfigurationConstants {
     public static final String NEXT_PAYMENT_DUE_DATE = "next-payment-due-date";
     public static final String ENABLE_PAYMENT_HUB_INTEGRATION = "enable-payment-hub-integration";
     public static final String ENABLE_IMMEDIATE_CHARGE_ACCRUAL_POST_MATURITY = "enable-immediate-charge-accrual-post-maturity";
+    public static final String INVESTMENT_FEE = "investment-fee";
+    public static final String RETURN_INVESTMENT_FEE = "return-on-investment-fee";
+    public static final String BELAT_ACCOUNT = "belat-account";
 
     private GlobalConfigurationConstants() {}
 }
