@@ -18,6 +18,11 @@
  */
 package com.belat.fineract.portfolio.promissorynote.domain;
 
+import lombok.Data;
+import lombok.Getter;
+
+
+@Getter
 public enum PromissoryNoteStatus {
 
     ACTIVE(0, "active"), CLOSE(1, "close");

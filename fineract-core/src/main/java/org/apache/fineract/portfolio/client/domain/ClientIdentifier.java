@@ -24,6 +24,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -57,11 +58,15 @@ public class ClientIdentifier extends AbstractAuditableWithUTCDateTimeCustom<Lon
     @Column(name = "active")
     private Integer active;
 
+    @Column(name = "expiration_date")
+    private LocalDate expirationDate;
+
     public static ClientIdentifier fromJson(final Client client, final CodeValue documentType, final JsonCommand command) {
         final String documentKey = command.stringValueOfParameterNamed("documentKey");
         final String description = command.stringValueOfParameterNamed("description");
         final String status = command.stringValueOfParameterNamed("status");
-        return new ClientIdentifier(client, documentType, documentKey, status, description);
+        final LocalDate expirationDate = command.dateValueOfParameterNamed("expirationDate");
+        return new ClientIdentifier(client, documentType, documentKey, status, description, expirationDate);
     }
 
     protected ClientIdentifier() {
@@ -69,7 +74,7 @@ public class ClientIdentifier extends AbstractAuditableWithUTCDateTimeCustom<Lon
     }
 
     private ClientIdentifier(final Client client, final CodeValue documentType, final String documentKey, final String statusName,
-            String description) {
+            String description, LocalDate expirationDate) {
         this.client = client;
         this.documentType = documentType;
         this.documentKey = StringUtils.defaultIfEmpty(documentKey, null);
@@ -80,6 +85,7 @@ public class ClientIdentifier extends AbstractAuditableWithUTCDateTimeCustom<Lon
             this.active = statusEnum.getValue();
         }
         this.status = statusEnum.getValue();
+        this.expirationDate = expirationDate;
     }
 
     public void update(final CodeValue documentType) {
@@ -126,5 +132,9 @@ public class ClientIdentifier extends AbstractAuditableWithUTCDateTimeCustom<Lon
 
     public Long documentTypeId() {
         return this.documentType.getId();
+    }
+
+    public LocalDate getExpirationDate() {
+        return this.expirationDate;
     }
 }

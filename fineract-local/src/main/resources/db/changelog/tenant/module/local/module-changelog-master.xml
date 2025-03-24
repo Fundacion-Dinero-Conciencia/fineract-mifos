@@ -29,4 +29,5 @@
   <include relativeToChangelogFile="true" file="parts/9005_add_permissions_distribute_fund.xml"/>
   <include relativeToChangelogFile="true" file="parts/9006_add_colum_percentage_promissory_note.xml"/>
   <include relativeToChangelogFile="true" file="parts/9007_add_colum_client_loan_limit_balance.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9008_add_client_identifier_and_m_document_expiration_date_colum.xml"/>
 </databaseChangeLog>
