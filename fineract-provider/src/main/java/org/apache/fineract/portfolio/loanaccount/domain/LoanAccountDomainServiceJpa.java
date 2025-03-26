@@ -344,12 +344,9 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
     private void createSavingFundDeposit(final Long loanId, final LoanTransaction newRepaymentTransaction) {
         Map<String, BigDecimal> portionsMap = new LinkedHashMap<>();
         portionsMap.put("I", newRepaymentTransaction.getInterestPortion());
+        portionsMap.put("A", newRepaymentTransaction.getPenaltyChargesPortion());
         portionsMap.put("P", newRepaymentTransaction.getPrincipalPortion());
-        portionsMap.put("C",
-                newRepaymentTransaction.getFeeChargesPortion() != null && newRepaymentTransaction.getPenaltyChargesPortion() != null
-                        ? newRepaymentTransaction.getFeeChargesPortion().add(newRepaymentTransaction.getPenaltyChargesPortion())
-                        : (newRepaymentTransaction.getFeeChargesPortion() != null ? newRepaymentTransaction.getFeeChargesPortion()
-                                : newRepaymentTransaction.getPenaltyChargesPortion()));
+        portionsMap.put("C", newRepaymentTransaction.getFeeChargesPortion());
 
         AccountAssociationsData accountAssociations = accountAssociationsReadPlatformService
                 .retriveLoanAssociations(loanId, AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue()).stream().findFirst()
