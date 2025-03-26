@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.account.data;
 
+import lombok.Data;
+
+@Data
 public class AccountAssociationsData {
 
     @SuppressWarnings("unused")

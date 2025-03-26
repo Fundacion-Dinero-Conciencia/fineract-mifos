@@ -52,7 +52,7 @@ public class AccountTransferAssembler {
 
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(transferDateParamName);
         final BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed(transferAmountParamName);
-        final Money transactionMonetaryAmount = Money.of(fromSavingsAccount.getCurrency(), transactionAmount);
+        final Money transactionMonetaryAmount = Money.of(fromSavingsAccount.getCurrency(), withdrawal.getAmount());
 
         final String description = command.stringValueOfParameterNamed(transferDescriptionParamName);
         AccountTransferTransaction accountTransferTransaction = AccountTransferTransaction.savingsToSavingsTransfer(accountTransferDetails,

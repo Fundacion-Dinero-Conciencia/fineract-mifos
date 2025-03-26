@@ -297,14 +297,24 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         final LocalDate transactionDate = command.localDateValueOfParameterNamed("transactionDate");
         final BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed("transactionAmount");
 
+        final String noteText = command.stringValueOfParameterNamed("note");
+
         this.savingsAccountTransactionDataValidator.validateTransactionWithPivotDate(transactionDate, account);
 
         final Map<String, Object> changes = new LinkedHashMap<>();
         final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService.createAndPersistPaymentDetail(command, changes);
         boolean isAccountTransfer = false;
         boolean isRegularTransaction = true;
+        SavingsAccountTransactionType transactionType =
+                switch (noteText != null && !noteText.isEmpty() ? noteText.substring(0,1) : "") {
+                    case "P" -> SavingsAccountTransactionType.CAPITAL_PAYMENT;
+                    case "I" -> SavingsAccountTransactionType.CURRENT_INTEREST;
+                    case "C" -> SavingsAccountTransactionType.INVESTMENT_FEE;
+                    case "A" -> SavingsAccountTransactionType.ARREARS_INTEREST;
+                    default -> null;
+                };
         final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(account, fmt, transactionDate,
-                transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, false);
+                transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, transactionType);
 
         if (isGsim && (deposit.getId() != null)) {
 
@@ -322,7 +332,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
 
         }
 
-        final String noteText = command.stringValueOfParameterNamed("note");
+
         if (StringUtils.isNotBlank(noteText)) {
             final Note note = Note.savingsTransactionNote(account, deposit, noteText);
             this.noteRepository.save(note);
@@ -780,8 +790,8 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
 
         final Locale locale = command.extractLocale();
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
-        final LocalDate transactionDate = command.localDateValueOfParameterNamed(SavingsApiConstants.transactionDateParamName);
-        final BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed(SavingsApiConstants.transactionAmountParamName);
+        final LocalDate transactionDate = command.localDateValueOfParameterNamed(transactionDateParamName);
+        final BigDecimal transactionAmount = command.bigDecimalValueOfParameterNamed(transactionAmountParamName);
         final Map<String, Object> changes = new LinkedHashMap<>();
         final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService.createAndPersistPaymentDetail(command, changes);
 

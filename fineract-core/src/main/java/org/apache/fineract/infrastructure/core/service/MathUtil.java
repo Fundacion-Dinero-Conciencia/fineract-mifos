@@ -21,6 +21,8 @@ package org.apache.fineract.infrastructure.core.service;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
+
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
@@ -504,5 +506,21 @@ public final class MathUtil {
     public static Money max(Money first, Money second, boolean notNull) {
         return notNull ? first == null ? second : second == null ? first : max(first, second, false)
                 : isGreaterThan(first, second) ? first : second;
+    }
+
+
+    /**
+     *
+     * @param periodMonths period of credit
+     * @param investmentAmount amount of investment
+     * @param percentageValue amount in settings
+     * @return value to CUP percentage
+     */
+    public static BigDecimal calculateCUPValue(Integer periodMonths, BigDecimal investmentAmount, BigDecimal percentageValue) {
+        MathContext mc = new MathContext(2, RoundingMode.HALF_EVEN);
+        if (periodMonths > 10) {
+            periodMonths = 10;
+        }
+        return percentageValue.multiply(BigDecimal.valueOf(periodMonths).multiply(investmentAmount), mc);
     }
 }

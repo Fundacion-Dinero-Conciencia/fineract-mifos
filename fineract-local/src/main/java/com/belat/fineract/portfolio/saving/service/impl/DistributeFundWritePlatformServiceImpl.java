@@ -23,7 +23,6 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransactionRep
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -59,7 +58,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
         final BigDecimal percentageInvestmentReturn = configurationService.retrievePercentageInvestmentFeeReturn();
         final SavingsAccount savingBelat = savingsAccountRepository.findById(configurationService.getDefaultAccountId()).orElseThrow();
-        final MathContext mc = MoneyHelper.getMathContext();
+        final MathContext mc = MoneyHelper.getMathContext(2);
 
         final Map<String, Object> changes = new LinkedHashMap<>(7);
 
@@ -80,7 +79,9 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                 .filter(tr -> tr.getTransactionType().isDeposit()
                         && !tr.isReversed()
                         && (tr.getWasDistribute() == null || !tr.getWasDistribute())
-                        && tr.getTransactionDate().isAfter(tr.getSavingsAccount().getActivationDate()))
+                        && tr.getTransactionDate().isAfter(tr.getSavingsAccount().getActivationDate())
+                        && tr.getTransactionType().isCurrentInterest()
+                )
                 .toList();
 
         if (transactions.isEmpty()) {
@@ -89,6 +90,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
         List<Long> transactionsList = new ArrayList<>(100);
         for (SavingsAccountTransaction tr : transactions) {
+
             BigDecimal transactionAmount = tr.getAmount();
 
             if (percentageInvestmentReturn.doubleValue() > 0) {
