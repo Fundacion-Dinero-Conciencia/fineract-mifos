@@ -62,6 +62,13 @@ public class MoneyHelper {
         return mathContext;
     }
 
+    public static MathContext getMathContext(int precision) {
+        if (mathContext == null) {
+            mathContext = new MathContext(precision, getRoundingMode());
+        }
+        return mathContext;
+    }
+
     public static void fetchRoundingModeFromGlobalConfig() {
         roundingMode = RoundingMode.valueOf(staticConfigurationDomainService.getRoundingMode());
         log.info("Fetch Rounding Mode from Global Config {}", roundingMode.name());

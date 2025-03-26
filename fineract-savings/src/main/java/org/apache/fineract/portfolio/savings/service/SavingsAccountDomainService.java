@@ -35,8 +35,8 @@ public interface SavingsAccountDomainService {
             boolean backdatedTxnsAllowedTill);
 
     SavingsAccountTransaction handleDeposit(SavingsAccount account, DateTimeFormatter fmt, LocalDate transactionDate,
-            BigDecimal transactionAmount, PaymentDetail paymentDetail, boolean isAccountTransfer, boolean isRegularTransaction,
-            boolean backdatedTxnsAllowedTill, boolean isInvestment);
+                                            BigDecimal transactionAmount, PaymentDetail paymentDetail, boolean isAccountTransfer, boolean isRegularTransaction,
+                                            boolean backdatedTxnsAllowedTill, Object... isInvestment);
 
     void postJournalEntries(SavingsAccount savingsAccount, Set<Long> existingTransactionIds, Set<Long> existingReversedTransactionIds,
             boolean backdatedTxnsAllowedTill);

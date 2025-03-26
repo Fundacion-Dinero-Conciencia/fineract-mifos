@@ -368,6 +368,18 @@ public final class SavingsAccountTransactionData implements Serializable {
         return this.transactionType.isDeposit() && isNotReversed();
     }
 
+    public boolean isCapitalPaymentAndNotReversed() {
+        return this.transactionType.isCapitalPayment() && isNotReversed();
+    }
+
+    public boolean isArrearsInterestAndNotReversed() {
+        return this.transactionType.isArrearsInterest() && isNotReversed();
+    }
+
+    public boolean isCurrentInterestAndNotReversed() {
+        return this.transactionType.isCurrentInterest() && isNotReversed();
+    }
+
     public boolean isDividendPayoutAndNotReversed() {
         return this.transactionType.isDividendPayout() && isNotReversed();
     }

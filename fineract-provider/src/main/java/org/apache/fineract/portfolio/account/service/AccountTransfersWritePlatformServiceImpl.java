@@ -32,6 +32,7 @@ import com.google.common.collect.Lists;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,12 +43,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.fineract.commands.domain.CommandWrapper;
-import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.config.FineractProperties;
@@ -60,6 +59,7 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
+import org.apache.fineract.infrastructure.core.service.MathUtil;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
@@ -91,6 +91,7 @@ import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 public class AccountTransfersWritePlatformServiceImpl implements AccountTransfersWritePlatformService {
 
@@ -109,12 +110,13 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private final ExternalIdFactory externalIdFactory;
     private final FineractProperties fineractProperties;
     private FromJsonHelper fromJsonHelper = new FromJsonHelper();
+    private final AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService;
 
     @Transactional
     @Override
     public CommandProcessingResult create(final JsonCommand command) {
         boolean isRegularTransaction = true;
-        final MathContext mc = MoneyHelper.getMathContext();
+        final MathContext mc = MoneyHelper.getMathContext(2);
         this.accountTransfersDataValidator.validate(command);
 
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(transferDateParamName);
@@ -153,17 +155,18 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
             if (isInvestment) {
 
-                final BigDecimal feePercentage = configurationDomainService.retrievePercentageInvestmentFee();
+                BigDecimal feePercentage = configurationDomainService.retrievePercentageInvestmentFee();
                 if (feePercentage.doubleValue() > 0) {
-                    BigDecimal feeAmount = transactionAmount
-                            .subtract(transactionAmount.multiply(feePercentage.divide(BigDecimal.valueOf(100), mc)));
-                    validateLimitAmountToInvestment(toSavingsAccount, feeAmount);
-                    transactionAmount = transactionAmount.subtract(feeAmount);
+                    feePercentage = feePercentage.divide(BigDecimal.valueOf(100));
+                    final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId).getId();
+                    final Integer period =  loanReadPlatformService.retrieveOne(loanAccountId).getTermInMonths();
+                    BigDecimal baseAmount = transactionAmount.divide(BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period), mc)), mc);
+                    BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage);
+                    validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
 
                     SavingsAccount belatAccount = this.savingsAccountAssembler.assembleFrom(configurationDomainService.getDefaultAccountId(), false);
-                    sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount, transactionAmount);
-
-                    transactionAmount = feeAmount;
+                    sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount, feeAmount);
+                    transactionAmount = baseAmount;
                 } else {
                     validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
                 }
@@ -183,7 +186,6 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                 throw new DifferentCurrenciesException(fromSavingsAccount.getCurrency().getCode(),
                         toSavingsAccount.getCurrency().getCode());
             }
-
             final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(command,
                     fromSavingsAccount, toSavingsAccount, withdrawal, deposit);
             this.accountTransferDetailRepository.saveAndFlush(accountTransferDetails);

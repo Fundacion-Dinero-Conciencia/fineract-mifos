@@ -149,11 +149,21 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
     @Transactional
     @Override
     public SavingsAccountTransaction handleDeposit(final SavingsAccount account, final DateTimeFormatter fmt,
-            final LocalDate transactionDate, final BigDecimal transactionAmount, final PaymentDetail paymentDetail,
-            final boolean isAccountTransfer, final boolean isRegularTransaction, final boolean backdatedTxnsAllowedTill,
-            boolean isInvestment) {
-        final SavingsAccountTransactionType savingsAccountTransactionType = isInvestment ? SavingsAccountTransactionType.INVESTMENT
-                : SavingsAccountTransactionType.DEPOSIT;
+                                                   final LocalDate transactionDate, final BigDecimal transactionAmount, final PaymentDetail paymentDetail,
+                                                   final boolean isAccountTransfer, final boolean isRegularTransaction, final boolean backdatedTxnsAllowedTill,
+                                                   Object... isInvestment) {
+
+        SavingsAccountTransactionType savingsAccountTransactionType = SavingsAccountTransactionType.DEPOSIT;
+
+        if (isInvestment != null && isInvestment.length > 0) {
+            if (isInvestment[0] instanceof Boolean && (Boolean) isInvestment[0]) {
+                savingsAccountTransactionType = SavingsAccountTransactionType.INVESTMENT;
+
+            } else if (isInvestment[0] instanceof SavingsAccountTransactionType) {
+                savingsAccountTransactionType = (SavingsAccountTransactionType) isInvestment[0];
+            }
+        }
+
         return handleDeposit(account, fmt, transactionDate, transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction,
                 savingsAccountTransactionType, backdatedTxnsAllowedTill);
     }
