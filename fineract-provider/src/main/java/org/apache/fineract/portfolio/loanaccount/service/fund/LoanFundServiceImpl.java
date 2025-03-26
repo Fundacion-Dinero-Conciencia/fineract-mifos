@@ -68,7 +68,7 @@ public class LoanFundServiceImpl {
 
         // Build saving data
         JsonObject savingJson = createSavingAccountData(loan.getApprovedPrincipal(), result.getClientId(),
-                clientJson.get("fullname").getAsString(), formatter);
+                clientJson.get("fullname").getAsString(), loan.getCurrencyCode(), formatter);
 
         JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()),
                 command.getFromApiJsonHelper());
@@ -102,7 +102,7 @@ public class LoanFundServiceImpl {
     }
 
     private JsonObject createSavingAccountData(final BigDecimal amount, final Long clientId, final String accountNo,
-            final DateTimeFormatter formatter) {
+            final String currencyCode, final DateTimeFormatter formatter) {
         JsonObject accountJson = new JsonObject();
         accountJson.addProperty("maxAllowedDepositLimit", amount);
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
@@ -112,6 +112,7 @@ public class LoanFundServiceImpl {
         accountJson.addProperty("clientId", clientId);
         accountJson.addProperty("allowOverdraft", false);
         accountJson.addProperty("accountNo", accountNo);
+        accountJson.addProperty("currencyCode", currencyCode);
         return accountJson;
     }
 

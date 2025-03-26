@@ -55,6 +55,8 @@ import org.apache.fineract.infrastructure.event.business.domain.savings.SavingsC
 import org.apache.fineract.infrastructure.event.business.domain.savings.SavingsRejectBusinessEvent;
 import org.apache.fineract.infrastructure.event.business.service.BusinessEventNotifierService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.organisation.monetary.domain.ApplicationCurrencyRepositoryWrapper;
+import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
@@ -113,6 +115,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     private final GSIMRepositoy gsimRepository;
     private final GroupRepositoryWrapper groupRepositoryWrapper;
     private final GroupSavingsIndividualMonitoringWritePlatformService gsimWritePlatformService;
+    private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepositoryWrapper;
 
     @Transactional
     @Override
@@ -143,6 +146,12 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             final AppUser submittedBy = this.context.authenticatedUser();
 
             final SavingsAccount account = this.savingAccountAssembler.assembleFrom(command, submittedBy);
+
+            final String currencyCodeParam = command.stringValueOfParameterNamed(SavingsApiConstants.currencyCodeParamName);
+            if (currencyCodeParam != null && !currencyCodeParam.isEmpty()) {
+                account.setCurrency(MonetaryCurrency.fromApplicationCurrency(applicationCurrencyRepositoryWrapper.findOneWithNotFoundDetection(currencyCodeParam)));
+            }
+
             this.savingAccountRepository.save(account);
             String accountNumber = "";
             GroupSavingsIndividualMonitoring gsimAccount = null;

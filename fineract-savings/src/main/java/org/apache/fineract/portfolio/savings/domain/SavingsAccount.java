@@ -3779,6 +3779,10 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         this.accountType = accountType;
     }
 
+    public void setCurrency(MonetaryCurrency currency) {
+        this.currency = currency;
+    }
+
     private boolean isOverdraft() {
         return allowOverdraft;
     }
