@@ -199,6 +199,18 @@ public enum SavingsAccountTransactionType {
         return this == CURRENT_INTEREST;
     }
 
+    public boolean isArrearsInterest() {
+        return this == ARREARS_INTEREST;
+    }
+
+    public boolean isCapitalPayment() {
+        return this == CAPITAL_PAYMENT;
+    }
+
+    public boolean isInvestmentFee() {
+        return this == INVESTMENT_FEE;
+    }
+
 
     public boolean isCredit() {
         // AMOUNT_RELEASE is not credit, because the account balance is not changed

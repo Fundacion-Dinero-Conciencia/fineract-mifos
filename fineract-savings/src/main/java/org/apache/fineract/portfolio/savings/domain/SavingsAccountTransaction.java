@@ -894,4 +894,20 @@ public final class SavingsAccountTransaction extends AbstractAuditableWithUTCDat
                 this.amount, currency, this.balanceNumberOfDays, isDeposit(), isWithdrawal(), isAllowOverDraft,
                 isChargeTransactionAndNotReversed(), isDividendPayoutAndNotReversed());
     }
+
+    public boolean isCapitalPaymentAndNotReversed() {
+        return getTransactionType().isCapitalPayment() && isNotReversed();
+    }
+
+    public boolean isCurrentInterestAndNotReversed() {
+        return getTransactionType().isCurrentInterest() && isNotReversed();
+    }
+
+    public boolean isArrearsInterestAndNotReversed() {
+        return getTransactionType().isArrearsInterest() && isNotReversed();
+    }
+
+    public boolean isInvestmentFeeAndNotReversed() {
+        return getTransactionType().isInvestmentFee() && isNotReversed();
+    }
 }

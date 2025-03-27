@@ -56,14 +56,14 @@ public class MoneyHelper {
     }
 
     public static MathContext getMathContext() {
-        if (mathContext == null) {
+        if (mathContext == null || mathContext.getPrecision() != PRECISION) {
             mathContext = new MathContext(PRECISION, getRoundingMode());
         }
         return mathContext;
     }
 
     public static MathContext getMathContext(int precision) {
-        if (mathContext == null) {
+        if (mathContext == null || mathContext.getPrecision() == PRECISION) {
             mathContext = new MathContext(precision, getRoundingMode());
         }
         return mathContext;

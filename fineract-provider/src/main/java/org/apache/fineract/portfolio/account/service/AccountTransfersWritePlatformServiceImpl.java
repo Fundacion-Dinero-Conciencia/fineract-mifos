@@ -18,31 +18,9 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferIsInvestmentParamName;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import com.google.gson.JsonParser;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +39,7 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
 import org.apache.fineract.infrastructure.core.service.MathUtil;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
+import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
@@ -91,6 +70,26 @@ import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferIsInvestmentParamName;
+
 @Slf4j
 @RequiredArgsConstructor
 public class AccountTransfersWritePlatformServiceImpl implements AccountTransfersWritePlatformService {
@@ -115,6 +114,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     @Transactional
     @Override
     public CommandProcessingResult create(final JsonCommand command) {
+
         boolean isRegularTransaction = true;
         final MathContext mc = MoneyHelper.getMathContext(2);
         this.accountTransfersDataValidator.validate(command);
@@ -157,16 +157,16 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
                 BigDecimal feePercentage = configurationDomainService.retrievePercentageInvestmentFee();
                 if (feePercentage.doubleValue() > 0) {
-                    feePercentage = feePercentage.divide(BigDecimal.valueOf(100));
+                    feePercentage = feePercentage.divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
                     final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId).getId();
                     final Integer period =  loanReadPlatformService.retrieveOne(loanAccountId).getTermInMonths();
-                    BigDecimal baseAmount = transactionAmount.divide(BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period), mc)), mc);
+                    BigDecimal baseAmount = transactionAmount.divide(BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period))), MoneyHelper.getMathContext());
                     BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage);
                     validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
 
                     SavingsAccount belatAccount = this.savingsAccountAssembler.assembleFrom(configurationDomainService.getDefaultAccountId(), false);
-                    sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount, feeAmount);
-                    transactionAmount = baseAmount;
+                    sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount, Money.of(belatAccount.getCurrency(), feeAmount).getAmount());
+                    transactionAmount = Money.of(belatAccount.getCurrency(),baseAmount).getAmount();
                 } else {
                     validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
                 }
@@ -243,22 +243,24 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
         }
 
-        final CommandProcessingResultBuilder builder = new CommandProcessingResultBuilder().withEntityId(transferDetailId);
+        final CommandProcessingResultBuilder builderx = new CommandProcessingResultBuilder().withEntityId(transferDetailId);
 
         if (fromAccountType.isSavingsAccount()) {
-            builder.withSavingsId(fromSavingsAccountId);
+            builderx.withSavingsId(fromSavingsAccountId);
         }
         if (fromAccountType.isLoanAccount()) {
-            builder.withLoanId(fromLoanAccountId);
+            builderx.withLoanId(fromLoanAccountId);
         }
 
-        return builder.build();
+        return builderx.build();
     }
 
     @Transactional
     public void sendTransactionFeeToBelatAccount(SavingsAccount belatAccount, SavingsAccount investorAccount, BigDecimal amount) {
 
         Map<String, Object> transferData = new HashMap<>();
+
+        // FIXME -> use AccountTransferDTO
 
         transferData.put("toAccountId", belatAccount.getId());
         transferData.put("toClientId", belatAccount.getClient().getId());
@@ -693,7 +695,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
         }
         amountActual = amountActual.add(amount);
-        if (amountActual.compareTo(maxLimitedAmountAvailable) > 0) {
+        if (amountActual.compareTo(maxLimitedAmountAvailable) > 0 || account.isActive()) {
             final String defaultUserMessage = "Transaction is not allowed, the accumulated value exceeds the maximum amount allowed in the account.";
             final ApiParameterError error = ApiParameterError.parameterError("error.msg.transaction.amount", defaultUserMessage,
                     "maxAllowedDepositLimit", maxLimitedAmountAvailable);

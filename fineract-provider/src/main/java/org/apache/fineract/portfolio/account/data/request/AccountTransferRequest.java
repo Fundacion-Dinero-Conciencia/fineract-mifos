@@ -43,4 +43,5 @@ public class AccountTransferRequest implements Serializable {
     private String toClientId;
     private String fromAccountId;
     private String fromOfficeId;
+    private Boolean isInvestment;
 }
