@@ -35,6 +35,7 @@ import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.data.StringEnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
+import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.staff.data.StaffData;
@@ -669,7 +670,12 @@ public class LoanAccountData {
     public Integer getTermInMonths() {
         if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.DAYS.getValue())) {
             return this.termFrequency / 30;
+        } else if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.MONTHS.getValue())) {
+            return this.termFrequency;
+        } else if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.YEARS.getValue())) {
+            return this.termFrequency / 12;
+        } else {
+            throw new PlatformApiDataValidationException("error.msg.period.frequency", "Error obtaining the credit period frequency to calculate the commission calculation", null);
         }
-        return 0;
     }
 }
