@@ -47,6 +47,7 @@ import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDoma
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -1048,6 +1049,10 @@ public class LoanScheduleAssembler {
                         && exceptionObject.get(LoanApiConstants.modifiedinstallmentsParamName).isJsonArray()) {
                     final JsonArray modificationsArray = exceptionObject.get(LoanApiConstants.modifiedinstallmentsParamName)
                             .getAsJsonArray();
+                    if (modificationsArray.isEmpty()) {
+                        throw new GeneralPlatformDomainRuleException("err.msg.there.are.not.modifications",
+                                "There are not modifications");
+                    }
                     extractLoanTermVariations(loan, dateFormat, locale, modificationsArray, false, false, loanTermVariations);
                 }
                 if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.newinstallmentsParamName, exceptionObject)
