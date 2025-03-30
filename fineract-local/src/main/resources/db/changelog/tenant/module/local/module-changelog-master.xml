@@ -31,4 +31,5 @@
   <include relativeToChangelogFile="true" file="parts/9007_add_colum_client_loan_limit_balance.xml"/>
   <include relativeToChangelogFile="true" file="parts/9008_add_client_identifier_and_m_document_expiration_date_colum.xml"/>
   <include relativeToChangelogFile="true" file="parts/9009_add_configuration_percentage_investors.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9010_add_investment_project_table.xml"/>
 </databaseChangeLog>

@@ -3819,4 +3819,20 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createInvestmentProject() {
+        this.actionName = "CREATE";
+        this.entityName = "INVESTMENT_PROJECT";
+        this.entityId = null;
+        this.href = "/v1/investmentproject";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateInvestmentProject(final Long projectId) {
+        this.actionName = "UPDATE";
+        this.entityName = "INVESTMENT_PROJECT";
+        this.entityId = projectId;
+        this.href = "/investmentproject/" + projectId;
+        return this;
+    }
+
 }
