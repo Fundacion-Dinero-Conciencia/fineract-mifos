@@ -3,6 +3,7 @@ package com.belat.fineract.portfolio.saving.service.impl;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNoteStatus;
 import com.belat.fineract.portfolio.promissorynote.service.impl.PromissoryNoteReadPlatformServiceImpl;
+import com.belat.fineract.portfolio.saving.api.DistributeFundConstants;
 import com.belat.fineract.portfolio.saving.service.DistributeFundWritePlatformService;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +49,6 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
     private final ApplicationContext context;
     private final PromissoryNoteReadPlatformServiceImpl promissoryNoteReadPlatformService;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
-    private final String PAYMENT_INVERSION = "Payment inversion";
     private final ConfigurationDomainService configurationService;
 
 
@@ -71,7 +70,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         List<PromissoryNote> accountsToDistribute = promissoryNoteReadPlatformService
                 .retrieveByFundAccountId(savingsAccountFund.getId())
                 .stream()
-                .filter(sa -> sa.getStatus().equals(PromissoryNoteStatus.ACTIVE) && sa.getFundSavingsAccount().getId() != null &&  sa.getFundSavingsAccount().getId().equals(savingsAccountFund.getId()))
+                .filter(sa -> sa.getStatus().equals(PromissoryNoteStatus.ACTIVE) && sa.getFundSavingsAccount().getId() != null && sa.getFundSavingsAccount().getId().equals(savingsAccountFund.getId()))
                 .toList();
 
 
@@ -94,30 +93,40 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
             BigDecimal transactionAmount = Money.of(savingBelat.getCurrency(), tr.getAmount()).getAmount();
 
+            // Commission CPD (devolución)
             if (percentageInvestmentReturn.doubleValue() > 0 && tr.getTransactionType().isCurrentInterest()) {
                 BigDecimal amountEarned = transactionAmount.multiply(percentageInvestmentReturn.divide(BigDecimal.valueOf(100), mc));
                 transactionAmount = Money.of(savingBelat.getCurrency(), transactionAmount.subtract(amountEarned)).getAmount();
 
                 if (amountEarned.doubleValue() > 0) {
-                    amountEarned = Money.of(savingBelat.getCurrency(),amountEarned).getAmount();
-                    Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned);
+                    amountEarned = Money.of(savingBelat.getCurrency(), amountEarned).getAmount();
+                    Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned, DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()));
                     transactionsList.add(transactionPercentage);
                 }
 
-                // TODO -> implementar comisión de CAI (agente inversiones)
             }
 
             for (PromissoryNote item : accountsToDistribute) {
-
-                // amount = amountTransaction * percentage
                 BigDecimal amountToSend = transactionAmount.multiply(item.getPercentageShare().divide(BigDecimal.valueOf(100), mc));
-                if (tr.getId().equals(transactions.get(transactions.size() -1).getId()) && item.getId().equals(accountsToDistribute.get(accountsToDistribute.size() -1).getId()) ) {
+                BigDecimal amountCAI = BigDecimal.ZERO;
+                // Commission CAI (agente inversiones)
+                if (item.getInvestmentAgent() != null && item.getPercentageInvestmentAgent().doubleValue() > 0 && tr.getTransactionType().isCurrentInterest()) {
+                    log.info("Send transaction to investment agent {}", item.getInvestmentAgent().displayName());
+                    amountCAI = amountToSend.multiply(item.getPercentageInvestmentAgent().divide(BigDecimal.valueOf(100), mc));
+                    SavingsAccount savingInvestmentAgent = savingsAccountRepository.findByStaffId(item.getInvestmentAgent().getId());
+                    Long transactionId = sendTransaction(savingsAccountFund, savingInvestmentAgent, amountCAI, DistributeFundConstants.COMMISSION_CAI.concat("-" + item.getInvestorSavingsAccount().getClient().getDisplayName()));
+                    transactionsList.add(transactionId);
+
+                }
+                amountToSend = amountToSend.subtract(amountCAI);
+                if (tr.getId().equals(transactions.get(transactions.size() - 1).getId()) && item.getId().equals(accountsToDistribute.get(accountsToDistribute.size() - 1).getId())) {
                     BigDecimal amountToCompare = savingsAccountRepository.findById(savingsAccountFund.getId()).orElseThrow(() -> new SavingsAccountNotFoundException(savingBelat.getId())).getSummary().getAccountBalance();
                     if (amountToCompare.compareTo(amountToSend) < 0) {
                         amountToSend = amountToCompare;
                     }
                 }
-                Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend);
+
+                Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend, DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()));
                 transactionsList.add(transactionId);
             }
             tr.setWasDistribute(true);
@@ -130,7 +139,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
     }
 
     @Transactional
-    public Long sendTransaction(SavingsAccount accountFund, SavingsAccount accountInvestor, BigDecimal amount) {
+    public Long sendTransaction(SavingsAccount accountFund, SavingsAccount accountInvestor, BigDecimal amount, String observationTransaction) {
 
         Map<String, Object> transferData = new HashMap<>();
 
@@ -141,7 +150,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
         transferData.put("transferAmount", Money.of(accountFund.getCurrency(), amount).getAmount());
         transferData.put("transferDate", DateUtils.getBusinessLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
-        transferData.put("transferDescription", PAYMENT_INVERSION);
+        transferData.put("transferDescription", observationTransaction);
         transferData.put("dateFormat", "dd MMMM yyyy");
         transferData.put("locale", "es");
 
@@ -149,7 +158,6 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         transferData.put("fromClientId", accountFund.getClient().getId());
         transferData.put("fromAccountType", "2");
         transferData.put("fromOfficeId", accountFund.officeId());
-
 
 
         final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(new Gson().toJson(transferData));
@@ -173,7 +181,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final Long clientTypeFund = context.getEnvironment().getProperty("fineract.fund.client.type", Long.class);
 
-        if (savingsAccount.isNotActive() ) {
+        if (savingsAccount.isNotActive()) {
 
             defaultUserMessage = "Transaction is not allowed. Account is not active.";
             error = ApiParameterError.parameterError(

@@ -32,4 +32,5 @@
   <include relativeToChangelogFile="true" file="parts/9008_add_client_identifier_and_m_document_expiration_date_colum.xml"/>
   <include relativeToChangelogFile="true" file="parts/9009_add_configuration_percentage_investors.xml"/>
   <include relativeToChangelogFile="true" file="parts/9010_add_investment_project_table.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9011_add_columns_to_promissory_note_commission_cai.xml"/>
 </databaseChangeLog>

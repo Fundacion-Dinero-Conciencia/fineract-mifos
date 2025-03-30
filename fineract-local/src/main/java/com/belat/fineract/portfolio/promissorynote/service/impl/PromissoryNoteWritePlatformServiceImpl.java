@@ -18,6 +18,7 @@
  */
 package com.belat.fineract.portfolio.promissorynote.service.impl;
 
+import com.belat.fineract.organisation.staff.service.StaffReadPlatformServiceLocal;
 import com.belat.fineract.portfolio.promissorynote.api.PromissoryNoteConstants;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNoteRepository;
@@ -26,7 +27,6 @@ import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePl
 import com.google.gson.JsonElement;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +45,7 @@ import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
+import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
     private final FromJsonHelper fromApiJsonHelper;
     private final PromissoryNoteRepository noteRepository;
     private final SavingsAccountRepository savingsAccountRepository;
+    private final StaffReadPlatformServiceLocal staffReadService;
 
     @Override
     public CommandProcessingResult addPromissoryNote(JsonCommand command) {
@@ -129,6 +131,8 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
                 .setInvestorSavingsAccount(savingsAccountRepository.findById(getInvestorSavingAccountIdFromJson(element)).orElseThrow(() -> new SavingsAccountNotFoundException(getInvestorSavingAccountIdFromJson(element))));
         promissoryNote.setCurrencyCode(getCurrencyCodeFromJson(element));
         promissoryNote.setPromissoryNoteNumber(promissoryNote.getFundSavingsAccount().getAccountNumber());
+        promissoryNote.setInvestmentAgent(getInvestmentAgentFromJson(element));
+        promissoryNote.setPercentageInvestmentAgent(getPercentageInvestmentAgent(element));
 
         if (!Objects.equals(promissoryNote.getFundSavingsAccount().getCurrency().getCode(),
                 promissoryNote.getInvestorSavingsAccount().getCurrency().getCode())) {
@@ -156,6 +160,19 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
     private BigDecimal getAmountFromJson(JsonElement json) {
         final Locale locale = fromApiJsonHelper.extractLocaleParameter(json.getAsJsonObject());
         return fromApiJsonHelper.extractBigDecimalNamed(PromissoryNoteConstants.amountParamName, json, locale);
+    }
+
+    private Staff getInvestmentAgentFromJson(JsonElement element) {
+        final Long investmentAgentId = fromApiJsonHelper.extractLongNamed(PromissoryNoteConstants.investmentAgentParamName, element);
+        if (investmentAgentId == null) {
+            return null;
+        }
+        return staffReadService.getById(investmentAgentId);
+    }
+
+    private BigDecimal getPercentageInvestmentAgent(JsonElement element) {
+        final Locale locale = fromApiJsonHelper.extractLocaleParameter(element.getAsJsonObject());
+        return fromApiJsonHelper.extractBigDecimalNamed(PromissoryNoteConstants.percentageInvestmentAgentParamName, element, locale);
     }
 
     private String paddingNumberPromissory(String clientId, String numberFund) {
