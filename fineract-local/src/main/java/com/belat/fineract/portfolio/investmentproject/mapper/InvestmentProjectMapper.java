@@ -1,0 +1,19 @@
+package com.belat.fineract.portfolio.investmentproject.mapper;
+
+import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
+import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
+import org.apache.fineract.infrastructure.core.config.MapstructMapperConfig;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.util.List;
+
+@Mapper(config = MapstructMapperConfig.class)
+public interface InvestmentProjectMapper {
+
+    @Mapping(target = "owner", ignore = true)
+    InvestmentProjectData map(InvestmentProject source);
+
+    List<InvestmentProjectData> map(List<InvestmentProject> sources);
+
+}

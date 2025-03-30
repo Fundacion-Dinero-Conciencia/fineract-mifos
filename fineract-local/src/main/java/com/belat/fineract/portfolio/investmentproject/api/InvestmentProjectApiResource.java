@@ -1,0 +1,85 @@
+package com.belat.fineract.portfolio.investmentproject.api;
+
+import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
+import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import lombok.RequiredArgsConstructor;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
+import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Path("/v1/investmentproject")
+@Component
+@Tag(name = "investmentproject", description = "investmentproject")
+@RequiredArgsConstructor
+public class InvestmentProjectApiResource {
+    private final PlatformUserRightsContext platformUserRightsContext;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final DefaultToApiJsonSerializer<InvestmentProjectData> apiJsonSerializerService;
+    private final InvestmentProjectReadPlatformService investmentProjectReadPlatformService;
+
+    @POST
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.PostAddInvestmentProjectRequest.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.PostAddInvestmentProjectResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Project can not be created") })
+    public String addInvestmentProject(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        platformUserRightsContext.isAuthenticated();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).createInvestmentProject().build();
+        CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return apiJsonSerializerService.serialize(result);
+    }
+
+    @GET
+    @Path("/all")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.PostAddInvestmentProjectRequest.class))) })
+    public String getAllInvestmentProjects() {
+        platformUserRightsContext.isAuthenticated();
+        final List<InvestmentProjectData> projects = investmentProjectReadPlatformService.retrieveAll();
+        return apiJsonSerializerService.serialize(projects);
+    }
+
+    @GET
+    @Path("/search")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.PostAddInvestmentProjectRequest.class))) })
+    public String getInvestmentProjects(@QueryParam("id") final Long id,
+                                        @QueryParam("ownerId") final Long ownerId) {
+        platformUserRightsContext.isAuthenticated();
+
+        if (id != null) {
+            final InvestmentProjectData projectData = investmentProjectReadPlatformService.retrieveById(id);
+            return apiJsonSerializerService.serialize(projectData);
+        } else if (ownerId != null) {
+            final List<InvestmentProjectData> projectsData = investmentProjectReadPlatformService.retrieveByClientId(ownerId);
+            return apiJsonSerializerService.serialize(projectsData);
+        } else {
+            throw new IllegalArgumentException("Not supported parameter");
+        }
+    }
+
+}
