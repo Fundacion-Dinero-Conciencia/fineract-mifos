@@ -25,5 +25,11 @@ public class InvestmentProjectConstants {
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS = new HashSet<>(Arrays.asList(projectNameParamName,
             projectOwnerIdParamName, amountParamName, currencyCodeParamName, descriptionParamName, projectRateParamName));
 
+    /**
+     * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try to
+     * get response parameters to match those of request parameters.
+     */
+    public static final Set<String> INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(projectNameParamName,
+            descriptionParamName, projectRateParamName));
 
 }

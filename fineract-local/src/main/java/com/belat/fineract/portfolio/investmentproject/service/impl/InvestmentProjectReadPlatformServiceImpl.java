@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,7 +23,13 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     @Override
     public List<InvestmentProjectData> retrieveAll() {
         List<InvestmentProject> projects = investmentProjectRepository.findAll();
-        return investmentProjectMapper.map(projects);
+        List<InvestmentProjectData> projectsData = new ArrayList<>();
+        for (InvestmentProject project : projects) {
+            InvestmentProjectData projectData = investmentProjectMapper.map(project);
+            projectData.setOwnerId(project.getOwner().getId());
+            projectsData.add(projectData);
+        }
+        return projectsData;
     }
 
     @Override
@@ -33,14 +40,25 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     @Override
     public InvestmentProjectData retrieveById(Long id) {
         InvestmentProject project = investmentProjectRepository.retrieveOneByProjectId(id);
-        return investmentProjectMapper.map(project);
+        InvestmentProjectData projectData = investmentProjectMapper.map(project);
+        if (project != null) {
+            projectData.setOwnerId(project.getOwner().getId());
+        }
+        return projectData;
     }
 
     @Override
     public List<InvestmentProjectData> retrieveByClientId(Long clientId) {
         List<InvestmentProject> projects = investmentProjectRepository.retrieveByClientId(clientId);
-        return investmentProjectMapper.map(projects);
-
+        List<InvestmentProjectData> projectsData = new ArrayList<>();
+        for (InvestmentProject project : projects) {
+            if (project != null) {
+                InvestmentProjectData projectData = investmentProjectMapper.map(project);
+                projectData.setOwnerId(project.getOwner().getId());
+                projectsData.add(projectData);
+            }
+        }
+        return projectsData;
     }
 
 }

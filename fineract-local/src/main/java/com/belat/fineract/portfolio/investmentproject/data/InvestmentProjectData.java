@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class InvestmentProjectData {
 
     private String name;
-    private ClientData owner;
+    private Long ownerId;
     private BigDecimal amount;
     private String currencyCode;
     private String description;
