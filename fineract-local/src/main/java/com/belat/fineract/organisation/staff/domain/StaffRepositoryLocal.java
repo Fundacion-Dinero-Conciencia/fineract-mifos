@@ -16,17 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.belat.fineract.portfolio.promissorynote.api;
+package com.belat.fineract.organisation.staff.domain;
 
-public final class PromissoryNoteConstants {
+import org.apache.fineract.organisation.staff.domain.Staff;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
-    private PromissoryNoteConstants() {}
-
-    public static final String fundSavingsAccountIdParamName = "fundSavingsAccountId";
-    public static final String investorSavingsAccountIdParamName = "investorSavingsAccountId";
-    public static final String amountParamName = "amount";
-    public static final String currencyCodeParamName = "currencyCode";
-    public static final String investmentAgentParamName = "investmentAgentId";
-    public static final String percentageInvestmentAgentParamName = "percentageInvestmentAgent";
+@Repository
+public interface StaffRepositoryLocal extends JpaRepository<Staff, Long>, JpaSpecificationExecutor<Staff> {
 
 }

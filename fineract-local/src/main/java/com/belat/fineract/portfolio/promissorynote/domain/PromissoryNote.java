@@ -24,6 +24,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -32,6 +33,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
+import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 
 @Getter
@@ -66,5 +68,12 @@ public class PromissoryNote extends AbstractAuditableWithUTCDateTimeCustom<Long>
 
     @Column(name = "currency_code", nullable = false)
     private String currencyCode;
+
+    @ManyToOne
+    @JoinColumn (name = "investment_agent", referencedColumnName = "id")
+    private Staff investmentAgent;
+
+    @Column(name = "percentage_investment_agent")
+    private BigDecimal percentageInvestmentAgent;
 
 }
