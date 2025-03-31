@@ -7,6 +7,6 @@ public interface InvestmentProjectWritePlatformService {
 
     CommandProcessingResult createInvestmentProject(JsonCommand command);
 
-    CommandProcessingResult updateInvestmentProject(JsonCommand command);
+    CommandProcessingResult updateInvestmentProject(Long projectId, JsonCommand command);
 
 }

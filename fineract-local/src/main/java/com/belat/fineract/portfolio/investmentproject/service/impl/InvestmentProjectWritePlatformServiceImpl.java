@@ -3,6 +3,7 @@ package com.belat.fineract.portfolio.investmentproject.service.impl;
 import com.belat.fineract.portfolio.investmentproject.api.InvestmentProjectConstants;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
+import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjectNotFoundException;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,8 +78,25 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     }
 
     @Override
-    public CommandProcessingResult updateInvestmentProject(JsonCommand command) {
-        return null;
+    public CommandProcessingResult updateInvestmentProject(Long projectId, JsonCommand command) {
+
+        this.validateForUpdate(command.json());
+
+        final Map<String, Object> changes = new LinkedHashMap<>(20);
+
+        InvestmentProject investmentProject = investmentProjectRepository.findById(projectId).orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
+        investmentProject.modifyApplication(command, changes);
+
+        if (!changes.isEmpty()) {
+            this.investmentProjectRepository.save(investmentProject);
+        }
+
+        return new CommandProcessingResultBuilder() //
+                .withCommandId(command.commandId()) //
+                .withEntityId(projectId) //
+                .with(changes) //
+                .build();
+
     }
 
     private void validateForCreate (final String json) {
@@ -125,6 +144,36 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
     }
 
+    private void validateForUpdate (final String json) {
 
+        if (StringUtils.isBlank(json)) {
+            throw new InvalidJsonException();
+        }
 
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
+                InvestmentProjectConstants.INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE);
+
+        final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+        final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("investmentProject");
+        final JsonElement jsonElement = fromApiJsonHelper.parse(json);
+
+        if (fromApiJsonHelper.parameterExists(InvestmentProjectConstants.projectNameParamName, jsonElement)) {
+            final String name = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectNameParamName, jsonElement);
+            baseDataValidator.reset().parameter(InvestmentProjectConstants.projectNameParamName).value(name).notBlank().notNull();
+        }
+        if (fromApiJsonHelper.parameterExists(InvestmentProjectConstants.descriptionParamName, jsonElement)) {
+            final String description = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.descriptionParamName, jsonElement);
+            baseDataValidator.reset().parameter(InvestmentProjectConstants.descriptionParamName).value(description).notBlank().notNull();
+        }
+        if (fromApiJsonHelper.parameterExists(InvestmentProjectConstants.projectRateParamName, jsonElement)) {
+            final String rate = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectRateParamName, jsonElement);
+            baseDataValidator.reset().parameter(InvestmentProjectConstants.projectRateParamName).value(rate).notBlank().notNull();
+        }
+
+        if (!dataValidationErrors.isEmpty()) {
+            throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
+                    dataValidationErrors);
+        }
+    }
 }

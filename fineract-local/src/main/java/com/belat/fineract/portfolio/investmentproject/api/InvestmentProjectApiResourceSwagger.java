@@ -70,4 +70,43 @@ public class InvestmentProjectApiResourceSwagger {
 
     }
 
+    @Schema(description = "PutInvestmentProjectRequest")
+    public static final class PutInvestmentProjectRequest {
+
+        private PutInvestmentProjectRequest() {}
+        @Schema(example = "Name")
+        public String name;
+
+        @Schema(example = "Description")
+        public String description;
+
+        @Schema(example = "5.9999999999")
+        public BigDecimal rate;
+    }
+
+    @Schema(description = "PutInvestmentProjectResponse")
+    public static final class PutInvestmentProjectResponse {
+
+        private PutInvestmentProjectResponse() {}
+
+        static final class PutInvestmentProjectChanges {
+
+            private PutInvestmentProjectChanges() {}
+
+            @Schema(example = "Name")
+            public String name;
+
+            @Schema(example = "Description")
+            public String description;
+
+            @Schema(example = "5.9999999999")
+            public BigDecimal rate;
+        }
+
+        @Schema(example = "2")
+
+        public PutInvestmentProjectChanges changes;
+    }
+
+
 }

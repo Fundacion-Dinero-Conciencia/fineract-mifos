@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(config = MapstructMapperConfig.class)
 public interface InvestmentProjectMapper {
 
-    @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "ownerId", ignore = true)
     InvestmentProjectData map(InvestmentProject source);
 
     List<InvestmentProjectData> map(List<InvestmentProject> sources);
