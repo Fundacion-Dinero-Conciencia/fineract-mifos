@@ -160,7 +160,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     feePercentage = feePercentage.divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
                     final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId).getId();
                     final Integer period =  loanReadPlatformService.retrieveOne(loanAccountId).getTermInMonths();
-                    BigDecimal baseAmount = transactionAmount.divide(BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period))), MoneyHelper.getMathContext());
+                    BigDecimal baseAmount = transactionAmount.divide(BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period > 10 ? 10 : period))), MoneyHelper.getMathContext());
                     BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage);
                     validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
 
