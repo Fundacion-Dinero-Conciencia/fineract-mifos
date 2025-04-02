@@ -57,7 +57,7 @@ public class InvestmentProjectApiResource {
     @Path("/all")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.PostAddInvestmentProjectRequest.class))) })
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.GetInvestmentProjectResponse.class))) })
     public String getAllInvestmentProjects() {
         platformUserRightsContext.isAuthenticated();
         final List<InvestmentProjectData> projects = investmentProjectReadPlatformService.retrieveAll();
@@ -68,7 +68,7 @@ public class InvestmentProjectApiResource {
     @Path("/search")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.PostAddInvestmentProjectRequest.class))) })
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.GetInvestmentProjectResponse.class))) })
     public String getInvestmentProjects(@QueryParam("id") final Long id,
                                         @QueryParam("ownerId") final Long ownerId) {
         platformUserRightsContext.isAuthenticated();

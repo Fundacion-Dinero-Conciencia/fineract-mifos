@@ -12,6 +12,14 @@ import java.util.List;
 public interface InvestmentProjectMapper {
 
     @Mapping(target = "ownerId", ignore = true)
+    @Mapping(target = "impactDescription", ignore = true)
+    @Mapping(target = "institutionDescription", ignore = true)
+    @Mapping(target = "teamDescription", ignore = true)
+    @Mapping(target = "financingDescription", ignore = true)
+    @Mapping(target = "isActive", ignore = true)
+    @Mapping(target = "country", ignore = true)
+    @Mapping(target = "images", ignore = true)
+    @Mapping(target = "categories", ignore = true)
     InvestmentProjectData map(InvestmentProject source);
 
     List<InvestmentProjectData> map(List<InvestmentProject> sources);

@@ -33,6 +33,7 @@ dependencies {
     implementation(project(path: ':fineract-savings'))
     implementation(project(path: ':fineract-report'))
     implementation(project(path: ':fineract-tax'))
+    implementation(project(path: ':fineract-document'))
     testImplementation(project(':fineract-client'))
 
     implementation 'com.squareup.okhttp3:okhttp'

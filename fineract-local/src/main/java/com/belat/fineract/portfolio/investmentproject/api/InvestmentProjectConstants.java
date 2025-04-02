@@ -14,8 +14,17 @@ public class InvestmentProjectConstants {
     public static final String projectOwnerIdParamName = "ownerId";
     public static final String amountParamName = "amount";
     public static final String currencyCodeParamName = "currencyCode";
-    public static final String descriptionParamName = "description";
     public static final String projectRateParamName = "projectRate";
+    public static final String periodParamName = "period";
+    public static final String countryIdParamName = "countryId";
+    public static final String isActiveParamName = "isActive";
+    public static final String categoriesParamName = "categories";
+
+    //Descriptions
+    public static final String impactDescriptionParamName = "impactDescription";
+    public static final String institutionDescriptionParamName = "institutionDescription";
+    public static final String teamDescriptionParamName = "teamDescription";
+    public static final String financingDescriptionParamName = "financingDescription";
 
 
     /**
@@ -23,13 +32,16 @@ public class InvestmentProjectConstants {
      * get response parameters to match those of request parameters.
      */
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS = new HashSet<>(Arrays.asList(projectNameParamName,
-            projectOwnerIdParamName, amountParamName, currencyCodeParamName, descriptionParamName, projectRateParamName));
+            projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName, periodParamName,
+            countryIdParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
+            financingDescriptionParamName, isActiveParamName, categoriesParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try to
      * get response parameters to match those of request parameters.
      */
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(projectNameParamName,
-            descriptionParamName, projectRateParamName));
+            projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
+            financingDescriptionParamName, isActiveParamName, categoriesParamName));
 
 }
