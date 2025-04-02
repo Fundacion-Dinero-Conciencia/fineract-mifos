@@ -5,6 +5,8 @@ import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData.ImageDocument;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
+import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategory;
+import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategoryRepository;
 import com.belat.fineract.portfolio.investmentproject.mapper.InvestmentProjectMapper;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     private final InvestmentProjectMapper investmentProjectMapper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DocumentReadPlatformService documentReadPlatformService;
+    private final InvestmentProjectCategoryRepository investmentProjectCategoryRepository;
 
     @Override
     public List<InvestmentProjectData> retrieveAll() {
@@ -73,6 +76,25 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     @Override
     public List<InvestmentProjectData> retrieveByClientId(Long clientId) {
         List<InvestmentProject> projects = investmentProjectRepository.retrieveByClientId(clientId);
+        List<InvestmentProjectData> projectsData = new ArrayList<>();
+        projects.forEach(project -> {
+            if (project != null) {
+                InvestmentProjectData projectData = investmentProjectMapper.map(project);
+                factoryData(projectData, project, projectsData);
+                projectData.setImpactDescription(project.getDescription().getImpactDescription());
+                projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
+                projectData.setTeamDescription(project.getDescription().getTeamDescription());
+                projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
+            }
+        });
+        return projectsData;
+    }
+
+    @Override
+    public List<InvestmentProjectData> retrieveByCategoryId(Long categoryId) {
+        List<InvestmentProjectCategory> categories = investmentProjectCategoryRepository.retrieveByCategoryId(categoryId);
+        List<InvestmentProject> projects = new ArrayList<>();
+        categories.forEach(item -> projects.add(item.getInvestmentProject()));
         List<InvestmentProjectData> projectsData = new ArrayList<>();
         projects.forEach(project -> {
             if (project != null) {

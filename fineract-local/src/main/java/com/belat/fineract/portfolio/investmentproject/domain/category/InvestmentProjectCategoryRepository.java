@@ -11,4 +11,6 @@ public interface InvestmentProjectCategoryRepository extends JpaRepository<Inves
     @Query("SELECT ipc FROM InvestmentProjectCategory ipc WHERE ipc.investmentProject.id = :projectId")
     List<InvestmentProjectCategory> retrieveByProjectId(@Param("projectId") Long projectId);
 
+    @Query("SELECT ipc FROM InvestmentProjectCategory ipc WHERE ipc.category.id = :categoryId")
+    List<InvestmentProjectCategory> retrieveByCategoryId(@Param("categoryId") Long categoryId);
 }

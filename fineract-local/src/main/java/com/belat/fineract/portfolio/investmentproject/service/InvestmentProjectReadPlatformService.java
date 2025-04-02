@@ -15,4 +15,6 @@ public interface InvestmentProjectReadPlatformService {
 
     List<InvestmentProjectData> retrieveByClientId(Long clientId);
 
+    List<InvestmentProjectData> retrieveByCategoryId(Long categoryId);
+
 }
