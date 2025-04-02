@@ -1,11 +1,16 @@
 package com.belat.fineract.portfolio.investmentproject.service.impl;
 
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
+import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData.DataCode;
+import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData.ImageDocument;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.mapper.InvestmentProjectMapper;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import lombok.RequiredArgsConstructor;
+import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
+import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
+import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,22 +19,36 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProjectReadPlatformService {
 
     private final InvestmentProjectRepository investmentProjectRepository;
     private final InvestmentProjectMapper investmentProjectMapper;
+    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
+    private final DocumentReadPlatformService documentReadPlatformService;
 
     @Override
     public List<InvestmentProjectData> retrieveAll() {
         List<InvestmentProject> projects = investmentProjectRepository.findAll();
         List<InvestmentProjectData> projectsData = new ArrayList<>();
-        for (InvestmentProject project : projects) {
-            InvestmentProjectData projectData = investmentProjectMapper.map(project);
-            projectData.setOwnerId(project.getOwner().getId());
-            projectsData.add(projectData);
-        }
+        projects.forEach(project -> {
+            if (project != null) {
+                InvestmentProjectData projectData = investmentProjectMapper.map(project);
+                factoryData(projectData, project, projectsData);
+            }
+        });
         return projectsData;
+    }
+
+    @Transactional
+    private List<ImageDocument> retrieveList(Long id) {
+        List<ImageDocument> images = new ArrayList<>();
+        List<DocumentData> documents = documentReadPlatformService.retrieveAllDocuments("projects", id);
+        documents.forEach(document -> {
+            if (document != null) {
+                images.add(new ImageDocument(document.getFileName(), document.getLocation()));
+            }
+        });
+        return images;
     }
 
     @Override
@@ -42,7 +61,11 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         InvestmentProject project = investmentProjectRepository.retrieveOneByProjectId(id);
         InvestmentProjectData projectData = investmentProjectMapper.map(project);
         if (project != null) {
-            projectData.setOwnerId(project.getOwner().getId());
+            factoryData(projectData, project, new ArrayList<>());
+            projectData.setImpactDescription(project.getDescription().getImpactDescription());
+            projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
+            projectData.setTeamDescription(project.getDescription().getTeamDescription());
+            projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
         }
         return projectData;
     }
@@ -51,14 +74,37 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     public List<InvestmentProjectData> retrieveByClientId(Long clientId) {
         List<InvestmentProject> projects = investmentProjectRepository.retrieveByClientId(clientId);
         List<InvestmentProjectData> projectsData = new ArrayList<>();
-        for (InvestmentProject project : projects) {
+        projects.forEach(project -> {
             if (project != null) {
                 InvestmentProjectData projectData = investmentProjectMapper.map(project);
-                projectData.setOwnerId(project.getOwner().getId());
-                projectsData.add(projectData);
+                factoryData(projectData, project, projectsData);
+                projectData.setImpactDescription(project.getDescription().getImpactDescription());
+                projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
+                projectData.setTeamDescription(project.getDescription().getTeamDescription());
+                projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
             }
-        }
+        });
         return projectsData;
+    }
+
+    private void factoryData (InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
+        projectData.setOwnerId(project.getOwner().getId());
+        projectData.setIsActive(project.isActive());
+        projectData.setPeriod(project.getPeriod());
+        DataCode country = new DataCode(project.getCountry().getId(),
+                project.getCountry().getLabel(), project.getCountry().getDescription());
+        projectData.setCountry(country);
+        projectData.setImages(retrieveList(project.getId()));
+        projectsData.add(projectData);
+
+        List<DataCode> categories = new ArrayList<>();
+        project.getCategories().forEach(item -> {
+            if (item != null) {
+                categories.add(new DataCode(item.getCategory().getId(), item.getCategory().getLabel(),
+                        item.getCategory().getDescription()));
+            }
+        });
+        projectData.setCategories(categories);
     }
 
 }

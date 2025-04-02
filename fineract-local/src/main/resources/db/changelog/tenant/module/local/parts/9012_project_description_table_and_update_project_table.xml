@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet author="fineract" id="1">
+        <createTable tableName="e_investment_project_description">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="impact_description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="institution_description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="team_description" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="financing_description" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on_utc" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_on_utc" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="fineract" id="3">
+        <dropColumn tableName="e_investment_project" columnName="description"/>
+    </changeSet>
+
+    <changeSet author="fineract" id="2">
+        <addColumn tableName="e_investment_project">
+            <column name="period" type="INTEGER" />
+        </addColumn>
+        <addColumn tableName="e_investment_project">
+            <column name="country_id" type="BIGINT" />
+        </addColumn>
+        <addColumn tableName="e_investment_project">
+            <column name="description_id" type="BIGINT" />
+        </addColumn>
+        <addColumn tableName="e_investment_project">
+            <column name="is_active" type="BOOLEAN" defaultValueBoolean="true" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="fineract" id="4">
+        <addForeignKeyConstraint baseColumnNames="country_id" baseTableName="e_investment_project"
+                                 constraintName="FK_investment_project_country" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="m_code_value" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="e_investment_project"
+                                 constraintName="FK_investment_project_description" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="e_investment_project_description" validate="true"/>
+    </changeSet>
+
+    <changeSet author="fineract" id="5">
+        <createIndex indexName="IDX_investment_project_country" tableName="e_investment_project">
+            <column name="country_id"/>
+        </createIndex>
+        <createIndex indexName="IDX_investment_project_description" tableName="e_investment_project">
+            <column name="description_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="fineract" id="6">
+        <createTable tableName="e_investment_project_category">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="investment_project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on_utc" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_on_utc" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="fineract" id="7">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="e_investment_project_category"
+                                 constraintName="FK_investment_project_category" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="m_code_value" validate="true"/>
+        <addForeignKeyConstraint baseColumnNames="investment_project_id" baseTableName="e_investment_project_category"
+                                 constraintName="FK_investment_project_category_relation" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="e_investment_project" validate="true"/>
+    </changeSet>
+
+    <changeSet author="fineract" id="8">
+        <createIndex indexName="IDX_investment_project_category" tableName="e_investment_project_category">
+            <column name="category_id"/>
+        </createIndex>
+        <createIndex indexName="IDX_investment_project_category_relation" tableName="e_investment_project_category">
+            <column name="investment_project_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

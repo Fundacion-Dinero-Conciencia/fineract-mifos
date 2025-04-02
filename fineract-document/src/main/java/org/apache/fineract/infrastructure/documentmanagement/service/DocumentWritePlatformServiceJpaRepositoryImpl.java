@@ -18,7 +18,6 @@
  */
 package org.apache.fineract.infrastructure.documentmanagement.service;
 
-import java.io.InputStream;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.ErrorHandler;
 import org.apache.fineract.infrastructure.documentmanagement.command.DocumentCommand;
@@ -39,6 +38,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.InputStream;
 
 @Service
 public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWritePlatformService {
@@ -180,7 +181,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
     /*** Entities for document Management **/
     public enum DocumentManagementEntity {
 
-        CLIENTS, CLIENT_IDENTIFIERS, STAFF, LOANS, SAVINGS, GROUPS, IMPORT;
+        CLIENTS, CLIENT_IDENTIFIERS, STAFF, LOANS, SAVINGS, GROUPS, IMPORT, PROJECTS;
 
         @Override
         public String toString() {

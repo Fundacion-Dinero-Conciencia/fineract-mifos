@@ -18,9 +18,6 @@
  */
 package org.apache.fineract.infrastructure.documentmanagement.service;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.documentmanagement.contentrepository.ContentRepository;
@@ -33,6 +30,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
     private final PlatformSecurityContext context;
     private final ContentRepositoryFactory contentRepositoryFactory;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     @Override
     public List<DocumentData> retrieveAllDocuments(final String entityType, final Long entityId) {
 
@@ -50,7 +54,7 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
         // TODO verify if the entities are valid and a user
         // has data
         // scope for the particular entities
-        final DocumentMapper mapper = new DocumentMapper(true, true);
+        final DocumentMapper mapper = new DocumentMapper(false, true);
         final String sql = "select " + mapper.schema() + " order by d.id";
         return this.jdbcTemplate.query(sql, mapper, new Object[] { entityType, entityId }); // NOSONAR
     }
