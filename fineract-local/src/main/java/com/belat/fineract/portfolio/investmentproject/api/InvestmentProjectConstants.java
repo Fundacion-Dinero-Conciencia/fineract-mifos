@@ -11,6 +11,7 @@ public class InvestmentProjectConstants {
     private InvestmentProjectConstants() {}
 
     public static final String projectNameParamName = "name";
+    public static final String subtitleParamName = "subtitle";
     public static final String projectOwnerIdParamName = "ownerId";
     public static final String amountParamName = "amount";
     public static final String currencyCodeParamName = "currencyCode";
@@ -32,16 +33,16 @@ public class InvestmentProjectConstants {
      * get response parameters to match those of request parameters.
      */
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS = new HashSet<>(Arrays.asList(projectNameParamName,
-            projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName, periodParamName,
-            countryIdParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
-            financingDescriptionParamName, isActiveParamName, categoriesParamName));
+            subtitleParamName, projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName,
+            periodParamName, countryIdParamName, impactDescriptionParamName, institutionDescriptionParamName,
+            teamDescriptionParamName, financingDescriptionParamName, isActiveParamName, categoriesParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try to
      * get response parameters to match those of request parameters.
      */
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(projectNameParamName,
-            projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
-            financingDescriptionParamName, isActiveParamName, categoriesParamName));
+            subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName,
+            teamDescriptionParamName, financingDescriptionParamName, isActiveParamName, categoriesParamName));
 
 }

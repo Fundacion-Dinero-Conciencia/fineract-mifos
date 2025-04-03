@@ -12,6 +12,7 @@ public class InvestmentProjectData {
 
     private Long id;
     private String name;
+    private String subtitle;
     private Long ownerId;
     private BigDecimal amount;
     private String currencyCode;

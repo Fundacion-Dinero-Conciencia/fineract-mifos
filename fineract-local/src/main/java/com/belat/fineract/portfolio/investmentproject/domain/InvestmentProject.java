@@ -35,6 +35,9 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "subtitle", nullable = false)
+    private String subtitle;
+
     @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "owner_id", nullable = false, referencedColumnName = "id")
@@ -74,6 +77,11 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
             final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.projectNameParamName);
             actualChanges.put(InvestmentProjectConstants.projectNameParamName, newValue);
             this.name = StringUtils.defaultIfEmpty(newValue, null);
+        }
+        if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.subtitleParamName, getName())) {
+            final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.subtitleParamName);
+            actualChanges.put(InvestmentProjectConstants.subtitleParamName, newValue);
+            this.subtitle = StringUtils.defaultIfEmpty(newValue, null);
         }
         if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.projectRateParamName, getRate())) {
             final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.projectRateParamName);
