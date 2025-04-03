@@ -34,4 +34,5 @@
   <include relativeToChangelogFile="true" file="parts/9010_add_investment_project_table.xml"/>
   <include relativeToChangelogFile="true" file="parts/9011_add_columns_to_promissory_note_commission_cai.xml"/>
   <include relativeToChangelogFile="true" file="parts/9012_project_description_table_and_update_project_table.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9013_add_project_participation_table.xml"/>
 </databaseChangeLog>

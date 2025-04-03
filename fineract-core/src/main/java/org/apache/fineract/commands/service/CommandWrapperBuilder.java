@@ -3835,4 +3835,28 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createProjectParticipation() {
+        this.actionName = "CREATE";
+        this.entityName = "PROJECT_PARTICIPATION";
+        this.entityId = null;
+        this.href = "/v1/projectparticipation";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateProjectParticipation(final Long id) {
+        this.actionName = "UPDATE";
+        this.entityName = "PROJECT_PARTICIPATION";
+        this.entityId = id;
+        this.href = "/projectparticipation/" + id;
+        return this;
+    }
+
+    public CommandWrapperBuilder deleteProjectParticipation(final Long id) {
+        this.actionName = "DELETE";
+        this.entityName = "PROJECT_PARTICIPATION";
+        this.entityId = id;
+        this.href = "/projectparticipation/" + id;
+        return this;
+    }
+
 }
