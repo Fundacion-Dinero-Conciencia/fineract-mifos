@@ -20,6 +20,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "country", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "categories", ignore = true)
+    @Mapping(target = "occupancyPercentage", ignore = true)
     InvestmentProjectData map(InvestmentProject source);
 
     List<InvestmentProjectData> map(List<InvestmentProject> sources);

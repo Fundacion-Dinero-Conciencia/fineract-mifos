@@ -104,6 +104,9 @@ public class InvestmentProjectApiResourceSwagger {
         @Schema(example = "true")
         public Boolean isActive;
 
+        @Schema(example = "5.9999999999")
+        public BigDecimal occupancyPercentage;
+
         static final class GetCountry {
 
             private GetCountry() {}
