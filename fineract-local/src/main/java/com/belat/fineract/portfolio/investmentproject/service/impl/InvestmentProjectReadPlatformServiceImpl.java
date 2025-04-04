@@ -9,6 +9,7 @@ import com.belat.fineract.portfolio.investmentproject.domain.category.Investment
 import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategoryRepository;
 import com.belat.fineract.portfolio.investmentproject.mapper.InvestmentProjectMapper;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
+import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
@@ -16,6 +17,8 @@ import org.apache.fineract.infrastructure.documentmanagement.service.DocumentRea
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DocumentReadPlatformService documentReadPlatformService;
     private final InvestmentProjectCategoryRepository investmentProjectCategoryRepository;
+    private final ProjectParticipationRepository projectParticipationRepository;
 
     @Override
     public List<InvestmentProjectData> retrieveAll() {
@@ -118,6 +122,12 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         projectData.setCountry(country);
         projectData.setImages(retrieveList(project.getId()));
         projectsData.add(projectData);
+
+        BigDecimal projectParticipation = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(project.getId());
+        BigDecimal projectAmount = project.getAmount();
+        BigDecimal occupancyPercentage = projectParticipation.multiply(BigDecimal.valueOf(100)).divide(projectAmount, 2, RoundingMode.HALF_UP);
+
+        projectData.setOccupancyPercentage(occupancyPercentage);
 
         List<DataCode> categories = new ArrayList<>();
         project.getCategories().forEach(item -> {

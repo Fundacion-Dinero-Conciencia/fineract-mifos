@@ -23,6 +23,7 @@ public class InvestmentProjectData {
     private Boolean isActive;
     private Integer period;
     private BigDecimal rate;
+    private BigDecimal occupancyPercentage;
     private DataCode country;
     private List<ImageDocument> images;
     private List<DataCode> categories;
