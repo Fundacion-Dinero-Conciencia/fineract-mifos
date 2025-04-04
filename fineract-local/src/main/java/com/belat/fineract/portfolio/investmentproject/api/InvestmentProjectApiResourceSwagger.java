@@ -17,6 +17,9 @@ public class InvestmentProjectApiResourceSwagger {
         @Schema(example = "Name")
         public String name;
 
+        @Schema(example = "Example")
+        public String subtitle;
+
         @Schema(example = "1")
         public String ownerId;
 
@@ -70,6 +73,9 @@ public class InvestmentProjectApiResourceSwagger {
 
         @Schema(example = "Name")
         public String name;
+
+        @Schema(example = "Example")
+        public String subtitle;
 
         @Schema(example = "1000.00")
         public BigDecimal amount;
@@ -145,6 +151,9 @@ public class InvestmentProjectApiResourceSwagger {
         private PutInvestmentProjectRequest() {}
         @Schema(example = "Name")
         public String name;
+
+        @Schema(example = "Example")
+        public String subtitle;
 
         @Schema(example = "Description")
         public String impactDescription;

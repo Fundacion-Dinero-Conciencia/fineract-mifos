@@ -64,6 +64,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         InvestmentProject investmentProject = new InvestmentProject();
 
         investmentProject.setName(command.stringValueOfParameterNamed(InvestmentProjectConstants.projectNameParamName));
+        investmentProject.setSubtitle(command.stringValueOfParameterNamed(InvestmentProjectConstants.subtitleParamName));
 
         final String ownerIdParam = command.stringValueOfParameterNamed(InvestmentProjectConstants.projectOwnerIdParamName);
         Client owner = clientRepository.findById(Long.valueOf(ownerIdParam)).orElseThrow( () -> new ClientNotFoundException(Long.valueOf(ownerIdParam)));
@@ -148,20 +149,17 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("investmentProject");
         final JsonElement jsonElement = fromApiJsonHelper.parse(json);
 
-        final String projectNameParam = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectNameParamName,
-                jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.projectNameParamName).value(projectNameParam).notBlank()
-                .notNull();
+        final String projectNameParam = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectNameParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.projectNameParamName).value(projectNameParam).notBlank().notNull();
 
-        final String ownerId = fromApiJsonHelper
-                .extractStringNamed(InvestmentProjectConstants.projectOwnerIdParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.projectOwnerIdParamName).value(ownerId)
-                .notBlank().notNull();
+        final String subtitleParam = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subtitleParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.subtitleParamName).value(subtitleParam).notBlank().notNull();
 
-        final String amount = fromApiJsonHelper
-                .extractStringNamed(InvestmentProjectConstants.amountParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.amountParamName).value(amount)
-                .notBlank().notNull();
+        final String ownerId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectOwnerIdParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.projectOwnerIdParamName).value(ownerId).notBlank().notNull();
+
+        final String amount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.amountParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.amountParamName).value(amount).notBlank().notNull();
 
         final String currencyCode = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.currencyCodeParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.currencyCodeParamName).value(currencyCode).notBlank().notNull();
@@ -216,6 +214,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String name = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectNameParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectNameParamName).value(name).notBlank().notNull();
+
+        final String subtitle = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subtitleParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.subtitleParamName).value(subtitle).notBlank().notNull();
 
         final String rate = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectRateParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectRateParamName).value(rate).notBlank().notNull();
