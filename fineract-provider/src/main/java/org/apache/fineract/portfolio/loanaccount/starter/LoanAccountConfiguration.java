@@ -272,8 +272,9 @@ public class LoanAccountConfiguration {
     public LoanChargeAssembler loanChargeAssembler(
 
             FromJsonHelper fromApiJsonHelper, ChargeRepositoryWrapper chargeRepository, LoanChargeRepository loanChargeRepository,
-            LoanProductRepository loanProductRepository, ExternalIdFactory externalIdFactory) {
-        return new LoanChargeAssembler(fromApiJsonHelper, chargeRepository, loanChargeRepository, loanProductRepository, externalIdFactory);
+            LoanProductRepository loanProductRepository, ExternalIdFactory externalIdFactory, LoanRepositoryWrapper loanRepositoryWrapper) {
+        return new LoanChargeAssembler(fromApiJsonHelper, chargeRepository, loanChargeRepository, loanProductRepository,
+                externalIdFactory, loanRepositoryWrapper);
     }
 
     @Bean

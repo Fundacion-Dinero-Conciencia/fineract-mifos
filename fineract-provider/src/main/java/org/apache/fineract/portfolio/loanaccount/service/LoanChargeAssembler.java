@@ -47,6 +47,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanCharge;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanChargeRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanDisbursementDetails;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTrancheDisbursementCharge;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductRepository;
@@ -60,6 +61,7 @@ public class LoanChargeAssembler {
     private final LoanChargeRepository loanChargeRepository;
     private final LoanProductRepository loanProductRepository;
     private final ExternalIdFactory externalIdFactory;
+    private final LoanRepositoryWrapper loanRepositoryWrapper;
 
     public Set<LoanCharge> fromParsedJson(final JsonElement element, List<LoanDisbursementDetails> disbursementDetails) {
         JsonArray jsonDisbursement = this.fromApiJsonHelper.extractJsonArrayNamed("disbursementData", element);
@@ -89,8 +91,15 @@ public class LoanChargeAssembler {
         final BigDecimal principal = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed("principal", element);
         final Integer numberOfRepayments = this.fromApiJsonHelper.extractIntegerWithLocaleNamed("numberOfRepayments", element);
         final Long productId = this.fromApiJsonHelper.extractLongNamed("productId", element);
-        final LoanProduct loanProduct = this.loanProductRepository.findById(productId)
-                .orElseThrow(() -> new LoanProductNotFoundException(productId));
+        LoanProduct loanProduct;
+        if (productId == null) {
+            final Long loanId = this.fromApiJsonHelper.extractLongNamed("loanId", element);
+            final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+            loanProduct = loan.getLoanProduct();
+        } else {
+            loanProduct = this.loanProductRepository.findById(productId)
+                    .orElseThrow(() -> new LoanProductNotFoundException(productId));
+        }
         final boolean isMultiDisbursal = loanProduct.isMultiDisburseLoan();
         LocalDate expectedDisbursementDate = null;
 
