@@ -168,9 +168,17 @@ public class LoanScheduleAssembler {
 
     public LoanApplicationTerms assembleLoanTerms(final JsonElement element) {
         final Long loanProductId = this.fromApiJsonHelper.extractLongNamed("productId", element);
+        LoanProduct loanProduct;
+        if (loanProductId == null) {
+            final Long loanId = this.fromApiJsonHelper.extractLongNamed("loanId", element);
 
-        final LoanProduct loanProduct = this.loanProductRepository.findById(loanProductId)
-                .orElseThrow(() -> new LoanProductNotFoundException(loanProductId));
+            final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
+
+            loanProduct = loan.getLoanProduct();
+        } else {
+            loanProduct = this.loanProductRepository.findById(loanProductId)
+                    .orElseThrow(() -> new LoanProductNotFoundException(loanProductId));
+        }
         return assembleLoanApplicationTermsFrom(element, loanProduct);
     }
 

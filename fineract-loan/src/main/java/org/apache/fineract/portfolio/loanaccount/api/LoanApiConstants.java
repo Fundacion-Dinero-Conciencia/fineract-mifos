@@ -60,6 +60,7 @@ public interface LoanApiConstants {
     String externalIdParameterName = "externalId";
     String accountNoParameterName = "accountNo";
     String productIdParameterName = "productId";
+    String loanIdParameterName = "loanId";
     String calendarIdParameterName = "calendarId";
     String loanTypeParameterName = "loanType";
     String groupIdParameterName = "groupId";

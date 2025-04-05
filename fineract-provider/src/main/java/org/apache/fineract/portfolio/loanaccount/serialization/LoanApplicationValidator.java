@@ -124,6 +124,7 @@ import org.apache.fineract.portfolio.loanproduct.exception.EqualAmortizationUnsu
 import org.apache.fineract.portfolio.loanproduct.exception.LoanProductNotFoundException;
 import org.apache.fineract.portfolio.loanproduct.serialization.LoanProductDataValidator;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
+import org.apache.fineract.portfolio.products.exception.ProductNotFoundException;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.springframework.stereotype.Component;
@@ -172,7 +173,8 @@ public final class LoanApplicationValidator {
             LoanProductConstants.LOAN_SCHEDULE_PROCESSING_TYPE, LoanProductConstants.FIXED_LENGTH,
             LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY, LoanProductConstants.ENABLE_DOWN_PAYMENT,
             LoanProductConstants.ENABLE_AUTO_REPAYMENT_DOWN_PAYMENT, LoanProductConstants.DISBURSED_AMOUNT_PERCENTAGE_DOWN_PAYMENT,
-            LoanApiConstants.INTEREST_RECOGNITION_ON_DISBURSEMENT_DATE, LoanApiConstants.daysInYearCustomStrategyParameterName));
+            LoanApiConstants.INTEREST_RECOGNITION_ON_DISBURSEMENT_DATE, LoanApiConstants.daysInYearCustomStrategyParameterName,
+            LoanApiConstants.loanIdParameterName));
     public static final String LOANAPPLICATION_UNDO = "loanapplication.undo";
 
     private final FromJsonHelper fromApiJsonHelper;
@@ -249,18 +251,33 @@ public final class LoanApplicationValidator {
         boolean isMeetingMandatoryForJLGLoans = configurationDomainService.isMeetingMandatoryForJLGLoans();
 
         final Long productId = this.fromApiJsonHelper.extractLongNamed(LoanApiConstants.productIdParameterName, element);
-        if (productId == null) {
-            throwMandatoryParameterError(LoanApiConstants.productIdParameterName);
+        final Long loanIdParam = this.fromApiJsonHelper.extractLongNamed(LoanApiConstants.loanIdParameterName, element);
+        LoanProduct loanProductTemporal = null;
+        Loan loan = null;
+        if (loanIdParam == null) {
+            if (productId == null) {
+                throwMandatoryParameterError(LoanApiConstants.productIdParameterName);
+            } else {
+                loanProductTemporal = this.loanProductRepository.findById(productId)
+                        .orElseThrow(() -> new LoanProductNotFoundException(productId));
+            }
+        } else {
+            loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanIdParam);
+            loanProductTemporal = loan.getLoanProduct();
         }
-        final LoanProduct loanProduct = this.loanProductRepository.findById(productId)
-                .orElseThrow(() -> new LoanProductNotFoundException(productId));
+
+        if (loanProductTemporal == null) {
+            throw new LoanProductNotFoundException(loan != null? loan.getLoanProduct().getId() : productId);
+        }
+
+        final LoanProduct loanProduct = loanProductTemporal;
 
         final Long clientId = this.fromApiJsonHelper.extractLongNamed(LoanApiConstants.clientIdParameterName, element);
         final Long groupId = this.fromApiJsonHelper.extractLongNamed(LoanApiConstants.groupIdParameterName, element);
         final Client client = clientId != null ? this.clientRepository.findOneWithNotFoundDetection(clientId) : null;
         final Group group = groupId != null ? this.groupRepository.findOneWithNotFoundDetection(groupId) : null;
 
-        validateClientOrGroup(client, group, productId);
+        validateClientOrGroup(client, group, loanProduct.getId());
         validateOrThrow("loan", baseDataValidator -> {
             final String loanTypeStr = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.loanTypeParameterName, element);
             baseDataValidator.reset().parameter(LoanApiConstants.loanTypeParameterName).value(loanTypeStr).notNull();
@@ -326,8 +343,8 @@ public final class LoanApplicationValidator {
                     .value(fixedPrincipalPercentagePerInstallment).notLessThanMin(BigDecimal.ONE)
                     .notGreaterThanMax(BigDecimal.valueOf(100));
 
-            baseDataValidator.reset().parameter(LoanApiConstants.productIdParameterName).value(productId).notNull()
-                    .integerGreaterThanZero();
+//            baseDataValidator.reset().parameter(LoanApiConstants.productIdParameterName).value(productId).notNull()
+//                    .integerGreaterThanZero();
 
             if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.accountNoParameterName, element)) {
                 final String accountNo = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.accountNoParameterName, element);
