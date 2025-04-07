@@ -258,6 +258,12 @@ public abstract class AbstractCumulativeLoanScheduleGenerator implements LoanSch
                 isNextRepaymentAvailable = false;
             }
 
+            // Max Repayments allowed
+            if (scheduleParams.getPeriodNumber() == loanApplicationTerms.getNumberOfRepayments()) {
+                log.warn("Loan schedule generation will stopped in period {}", scheduleParams.getPeriodNumber());
+                isNextRepaymentAvailable = false;
+            }
+
             if (loanApplicationTerms.isInterestBearingAndInterestRecalculationEnabled()) {
                 populateCompoundingDatesInPeriod(scheduleParams.getPeriodStartDate(), scheduledDueDate, loanApplicationTerms,
                         holidayDetailDTO, scheduleParams, loanCharges, monetaryCurrency, mc);
