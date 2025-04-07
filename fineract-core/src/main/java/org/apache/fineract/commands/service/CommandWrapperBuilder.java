@@ -3859,4 +3859,13 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createSubCredit(final Long loanId) {
+        this.actionName = "CREATE_SUB_CREDIT";
+        this.entityName = "LOAN";
+        this.entityId = loanId;
+        this.loanId = loanId;
+        this.href = "/loans/" + loanId;
+        return this;
+    }
+
 }

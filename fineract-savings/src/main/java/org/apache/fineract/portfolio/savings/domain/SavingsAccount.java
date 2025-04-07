@@ -851,9 +851,8 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
             }
             List<LocalDateInterval> postingPeriodIntervalsCurrent = new ArrayList<>();
             if (getStartInterestCalculationDate() != null) {
-                postingPeriodIntervalsCurrent = this.savingsHelper.determineInterestPostingPeriods(
-                        getStartInterestCalculationDate(), upToInterestCalculationDate, postingPeriodType, financialYearBeginningMonth,
-                        postedAsOnDates);
+                postingPeriodIntervalsCurrent = this.savingsHelper.determineInterestPostingPeriods(getStartInterestCalculationDate(),
+                        upToInterestCalculationDate, postingPeriodType, financialYearBeginningMonth, postedAsOnDates);
             }
 
             final List<LocalDateInterval> postingPeriodIntervals = postingPeriodIntervalsCurrent;
@@ -1160,7 +1159,8 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
 
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
 
-        SavingsAccountTransactionType transactionType = savingsAccountTransactionType.isInvestment() ? SavingsAccountTransactionType.DEPOSIT : savingsAccountTransactionType;
+        SavingsAccountTransactionType transactionType = savingsAccountTransactionType.isInvestment() ? SavingsAccountTransactionType.DEPOSIT
+                : savingsAccountTransactionType;
 
         final SavingsAccountTransaction transaction = SavingsAccountTransaction.deposit(this, office(), transactionDTO.getPaymentDetail(),
                 transactionDTO.getTransactionDate(), amount, transactionType, refNo);

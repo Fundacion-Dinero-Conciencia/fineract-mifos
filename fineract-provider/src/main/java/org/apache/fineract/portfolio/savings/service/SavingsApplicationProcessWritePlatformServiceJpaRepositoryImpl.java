@@ -149,7 +149,8 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
             final String currencyCodeParam = command.stringValueOfParameterNamed(SavingsApiConstants.currencyCodeParamName);
             if (currencyCodeParam != null && !currencyCodeParam.isEmpty()) {
-                account.setCurrency(MonetaryCurrency.fromApplicationCurrency(applicationCurrencyRepositoryWrapper.findOneWithNotFoundDetection(currencyCodeParam)));
+                account.setCurrency(MonetaryCurrency
+                        .fromApplicationCurrency(applicationCurrencyRepositoryWrapper.findOneWithNotFoundDetection(currencyCodeParam)));
             }
 
             this.savingAccountRepository.save(account);

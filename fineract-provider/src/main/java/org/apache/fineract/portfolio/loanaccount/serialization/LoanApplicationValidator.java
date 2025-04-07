@@ -124,7 +124,6 @@ import org.apache.fineract.portfolio.loanproduct.exception.EqualAmortizationUnsu
 import org.apache.fineract.portfolio.loanproduct.exception.LoanProductNotFoundException;
 import org.apache.fineract.portfolio.loanproduct.serialization.LoanProductDataValidator;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
-import org.apache.fineract.portfolio.products.exception.ProductNotFoundException;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.springframework.stereotype.Component;
@@ -267,7 +266,7 @@ public final class LoanApplicationValidator {
         }
 
         if (loanProductTemporal == null) {
-            throw new LoanProductNotFoundException(loan != null? loan.getLoanProduct().getId() : productId);
+            throw new LoanProductNotFoundException(loan != null ? loan.getLoanProduct().getId() : productId);
         }
 
         final LoanProduct loanProduct = loanProductTemporal;
@@ -343,8 +342,8 @@ public final class LoanApplicationValidator {
                     .value(fixedPrincipalPercentagePerInstallment).notLessThanMin(BigDecimal.ONE)
                     .notGreaterThanMax(BigDecimal.valueOf(100));
 
-//            baseDataValidator.reset().parameter(LoanApiConstants.productIdParameterName).value(productId).notNull()
-//                    .integerGreaterThanZero();
+            // baseDataValidator.reset().parameter(LoanApiConstants.productIdParameterName).value(productId).notNull()
+            // .integerGreaterThanZero();
 
             if (this.fromApiJsonHelper.parameterExists(LoanApiConstants.accountNoParameterName, element)) {
                 final String accountNo = this.fromApiJsonHelper.extractStringNamed(LoanApiConstants.accountNoParameterName, element);

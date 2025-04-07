@@ -305,14 +305,13 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         final PaymentDetail paymentDetail = this.paymentDetailWritePlatformService.createAndPersistPaymentDetail(command, changes);
         boolean isAccountTransfer = false;
         boolean isRegularTransaction = true;
-        SavingsAccountTransactionType transactionType =
-                switch (noteText != null && !noteText.isEmpty() ? noteText.substring(0,1) : "") {
-                    case "P" -> SavingsAccountTransactionType.CAPITAL_PAYMENT;
-                    case "I" -> SavingsAccountTransactionType.CURRENT_INTEREST;
-                    case "C" -> SavingsAccountTransactionType.INVESTMENT_FEE;
-                    case "A" -> SavingsAccountTransactionType.ARREARS_INTEREST;
-                    default -> null;
-                };
+        SavingsAccountTransactionType transactionType = switch (noteText != null && !noteText.isEmpty() ? noteText.substring(0, 1) : "") {
+            case "P" -> SavingsAccountTransactionType.CAPITAL_PAYMENT;
+            case "I" -> SavingsAccountTransactionType.CURRENT_INTEREST;
+            case "C" -> SavingsAccountTransactionType.INVESTMENT_FEE;
+            case "A" -> SavingsAccountTransactionType.ARREARS_INTEREST;
+            default -> null;
+        };
         final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(account, fmt, transactionDate,
                 transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, transactionType);
 
@@ -331,7 +330,6 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
                     gsimRepository.findById(account.getGsim().getId()).orElseThrow().getParentDeposit());
 
         }
-
 
         if (StringUtils.isNotBlank(noteText)) {
             final Note note = Note.savingsTransactionNote(account, deposit, noteText);

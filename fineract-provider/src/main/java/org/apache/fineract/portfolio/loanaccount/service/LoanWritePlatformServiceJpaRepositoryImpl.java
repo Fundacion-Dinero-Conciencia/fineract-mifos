@@ -25,7 +25,10 @@ import static org.apache.fineract.portfolio.loanaccount.domain.Loan.PARAM_STATUS
 import static org.apache.fineract.portfolio.loanaccount.domain.Loan.TRANSACTION_DATE;
 import static org.apache.fineract.portfolio.loanaccount.domain.Loan.WRITTEN_OFF_ON_DATE;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,6 +37,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.resilience4j.retry.annotation.Retry;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +59,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.cob.exceptions.LoanAccountLockCannotBeOverruledException;
 import org.apache.fineract.cob.service.LoanAccountLockService;
+import org.apache.fineract.commands.domain.CommandSource;
+import org.apache.fineract.commands.domain.CommandSourceRepository;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
@@ -287,6 +293,8 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     private final AccountAssociationsRepository accountAssociationsRepository;
     private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
     private final ApplicationContext applicationContext;
+    private final CommandSourceRepository commandSourceRepository;
+    private final LoanApplicationWritePlatformService writePlatformService;
 
     @Transactional
     @Override
@@ -954,7 +962,6 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             }
             loan = saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
             this.accountTransfersWritePlatformService.reverseAllTransactions(loanId, PortfolioAccountType.LOAN);
-            String noteText;
             createNote(loan, command, changes);
             boolean isAccountTransfer = false;
             final Map<String, Object> accountingBridgeData = loan.deriveAccountingBridgeData(currency.getCode(), existingTransactionIds,
@@ -3133,6 +3140,60 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 .withGroupId(loan.getGroupId()) //
                 .with(changes) //
                 .build();
+    }
+
+    @Override
+    public CommandProcessingResult createSubCredit(JsonCommand command) {
+
+        final Long loanId = command.getLoanId();
+        Loan loan = this.loanAssembler.assembleFrom(loanId);
+        CommandSource commandSource = commandSourceRepository.retrieveCommandPerCreateSubCredit(loan.getClientId(), loanId,
+                loan.getExternalId().getValue());
+        final BigDecimal amount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.subCreditAMountParamName);
+        String format = null;
+        String locale = null;
+        LocalDate date = null;
+        String newJson = null;
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(command.json());
+            String dateStr = root.get(LoanApiConstants.dateOfCreationParamName).asText();
+            format = root.get(LoanApiConstants.dateFormatParameterName).asText();
+            locale = root.get(LoanApiConstants.localeParameterName).asText();
+            date = OffsetDateTime.parse(dateStr).toLocalDate();
+        } catch (Exception e) {
+            date = DateUtils.getBusinessLocalDate();
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> jsonMap = mapper.readValue(commandSource.getCommandAsJson(), HashMap.class);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format, new Locale(locale));
+            String formattedDate = date.format(formatter);
+            jsonMap.put("submittedOnDate", formattedDate);
+            jsonMap.put("principal", amount);
+
+            newJson = new Gson().toJson(jsonMap);
+
+        } catch (Exception e) {
+            log.error("Error in extraction of base credit data");
+            throw new PlatformApiDataValidationException("error.msg.resource.extract", "Error in extraction of base credit data", null);
+        }
+
+        if (loan.getLoanStatus().isSubmittedAndPendingApproval()) {
+            return cloneLoan(newJson);
+        } else {
+            throw new PlatformApiDataValidationException("error.msg.resource.status",
+                    "A copy can only be created from a credit in pending approval status.", null);
+        }
+    }
+
+    public CommandProcessingResult cloneLoan(String json) {
+        JsonElement element = this.fromApiJsonHelper.parse(json);
+        JsonCommand command = JsonCommand.from(json, element, this.fromApiJsonHelper);
+
+        return writePlatformService.submitApplication(command);
     }
 
     public void handleChargebackTransaction(final Loan loan, LoanTransaction chargebackTransaction,

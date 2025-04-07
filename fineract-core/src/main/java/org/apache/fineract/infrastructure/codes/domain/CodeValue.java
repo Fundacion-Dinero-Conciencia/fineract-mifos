@@ -68,7 +68,7 @@ public class CodeValue extends AbstractPersistableCustom<Long> {
     private boolean mandatory;
 
     public static CodeValue createNew(final Code code, final String label, final int position, final String description,
-                                      final boolean isActive, final boolean mandatory, int codeScore) {
+            final boolean isActive, final boolean mandatory, int codeScore) {
         return new CodeValue().setCode(code).setLabel(StringUtils.defaultIfEmpty(label, null)).setPosition(position)
                 .setDescription(description).setActive(isActive).setMandatory(mandatory).setCodeScore(codeScore);
     }

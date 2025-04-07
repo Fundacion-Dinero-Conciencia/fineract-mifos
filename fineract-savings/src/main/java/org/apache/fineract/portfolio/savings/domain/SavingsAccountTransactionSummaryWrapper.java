@@ -35,9 +35,9 @@ public final class SavingsAccountTransactionSummaryWrapper {
         Money total = Money.zero(currency);
         for (final SavingsAccountTransaction transaction : transactions) {
             if ((transaction.isDepositAndNotReversed() || transaction.isDividendPayoutAndNotReversed()
-                    || transaction.isArrearsInterestAndNotReversed() || transaction.isCurrentInterestAndNotReversed() || transaction.isCapitalPaymentAndNotReversed() || transaction.isArrearsInterestAndNotReversed()
-                    || transaction.isInvestmentFeeAndNotReversed())
-                    && !transaction.isReversalTransaction()) {
+                    || transaction.isArrearsInterestAndNotReversed() || transaction.isCurrentInterestAndNotReversed()
+                    || transaction.isCapitalPaymentAndNotReversed() || transaction.isArrearsInterestAndNotReversed()
+                    || transaction.isInvestmentFeeAndNotReversed()) && !transaction.isReversalTransaction()) {
                 total = total.plus(transaction.getAmount(currency));
             }
         }

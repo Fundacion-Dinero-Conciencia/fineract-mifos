@@ -1058,8 +1058,7 @@ public class LoanScheduleAssembler {
                     final JsonArray modificationsArray = exceptionObject.get(LoanApiConstants.modifiedinstallmentsParamName)
                             .getAsJsonArray();
                     if (modificationsArray.isEmpty()) {
-                        throw new GeneralPlatformDomainRuleException("err.msg.there.are.not.modifications",
-                                "There are not modifications");
+                        throw new GeneralPlatformDomainRuleException("err.msg.there.are.not.modifications", "There are not modifications");
                     }
                     extractLoanTermVariations(loan, dateFormat, locale, modificationsArray, false, false, loanTermVariations);
                 }

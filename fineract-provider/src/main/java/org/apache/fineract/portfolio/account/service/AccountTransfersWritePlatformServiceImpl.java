@@ -18,11 +18,30 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferIsInvestmentParamName;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParser;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
@@ -69,26 +88,6 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferIsInvestmentParamName;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -158,15 +157,20 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                 BigDecimal feePercentage = configurationDomainService.retrievePercentageInvestmentFee();
                 if (feePercentage.doubleValue() > 0) {
                     feePercentage = feePercentage.divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
-                    final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId).getId();
-                    final Integer period =  loanReadPlatformService.retrieveOne(loanAccountId).getTermInMonths();
-                    BigDecimal baseAmount = transactionAmount.divide(BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period > 10 ? 10 : period))), MoneyHelper.getMathContext());
+                    final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId)
+                            .getId();
+                    final Integer period = loanReadPlatformService.retrieveOne(loanAccountId).getTermInMonths();
+                    BigDecimal baseAmount = transactionAmount.divide(
+                            BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period > 10 ? 10 : period))),
+                            MoneyHelper.getMathContext());
                     BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage);
                     validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
 
-                    SavingsAccount belatAccount = this.savingsAccountAssembler.assembleFrom(configurationDomainService.getDefaultAccountId(), false);
-                    sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount, Money.of(belatAccount.getCurrency(), feeAmount).getAmount());
-                    transactionAmount = Money.of(belatAccount.getCurrency(),baseAmount).getAmount();
+                    SavingsAccount belatAccount = this.savingsAccountAssembler
+                            .assembleFrom(configurationDomainService.getDefaultAccountId(), false);
+                    sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount,
+                            Money.of(belatAccount.getCurrency(), feeAmount).getAmount());
+                    transactionAmount = Money.of(belatAccount.getCurrency(), baseAmount).getAmount();
                 } else {
                     validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
                 }
@@ -268,8 +272,10 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         transferData.put("toOfficeId", belatAccount.officeId());
 
         transferData.put("transferAmount", amount);
-        transferData.put("transferDate", DateUtils.getBusinessLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
-        transferData.put("transferDescription", "investment commission of investor ".concat(investorAccount.getClient().getAccountNumber()));
+        transferData.put("transferDate",
+                DateUtils.getBusinessLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
+        transferData.put("transferDescription",
+                "investment commission of investor ".concat(investorAccount.getClient().getAccountNumber()));
         transferData.put("dateFormat", "dd MMMM yyyy");
         transferData.put("locale", "es");
 
@@ -306,15 +312,15 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                 amount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, isInvestment);
 
         if (!investorAccount.getCurrency().getCode().equals(toSavingsAccount.getCurrency().getCode())) {
-            throw new DifferentCurrenciesException(investorAccount.getCurrency().getCode(),
-                    toSavingsAccount.getCurrency().getCode());
+            throw new DifferentCurrenciesException(investorAccount.getCurrency().getCode(), toSavingsAccount.getCurrency().getCode());
         }
         JsonCommand jsonCommand = null;
         try {
             jsonCommand = createJsonCommand(transferData);
 
         } catch (Exception e) {
-            throw new PlatformApiDataValidationException("error.msg.validation", "Information for the incoming investment commission could not be constructed.", null);
+            throw new PlatformApiDataValidationException("error.msg.validation",
+                    "Information for the incoming investment commission could not be constructed.", null);
         }
 
         final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(jsonCommand,
@@ -338,7 +344,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     @Override
     @Transactional
     public void reverseTransfersWithFromAccountTransactions(final Collection<Long> fromTransactionIds,
-                                                            final PortfolioAccountType accountTypeId) {
+            final PortfolioAccountType accountTypeId) {
         List<AccountTransferTransaction> acccountTransfers = new ArrayList<>();
         if (accountTypeId.isLoanAccount()) {
             List<List<Long>> partitions = Lists.partition(fromTransactionIds.stream().toList(),
@@ -626,7 +632,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     }
 
     private boolean isSavingsToSavingsAccountTransfer(final PortfolioAccountType fromAccountType,
-                                                      final PortfolioAccountType toAccountType) {
+            final PortfolioAccountType toAccountType) {
         return fromAccountType.isSavingsAccount() && toAccountType.isSavingsAccount();
     }
 
