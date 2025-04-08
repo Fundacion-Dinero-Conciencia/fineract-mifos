@@ -9,7 +9,9 @@ import java.util.stream.Collectors;
 public enum ProjectParticipationStatusEnum {
 
     ACCEPTED("ProjectParticipationStatusEnum.accepted", 100), //
-    DECLINED("ProjectParticipationStatusEnum.declined", 200), // //
+
+    PENDING("ProjectParticipationStatusEnum.declined", 200), //
+    DECLINED("ProjectParticipationStatusEnum.declined", 300), // //
     ;
 
 

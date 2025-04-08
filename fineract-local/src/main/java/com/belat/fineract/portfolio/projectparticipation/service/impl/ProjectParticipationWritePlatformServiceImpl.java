@@ -4,6 +4,7 @@ import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjectNotFoundException;
 import com.belat.fineract.portfolio.projectparticipation.api.ProjectParticipationConstants;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipation;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
@@ -75,12 +76,7 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         projectParticipation.setInvestmentProject(investmentProject);
         projectParticipation.setAmount(command.bigDecimalValueOfParameterNamed(ProjectParticipationConstants.amountParamName));
 
-        final Integer status = command.integerValueSansLocaleOfParameterNamed(ProjectParticipationConstants.statusParamName);
-        if (ProjectParticipationStatusEnum.fromInt(status) == null) {
-            throw new GeneralPlatformDomainRuleException("msg.err.not.valid.status", "Status is not valid");
-
-        }
-        projectParticipation.setStatusEnum(status);
+        projectParticipation.setStatusEnum(ProjectParticipationStatusEnum.PENDING.getValue());
 
         projectParticipationRepository.saveAndFlush(projectParticipation);
 
@@ -158,9 +154,6 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
 
         final String amountParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.amountParamName, jsonElement);
         baseDataValidator.reset().parameter(ProjectParticipationConstants.amountParamName).value(amountParam).notBlank().notNull();
-
-        final String statusParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.statusParamName, jsonElement);
-        baseDataValidator.reset().parameter(ProjectParticipationConstants.statusParamName).value(statusParam).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
