@@ -22,7 +22,6 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
@@ -508,12 +507,14 @@ public final class MathUtil {
                 : isGreaterThan(first, second) ? first : second;
     }
 
-
     /**
      *
-     * @param periodMonths period of credit
-     * @param investmentAmount amount of investment
-     * @param percentageValue amount in settings
+     * @param periodMonths
+     *            period of credit
+     * @param investmentAmount
+     *            amount of investment
+     * @param percentageValue
+     *            amount in settings
      * @return value to CUP percentage
      */
     public static BigDecimal calculateCUPValue(Integer periodMonths, BigDecimal investmentAmount, BigDecimal percentageValue) {

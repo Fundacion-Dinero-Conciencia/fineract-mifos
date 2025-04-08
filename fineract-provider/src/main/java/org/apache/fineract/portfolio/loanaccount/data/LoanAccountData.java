@@ -51,10 +51,8 @@ import org.apache.fineract.portfolio.floatingrates.data.InterestRatePeriodData;
 import org.apache.fineract.portfolio.fund.data.FundData;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTermVariationType;
 import org.apache.fineract.portfolio.loanaccount.guarantor.data.GuarantorData;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
-import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanApplicationTerms;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductBorrowerCycleVariationData;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.data.TransactionProcessingStrategyData;
@@ -675,7 +673,8 @@ public class LoanAccountData {
         } else if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.YEARS.getValue())) {
             return this.termFrequency / 12;
         } else {
-            throw new PlatformApiDataValidationException("error.msg.period.frequency", "Error obtaining the credit period frequency to calculate the commission calculation", null);
+            throw new PlatformApiDataValidationException("error.msg.period.frequency",
+                    "Error obtaining the credit period frequency to calculate the commission calculation", null);
         }
     }
 }

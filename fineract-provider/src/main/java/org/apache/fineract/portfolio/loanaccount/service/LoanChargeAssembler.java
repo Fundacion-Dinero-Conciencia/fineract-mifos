@@ -97,8 +97,7 @@ public class LoanChargeAssembler {
             final Loan loan = this.loanRepositoryWrapper.findOneWithNotFoundDetection(loanId);
             loanProduct = loan.getLoanProduct();
         } else {
-            loanProduct = this.loanProductRepository.findById(productId)
-                    .orElseThrow(() -> new LoanProductNotFoundException(productId));
+            loanProduct = this.loanProductRepository.findById(productId).orElseThrow(() -> new LoanProductNotFoundException(productId));
         }
         final boolean isMultiDisbursal = loanProduct.isMultiDisburseLoan();
         LocalDate expectedDisbursementDate = null;

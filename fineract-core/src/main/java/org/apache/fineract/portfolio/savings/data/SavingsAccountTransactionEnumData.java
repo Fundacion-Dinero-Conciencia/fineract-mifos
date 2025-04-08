@@ -55,7 +55,6 @@ public class SavingsAccountTransactionEnumData implements Serializable {
     private final boolean currentInterest;
     private final boolean investmentFee;
 
-
     public SavingsAccountTransactionEnumData(final Long id, final String code, final String value) {
         this.id = id;
         this.code = code;
