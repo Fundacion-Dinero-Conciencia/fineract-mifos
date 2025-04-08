@@ -3868,4 +3868,20 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createQuestion() {
+        this.actionName = "CREATE";
+        this.entityName = "QUESTION";
+        this.entityId = null;
+        this.href = "/v1/question";
+        return this;
+    }
+
+    public CommandWrapperBuilder createAnswer(Long questionId) {
+        this.actionName = "CREATE";
+        this.entityName = "ANSWER";
+        this.entityId = questionId;
+        this.href = "/v1/question/" + questionId;
+        return this;
+    }
+
 }
