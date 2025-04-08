@@ -10,7 +10,7 @@ public enum ProjectParticipationStatusEnum {
 
     ACCEPTED("ProjectParticipationStatusEnum.accepted", 100), //
 
-    PENDING("ProjectParticipationStatusEnum.declined", 200), //
+    PENDING("ProjectParticipationStatusEnum.pending", 200), //
     DECLINED("ProjectParticipationStatusEnum.declined", 300), // //
     ;
 
