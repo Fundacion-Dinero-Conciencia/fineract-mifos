@@ -1632,7 +1632,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom<Long> {
         };
     }
 
-    private LocalDate getNextUnpaidInstallmentDueDate() {
+    public LocalDate getNextUnpaidInstallmentDueDate() {
         List<LoanRepaymentScheduleInstallment> installments = getRepaymentScheduleInstallments();
         LocalDate currentBusinessDate = DateUtils.getBusinessLocalDate();
         LocalDate expectedMaturityDate = determineExpectedMaturityDate();

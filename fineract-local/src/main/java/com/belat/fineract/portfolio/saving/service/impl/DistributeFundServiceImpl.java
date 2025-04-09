@@ -1,6 +1,5 @@
 package com.belat.fineract.portfolio.saving.service.impl;
 
-import com.belat.fineract.portfolio.saving.service.DistributeFundWritePlatformService;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;

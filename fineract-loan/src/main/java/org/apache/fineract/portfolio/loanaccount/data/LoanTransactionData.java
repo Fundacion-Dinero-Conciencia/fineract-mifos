@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
@@ -65,6 +66,10 @@ public class LoanTransactionData {
     private final LocalDate submittedOnDate;
     private final boolean manuallyReversed;
     private final LocalDate possibleNextRepaymentDate;
+
+    @Getter
+    @Setter
+    private BigDecimal amountPrepayCommission;
 
     private Collection<LoanChargePaidByData> loanChargePaidByList;
 

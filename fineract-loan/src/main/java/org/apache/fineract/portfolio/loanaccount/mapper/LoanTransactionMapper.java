@@ -47,5 +47,6 @@ public interface LoanTransactionMapper {
     @Mapping(target = "transactionType", expression = "java(org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations.transactionType(loanTransaction.getTypeOf()))")
     @Mapping(target = "paymentDetailData", expression = "java(loanTransaction.getPaymentDetail() != null ? loanTransaction.getPaymentDetail().toData() : null)")
     @Mapping(target = "currency", expression = "java(loanTransaction.getLoan().getCurrency().toData())")
+    @Mapping(target = "amountPrepayCommission", ignore = true)
     LoanTransactionData mapLoanTransaction(LoanTransaction loanTransaction);
 }
