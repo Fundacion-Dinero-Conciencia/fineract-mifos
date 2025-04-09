@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     private final DocumentReadPlatformService documentReadPlatformService;
     private final InvestmentProjectCategoryRepository investmentProjectCategoryRepository;
     private final ProjectParticipationRepository projectParticipationRepository;
+    private final ApplicationContext applicationContext;
 
     @Override
     public List<InvestmentProjectData> retrieveAll() {
@@ -52,7 +54,8 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         List<DocumentData> documents = documentReadPlatformService.retrieveAllDocuments("projects", id);
         documents.forEach(document -> {
             if (document != null) {
-                images.add(new ImageDocument(document.getFileName(), document.getLocation()));
+                images.add(new ImageDocument(document.getFileName(),
+                        applicationContext.getEnvironment().getProperty("fineract.s3.images.url").concat(document.getLocation())));
             }
         });
         return images;
