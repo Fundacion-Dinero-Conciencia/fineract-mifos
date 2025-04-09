@@ -14,6 +14,7 @@ public class ProjectParticipationData {
     private Long projectId;
     private BigDecimal amount;
     private StatusEnum status;
+    private String type;
 
     @Data
     @AllArgsConstructor

@@ -41,6 +41,9 @@ public class ProjectParticipation extends AbstractAuditableWithUTCDateTimeCustom
     @Column(name = "status_enum", nullable = false)
     private Integer statusEnum;
 
+    @Column(name = "type", nullable = false)
+    private String type;
+
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInIntegerSansLocaleParameterNamed(ProjectParticipationConstants.statusParamName, getStatusEnum())) {
             final Integer newValue = command.integerValueSansLocaleOfParameterNamed(ProjectParticipationConstants.statusParamName);

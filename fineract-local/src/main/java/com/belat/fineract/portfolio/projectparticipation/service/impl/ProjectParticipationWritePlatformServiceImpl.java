@@ -76,7 +76,15 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         projectParticipation.setInvestmentProject(investmentProject);
         projectParticipation.setAmount(command.bigDecimalValueOfParameterNamed(ProjectParticipationConstants.amountParamName));
 
-        projectParticipation.setStatusEnum(ProjectParticipationStatusEnum.PENDING.getValue());
+        final Integer status = command.integerValueSansLocaleOfParameterNamed(ProjectParticipationConstants.statusParamName);
+        if (ProjectParticipationStatusEnum.fromInt(status) == null) {
+            throw new GeneralPlatformDomainRuleException("msg.err.not.valid.status", "Status is not valid");
+
+        }
+
+        projectParticipation.setStatusEnum(status);
+
+        projectParticipation.setType(command.stringValueOfParameterNamed(ProjectParticipationConstants.typeParamName));
 
         projectParticipationRepository.saveAndFlush(projectParticipation);
 
@@ -154,6 +162,12 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
 
         final String amountParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.amountParamName, jsonElement);
         baseDataValidator.reset().parameter(ProjectParticipationConstants.amountParamName).value(amountParam).notBlank().notNull();
+
+        final String statusParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.statusParamName, jsonElement);
+        baseDataValidator.reset().parameter(ProjectParticipationConstants.statusParamName).value(statusParam).notBlank().notNull();
+
+        final String typeParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.typeParamName, jsonElement);
+        baseDataValidator.reset().parameter(ProjectParticipationConstants.typeParamName).value(typeParam).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",

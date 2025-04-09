@@ -16,12 +16,14 @@ public class ProjectParticipationConstants {
 
     public static final String statusParamName = "status";
 
+    public static final String typeParamName = "type";
+
     /**
      * These parameters will match the class level parameters of {@link ProjectParticipationData}. Where possible, we try to
      * get response parameters to match those of request parameters.
      */
     public static final Set<String> PROJECT_PARTICIPATION_PARAMETERS = new HashSet<>(Arrays.asList(participantIdParamName,
-            projectIdParamName, amountParamName, statusParamName));
+            projectIdParamName, amountParamName, statusParamName, typeParamName));
 
     /**
      * These parameters will match the class level parameters of {@link ProjectParticipationData}. Where possible, we try to
