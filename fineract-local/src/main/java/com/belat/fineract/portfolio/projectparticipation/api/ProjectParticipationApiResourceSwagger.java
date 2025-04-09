@@ -26,6 +26,9 @@ public class ProjectParticipationApiResourceSwagger {
         @Schema(example = "USD")
         public Integer status;
 
+        @Schema(example = "Type")
+        public String type;
+
     }
 
     @Schema(description = "PostAddProjectParticipationResponse")
@@ -67,6 +70,9 @@ public class ProjectParticipationApiResourceSwagger {
         }
 
         public GetStatusEnum status;
+
+        @Schema(example = "Type")
+        public String type;
 
     }
 
