@@ -57,6 +57,8 @@ public class AccountTransferDTO {
     private final Boolean isRegularTransaction;
     private final Boolean isExceptionForBalanceCheck;
     private final Boolean isInvestment;
+    private final BigDecimal percentageInvestmentAgent;
+    private final Long investmentAgentId;
 
     public AccountTransferDTO(final LocalDate transactionDate, final BigDecimal transactionAmount,
             final PortfolioAccountType fromAccountType, final PortfolioAccountType toAccountType, final Long fromAccountId,
@@ -64,7 +66,7 @@ public class AccountTransferDTO {
             final PaymentDetail paymentDetail, final Integer fromTransferType, final Integer toTransferType, final Long chargeId,
             Integer loanInstallmentNumber, Integer transferType, final AccountTransferDetails accountTransferDetails, final String noteText,
             final ExternalId txnExternalId, final Loan loan, SavingsAccount toSavingsAccount, final SavingsAccount fromSavingsAccount,
-            final Boolean isRegularTransaction, Boolean isExceptionForBalanceCheck, Boolean isInvestment) {
+            final Boolean isRegularTransaction, Boolean isExceptionForBalanceCheck, Boolean isInvestment, BigDecimal percentageInvestmentAgent, Long investmentAgentId) {
         this.transactionDate = transactionDate;
         this.transactionAmount = transactionAmount;
         this.fromAccountType = fromAccountType;
@@ -91,13 +93,15 @@ public class AccountTransferDTO {
         this.fromSavingsAccount = fromSavingsAccount;
         this.isRegularTransaction = isRegularTransaction;
         this.isExceptionForBalanceCheck = isExceptionForBalanceCheck;
+        this.investmentAgentId = investmentAgentId;
+        this.percentageInvestmentAgent = percentageInvestmentAgent;
     }
 
     public AccountTransferDTO(final LocalDate transactionDate, final BigDecimal transactionAmount,
             final PortfolioAccountType fromAccountType, final PortfolioAccountType toAccountType, final Long fromAccountId,
             final Long toAccountId, final String description, final Locale locale, final DateTimeFormatter fmt,
             final Integer fromTransferType, final Integer toTransferType, final ExternalId txnExternalId, final Loan fromLoan,
-            final Loan toLoan, Boolean isInvestment) {
+            final Loan toLoan, Boolean isInvestment, BigDecimal percentageInvestmentAgent, Long investmentAgentId) {
         this.transactionDate = transactionDate;
         this.transactionAmount = transactionAmount;
         this.fromAccountType = fromAccountType;
@@ -124,6 +128,8 @@ public class AccountTransferDTO {
         this.fromSavingsAccount = null;
         this.isRegularTransaction = null;
         this.isExceptionForBalanceCheck = null;
+        this.investmentAgentId = investmentAgentId;
+        this.percentageInvestmentAgent = percentageInvestmentAgent;
     }
 
     public LocalDate getTransactionDate() {
@@ -228,6 +234,14 @@ public class AccountTransferDTO {
 
     public Boolean getIsInvestment() {
         return this.isInvestment;
+    }
+
+    public BigDecimal getPercentageInvestmentAgent() {
+        return this.percentageInvestmentAgent;
+    }
+
+    public Long getInvestmentAgentId() {
+        return this.investmentAgentId;
     }
 
 }
