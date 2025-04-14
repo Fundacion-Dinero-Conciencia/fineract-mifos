@@ -18,13 +18,6 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -40,6 +33,8 @@ import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountDTO;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
+import org.apache.fineract.portfolio.account.domain.AccountTransferRepository;
+import org.apache.fineract.portfolio.account.domain.AccountTransferTransaction;
 import org.apache.fineract.portfolio.account.domain.AccountTransferType;
 import org.apache.fineract.portfolio.account.exception.AccountTransferNotFoundException;
 import org.apache.fineract.portfolio.account.mapper.AccountTransfersMapper;
@@ -48,6 +43,15 @@ import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.CollectionUtils;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class AccountTransfersReadPlatformServiceImpl implements AccountTransfersReadPlatformService {
@@ -64,6 +68,7 @@ public class AccountTransfersReadPlatformServiceImpl implements AccountTransfers
     // pagination
     private final PaginationHelper paginationHelper;
     private final SqlValidator sqlValidator;
+    private final AccountTransferRepository accountTransferRepository;
 
     @Override
     public AccountTransferData retrieveTemplate(final Long fromOfficeId, final Long fromClientId, final Long fromAccountId,
@@ -421,5 +426,21 @@ public class AccountTransfersReadPlatformServiceImpl implements AccountTransfers
 
         return this.jdbcTemplate.queryForObject(sqlBuilder.toString(), BigDecimal.class, DATE_TIME_FORMATTER.format(transactionDate),
                 accountType, accountId, accountId);
+    }
+
+    @Override
+    public List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(Long toAccountId, String fromSavingsName) {
+        List<AccountTransferTransaction> accountTransferTransactions = accountTransferRepository.findToSavingsAccountTransactionsDependsOnFromSavingsName(toAccountId, fromSavingsName);
+        List<AccountTransferData> accountTransferData = new ArrayList<>();
+
+        accountTransferTransactions.forEach(item -> {
+            AccountTransferData transferData = retrieveTemplate(null, item.getFromSavingsTransaction().getSavingsAccount().getClient().getId(),
+                    item.getFromSavingsTransaction().getSavingsAccount().getId(), PortfolioAccountType.SAVINGS.getValue(), null,
+                    item.getToSavingsTransaction().getSavingsAccount().getClient().getId(), item.getToSavingsTransaction().getSavingsAccount().getId(),
+                    PortfolioAccountType.SAVINGS.getValue());
+            accountTransferData.add(transferData);
+        });
+
+        return accountTransferData;
     }
 }

@@ -18,6 +18,7 @@
  */
 package com.belat.fineract.portfolio.projectparticipation.data;
 
+import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -30,14 +31,19 @@ public class ProjectParticipationData {
 
     private Long id;
     private Long participantId;
-    private Long projectId;
+    private InvestmentProjectData project;
     private BigDecimal amount;
+    private BigDecimal commission;
     private StatusEnum status;
     private String type;
+    private Long confirmedParticipants;
     private String participantName;
     private String projectName;
     private String currencyCode;
     private LocalDate createdOnDate;
+    private BigDecimal principalEarned;
+    private BigDecimal commissionEarned;
+    private BigDecimal interestsEarned;
 
     @Data
     @AllArgsConstructor
