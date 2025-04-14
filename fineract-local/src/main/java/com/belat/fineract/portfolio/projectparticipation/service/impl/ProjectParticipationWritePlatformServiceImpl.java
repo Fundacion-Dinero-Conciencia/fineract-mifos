@@ -75,6 +75,7 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         projectParticipation.setClient(participant);
         projectParticipation.setInvestmentProject(investmentProject);
         projectParticipation.setAmount(command.bigDecimalValueOfParameterNamed(ProjectParticipationConstants.amountParamName));
+        projectParticipation.setCommission(command.bigDecimalValueOfParameterNamed(ProjectParticipationConstants.commissionParamName));
 
         final Integer status = command.integerValueSansLocaleOfParameterNamed(ProjectParticipationConstants.statusParamName);
         if (ProjectParticipationStatusEnum.fromInt(status) == null) {
@@ -162,6 +163,9 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
 
         final String amountParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.amountParamName, jsonElement);
         baseDataValidator.reset().parameter(ProjectParticipationConstants.amountParamName).value(amountParam).notBlank().notNull();
+
+        final String commissionParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.commissionParamName, jsonElement);
+        baseDataValidator.reset().parameter(ProjectParticipationConstants.commissionParamName).value(commissionParam).notBlank().notNull();
 
         final String statusParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.statusParamName, jsonElement);
         baseDataValidator.reset().parameter(ProjectParticipationConstants.statusParamName).value(statusParam).notBlank().notNull();

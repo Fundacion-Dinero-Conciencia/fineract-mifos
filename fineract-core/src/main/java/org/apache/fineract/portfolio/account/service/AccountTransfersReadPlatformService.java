@@ -18,13 +18,15 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Collection;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.SearchParameters;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
 public interface AccountTransfersReadPlatformService {
 
@@ -47,4 +49,6 @@ public interface AccountTransfersReadPlatformService {
             Long toOfficeId, Long toClientId, Long toAccountId, Integer toAccountType);
 
     BigDecimal getTotalTransactionAmount(Long accountId, Integer accountType, LocalDate transactionDate);
+
+    List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(Long toAccountId, String fromSavingsName);
 }

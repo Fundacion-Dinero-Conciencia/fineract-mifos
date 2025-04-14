@@ -18,12 +18,13 @@
  */
 package org.apache.fineract.portfolio.account.domain;
 
-import java.util.Collection;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Collection;
+import java.util.List;
 
 public interface AccountTransferRepository
         extends JpaRepository<AccountTransferTransaction, Long>, JpaSpecificationExecutor<AccountTransferTransaction> {
@@ -39,4 +40,7 @@ public interface AccountTransferRepository
 
     @Query("select att from AccountTransferTransaction att where att.fromLoanTransaction.id IN :loanTransactions and att.reversed=false")
     List<AccountTransferTransaction> findByFromLoanTransactions(@Param("loanTransactions") Collection<Long> loanTransactions);
+
+    @Query("select att from AccountTransferTransaction att where att.toSavingsTransaction.savingsAccount.id = :toSavingsId and att.fromSavingsTransaction.savingsAccount.accountNumber like '%:fromSavingsName%' and att.reversed=false")
+    List<AccountTransferTransaction> findToSavingsAccountTransactionsDependsOnFromSavingsName(@Param("toSavingsId") Long toSavingsId, @Param("fromSavingsName") String fromSavingsName);
 }

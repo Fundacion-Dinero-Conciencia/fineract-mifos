@@ -77,9 +77,10 @@ public class AccountConfiguration {
             ClientReadPlatformService clientReadPlatformService, OfficeReadPlatformService officeReadPlatformService,
             PortfolioAccountReadPlatformService portfolioAccountReadPlatformService, ColumnValidator columnValidator,
             DatabaseSpecificSQLGenerator sqlGenerator, AccountTransfersMapper accountTransfersMapper, PaginationHelper paginationHelper,
-            SqlValidator sqlValidator) {
+            SqlValidator sqlValidator, AccountTransferRepository accountTransferRepository) {
         return new AccountTransfersReadPlatformServiceImpl(jdbcTemplate, clientReadPlatformService, officeReadPlatformService,
-                portfolioAccountReadPlatformService, columnValidator, sqlGenerator, accountTransfersMapper, paginationHelper, sqlValidator);
+                portfolioAccountReadPlatformService, columnValidator, sqlGenerator, accountTransfersMapper, paginationHelper, sqlValidator,
+                accountTransferRepository);
     }
 
     @Bean

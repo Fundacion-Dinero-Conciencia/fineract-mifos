@@ -35,8 +35,12 @@ import java.util.List;
 public interface ProjectParticipationMapper {
 
     @Mapping(target = "participantId", ignore = true)
-    @Mapping(target = "projectId", ignore = true)
+    @Mapping(target = "project", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "confirmedParticipants", ignore = true)
+    @Mapping(target = "interestsEarned", ignore = true)
+    @Mapping(target = "commissionEarned", ignore = true)
+    @Mapping(target = "principalEarned", ignore = true)
     @Mapping(target = "participantName", source = "client.displayName")
     @Mapping(target = "projectName", source = "investmentProject.name")
     @Mapping(target = "currencyCode", source = "investmentProject.currencyCode")

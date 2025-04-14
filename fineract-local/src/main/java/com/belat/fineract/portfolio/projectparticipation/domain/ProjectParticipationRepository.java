@@ -23,4 +23,8 @@ public interface ProjectParticipationRepository extends JpaRepository<ProjectPar
     @Query(value = "SELECT COALESCE(SUM(amount), 0.0) FROM e_project_participation WHERE client_id = ?1 AND investment_project_id = ?2 AND status_enum = 100", nativeQuery = true)
     BigDecimal retrieveTotalParticipationAmountByClientIdAndProjectId(Long clientId, Long projectId);
 
+    @Query(value = "SELECT COUNT(*) FROM e_project_participation WHERE investment_project_id = ?1 AND status_enum = 100", nativeQuery = true)
+    Long countParticipationByProjectIdWithStatus100(Long projectId);
+
+
 }

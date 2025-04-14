@@ -39,4 +39,5 @@
   <include relativeToChangelogFile="true" file="parts/9015_add_permissions_create_sub_credit.xml"/>
   <include relativeToChangelogFile="true" file="parts/9016_add_question_answer_tables.xml"/>
   <include relativeToChangelogFile="true" file="parts/9017_add_projects_participation_type.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9018_add_projects_participation_commission.xml"/>
 </databaseChangeLog>

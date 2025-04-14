@@ -56,6 +56,9 @@ public class ProjectParticipation extends AbstractAuditableWithUTCDateTimeCustom
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
+    @Column(name = "commission", nullable = false)
+    private BigDecimal commission;
+
     @Column(name = "status_enum", nullable = false)
     private Integer statusEnum;
 

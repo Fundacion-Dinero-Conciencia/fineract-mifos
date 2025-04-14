@@ -18,10 +18,6 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 import org.apache.fineract.accounting.common.AccountingRuleType;
 import org.apache.fineract.cob.data.LoanDataForExternalTransfer;
 import org.apache.fineract.cob.data.LoanIdAndExternalIdAndAccountNo;
@@ -32,6 +28,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificationExecutor<Loan> {
 
@@ -163,6 +165,9 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
 
     @Query("select loan from Loan loan where loan.client.id = :clientId")
     List<Loan> findLoanByClientId(@Param("clientId") Long clientId);
+
+    @Query(value = "SELECT * FROM loan WHERE client_id = :clientId AND proposed_principal = :amount AND loan_status not in (100, 200) ORDER BY id DESC LIMIT 1", nativeQuery = true)
+    Loan findLoanByClientIdAmountAndApprovedStatus(@Param("clientId") Long clientId, @Param("amount") BigDecimal amount);
 
     @Query("select loan from Loan loan where loan.group.id = :groupId and loan.client.id is null")
     List<Loan> findByGroupId(@Param("groupId") Long groupId);
