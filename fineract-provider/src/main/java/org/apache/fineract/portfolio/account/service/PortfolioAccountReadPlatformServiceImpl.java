@@ -127,13 +127,16 @@ public class PortfolioAccountReadPlatformServiceImpl implements PortfolioAccount
                 accounts = this.jdbcTemplate.query(sql, this.loanAccountMapper, sqlParams.toArray()); // NOSONAR
             break;
             case SAVINGS:
+                long defaultSavingAccountStatus = 100;
                 sql = "select " + this.savingsAccountMapper.schema() + " where ";
                 if (portfolioAccountDTO.getClientId() != null) {
-                    sql += " sa.client_id = ? and sa.status_enum in (?) ";
+                    sql += " sa.client_id = ? and sa.status_enum in (?, ?) ";
                     sqlParams.add(portfolioAccountDTO.getClientId());
+                    sqlParams.add(defaultSavingAccountStatus);
                     sqlParams.add(defaultAccountStatus);
                 } else {
                     sql += " sa.status_enum in (?) ";
+                    sqlParams.add(defaultSavingAccountStatus);
                     sqlParams.add(defaultAccountStatus);
                 }
                 if (portfolioAccountDTO.getCurrencyCode() != null) {

@@ -254,7 +254,7 @@ public class GuarantorDomainServiceImpl implements GuarantorDomainService {
                         AccountTransferDTO accountTransferDTO = new AccountTransferDTO(transactionDate, remainingAmount, fromAccountType,
                                 toAccountType, fromAccountId, toAccountId, description, locale, fmt, paymentDetail, fromTransferType,
                                 toTransferType, chargeId, loanInstallmentNumber, transferType, accountTransferDetails, noteText, externalId,
-                                null, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false);
+                                null, null, fromSavingsAccount, isRegularTransaction, isExceptionForBalanceCheck, false, null, null);
                         transferAmount(accountTransferDTO);
                     } finally {
                         releaseLoanIds.remove(loanId);

@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.account.starter;
 
+import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.config.FineractProperties;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
@@ -91,11 +92,11 @@ public class AccountConfiguration {
             LoanAccountDomainService loanAccountDomainService, SavingsAccountWritePlatformService savingsAccountWritePlatformService,
             AccountTransferDetailRepository accountTransferDetailRepository, LoanReadPlatformService loanReadPlatformService,
             GSIMRepositoy gsimRepository, ConfigurationDomainService configurationDomainService, ExternalIdFactory externalIdFactory,
-            FineractProperties fineractProperties, AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService) {
+            FineractProperties fineractProperties, AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService, PromissoryNoteWritePlatformService promissoryNoteWritePlatformService) {
         return new AccountTransfersWritePlatformServiceImpl(accountTransfersDataValidator, accountTransferAssembler,
                 accountTransferRepository, savingsAccountAssembler, savingsAccountDomainService, loanAccountAssembler,
                 loanAccountDomainService, savingsAccountWritePlatformService, accountTransferDetailRepository, loanReadPlatformService,
-                gsimRepository, configurationDomainService, externalIdFactory, fineractProperties, accountAssociationsReadPlatformService);
+                gsimRepository, configurationDomainService, externalIdFactory, fineractProperties, accountAssociationsReadPlatformService, promissoryNoteWritePlatformService);
     }
 
     @Bean

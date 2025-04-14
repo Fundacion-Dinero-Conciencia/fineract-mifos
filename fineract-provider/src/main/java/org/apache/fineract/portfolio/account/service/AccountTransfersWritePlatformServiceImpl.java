@@ -26,9 +26,11 @@ import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConst
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferIsInvestmentParamName;
 
+import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -61,6 +63,7 @@ import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
+import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
 import org.apache.fineract.portfolio.account.data.AccountTransfersDataValidator;
 import org.apache.fineract.portfolio.account.domain.AccountTransferAssembler;
@@ -109,6 +112,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private final FineractProperties fineractProperties;
     private FromJsonHelper fromJsonHelper = new FromJsonHelper();
     private final AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService;
+    private final PromissoryNoteWritePlatformService promissoryNoteWritePlatformService;
 
     @Transactional
     @Override
@@ -129,8 +133,9 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
         final Integer toAccountTypeId = command.integerValueSansLocaleOfParameterNamed(toAccountTypeParamName);
         final PortfolioAccountType toAccountType = PortfolioAccountType.fromInt(toAccountTypeId);
-
-        Boolean isInvestment = command.booleanObjectValueOfParameterNamed(transferIsInvestmentParamName);
+        final Long investmentAgentId = command.longValueOfParameterNamed(AccountTransfersApiConstants.investmentAgentIdParamName);
+        final BigDecimal percentageInvestmentAgent = command.bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.percentageInvestmentAgentParamName);
+        Boolean isInvestment = command.booleanObjectValueOfParameterNamed(AccountTransfersApiConstants.transferIsInvestmentParamName);
         if (isInvestment == null) {
             isInvestment = false;
         }
@@ -194,6 +199,39 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     fromSavingsAccount, toSavingsAccount, withdrawal, deposit);
             this.accountTransferDetailRepository.saveAndFlush(accountTransferDetails);
             transferDetailId = accountTransferDetails.getId();
+
+            if (isInvestment) {
+
+                final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+
+                if (investmentAgentId == null && percentageInvestmentAgent != null) {
+                    final String message = "If an investment agent is provided, the percentage must also be provided.";
+                    dataValidationErrors.add(ApiParameterError.parameterError(
+                            "error.msg.transaction.external.agent.missing.percentage",
+                            message,
+                            "percentageInvestmentAgent", percentageInvestmentAgent
+                    ));
+                    throw new PlatformApiDataValidationException(dataValidationErrors);
+                } else if (investmentAgentId != null && percentageInvestmentAgent == null) {
+                    final String message = "A percentage cannot be provided without specifying an investment agent.";
+                    dataValidationErrors.add(ApiParameterError.parameterError(
+                            "error.msg.transaction.external.percentage.without.agent",
+                            message,
+                            "investmentAgentId", investmentAgentId
+                    ));
+                    throw new PlatformApiDataValidationException(dataValidationErrors);
+                } else {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("fundSavingsAccountId", toSavingsAccount.getId());
+                    data.put("investorSavingsAccountId", fromSavingsAccount.getId());
+                    data.put("amount", transactionAmount);
+                    data.put("currencyCode", toSavingsAccount.getCurrency().getCode());
+                    data.put("investmentAgentId", investmentAgentId);
+                    data.put("percentageInvestmentAgent", percentageInvestmentAgent);
+                    promissoryNoteWritePlatformService.addPromissoryNote(JsonCommand.from(new Gson().toJson(data)));
+                }
+
+            }
 
         } else if (isSavingsToLoanAccountTransfer(fromAccountType, toAccountType)) {
             //
