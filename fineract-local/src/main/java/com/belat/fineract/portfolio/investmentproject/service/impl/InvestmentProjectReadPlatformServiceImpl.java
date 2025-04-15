@@ -132,6 +132,10 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
 
         projectData.setOccupancyPercentage(occupancyPercentage);
 
+        BigDecimal remainingPercentage = BigDecimal.valueOf(100).subtract(occupancyPercentage);
+        BigDecimal remainingAmount = projectAmount.multiply(remainingPercentage).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        projectData.setMaxAmount(remainingAmount);
+
         List<DataCode> categories = new ArrayList<>();
         project.getCategories().forEach(item -> {
             if (item != null) {
