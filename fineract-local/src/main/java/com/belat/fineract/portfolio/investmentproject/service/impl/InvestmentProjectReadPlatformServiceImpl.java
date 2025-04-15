@@ -140,6 +140,9 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
             }
         });
         projectData.setCategories(categories);
+        if (project.getLoan() != null) {
+            projectData.setLoanId(project.getLoan().getId());
+        }
     }
 
 }

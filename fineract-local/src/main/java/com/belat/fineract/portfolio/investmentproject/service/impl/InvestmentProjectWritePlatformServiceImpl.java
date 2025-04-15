@@ -33,6 +33,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
     private final InvestmentProjectDescriptionRepository investmentProjectDescriptionRepository;
     private final InvestmentProjectCategoryRepository investmentProjectCategoryRepository;
+    private final LoanRepositoryWrapper loanRepositoryWrapper;
 
     @Override
     public CommandProcessingResult createInvestmentProject(JsonCommand command) {
@@ -103,6 +105,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         InvestmentProject finalInvestmentProject = investmentProject;
         codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
+        final Long loanId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanIdParamName);
+        investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(investmentProject.getId()).build();
     }
 
@@ -190,6 +194,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String categories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoriesParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.categoriesParamName).value(categories).notBlank().notNull();
+
+        final String loanId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.loanIdParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.loanIdParamName).value(loanId).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
