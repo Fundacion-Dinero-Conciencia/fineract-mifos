@@ -38,6 +38,7 @@ import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
 import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -89,6 +90,11 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
 
     @OneToMany(mappedBy = "investmentProject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<InvestmentProjectCategory> categories;
+
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "loan_id", nullable = false, referencedColumnName = "id")
+    private Loan loan;
 
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.projectNameParamName, getName())) {

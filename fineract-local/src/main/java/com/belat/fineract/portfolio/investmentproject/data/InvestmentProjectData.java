@@ -27,6 +27,7 @@ public class InvestmentProjectData {
     private DataCode country;
     private List<ImageDocument> images;
     private List<DataCode> categories;
+    private Long loanId;
 
     @Data
     @AllArgsConstructor
