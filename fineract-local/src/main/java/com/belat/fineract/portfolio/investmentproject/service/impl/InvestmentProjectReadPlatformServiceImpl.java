@@ -137,16 +137,20 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         projectData.setMaxAmount(remainingAmount);
 
         List<DataCode> categories = new ArrayList<>();
-        project.getCategories().forEach(item -> {
+        project.getSubCategories().forEach(item -> {
             if (item != null) {
                 categories.add(new DataCode(item.getCategory().getId(), item.getCategory().getLabel(),
                         item.getCategory().getDescription()));
             }
         });
-        projectData.setCategories(categories);
+        projectData.setSubCategories(categories);
         if (project.getLoan() != null) {
             projectData.setLoanId(project.getLoan().getId());
         }
+        projectData.setCategory(new DataCode(project.getCategory().getId(), project.getCategory().getLabel(),
+                project.getCategory().getDescription()));
+        projectData.setArea(new DataCode(project.getArea().getId(), project.getArea().getLabel(),
+                project.getArea().getDescription()));
     }
 
 }

@@ -19,7 +19,9 @@ public class InvestmentProjectConstants {
     public static final String periodParamName = "period";
     public static final String countryIdParamName = "countryId";
     public static final String isActiveParamName = "isActive";
-    public static final String categoriesParamName = "categories";
+    public static final String categoryParamName = "categoryId";
+    public static final String subCategoriesParamName = "subCategories";
+    public static final String areaParamName = "areaId";
     public static final String loanIdParamName = "loanId";
 
     //Descriptions
@@ -36,8 +38,8 @@ public class InvestmentProjectConstants {
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS = new HashSet<>(Arrays.asList(projectNameParamName,
             subtitleParamName, projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName,
             periodParamName, countryIdParamName, impactDescriptionParamName, institutionDescriptionParamName,
-            teamDescriptionParamName, financingDescriptionParamName, isActiveParamName, categoriesParamName,
-            loanIdParamName));
+            teamDescriptionParamName, financingDescriptionParamName, isActiveParamName, categoryParamName,
+            loanIdParamName, subCategoriesParamName, areaParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try to
@@ -45,6 +47,7 @@ public class InvestmentProjectConstants {
      */
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(projectNameParamName,
             subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName,
-            teamDescriptionParamName, financingDescriptionParamName, isActiveParamName, categoriesParamName));
+            teamDescriptionParamName, financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName,
+            areaParamName));
 
 }

@@ -99,11 +99,18 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         investmentProject.setCurrencyCode(currencyRepositoryWrapper.findOneWithNotFoundDetection(currencyCode).getCode());
 
+        final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
+        investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
+
+        final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
+        investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
+
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
-        final String categories = command.stringValueOfParameterNamed(InvestmentProjectConstants.categoriesParamName);
-        List<CodeValue> codeCategories = getInvestmentProjectCategoryData(categories);
+
+        final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
+        List<CodeValue> codeSubCategories = getInvestmentProjectCategoryData(subcategories);
         InvestmentProject finalInvestmentProject = investmentProject;
-        codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
+        codeSubCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         final Long loanId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanIdParamName);
         investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
@@ -123,8 +130,16 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         List<InvestmentProjectCategory> categoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
         categoriesList.forEach(investmentProjectCategoryRepository::delete);
 
-        final String categoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.categoriesParamName);
-        List<CodeValue> codeCategories = getInvestmentProjectCategoryData(categoriesString);
+        final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
+        investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
+        changes.put(InvestmentProjectConstants.categoryParamName, categoryId);
+
+        final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
+        investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
+        changes.put(InvestmentProjectConstants.areaParamName, areaId);
+
+        final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
+        List<CodeValue> codeCategories = getInvestmentProjectCategoryData(subCategoriesString);
         codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, investmentProject)));
 
         if (!changes.isEmpty()) {
@@ -192,8 +207,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String isActive = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull().validateForBooleanValue();
 
-        final String categories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoriesParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoriesParamName).value(categories).notBlank().notNull();
+        final String categoryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoryParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoryParamName).value(categoryId).notBlank().notNull();
+
+        final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
+
+        final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
 
         final String loanId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.loanIdParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.loanIdParamName).value(loanId).notBlank().notNull();
@@ -243,9 +264,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final Boolean isActive = fromApiJsonHelper.extractBooleanNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull();
 
-        final String categories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoriesParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoriesParamName).value(categories).notBlank().notNull();
+        final String categoryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoryParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoryParamName).value(categoryId).notBlank().notNull();
 
+        final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
+
+        final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
