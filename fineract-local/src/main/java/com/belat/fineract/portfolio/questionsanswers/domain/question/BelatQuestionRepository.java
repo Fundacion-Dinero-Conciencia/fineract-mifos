@@ -1,11 +1,9 @@
 package com.belat.fineract.portfolio.questionsanswers.domain.question;
 
-import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface BelatQuestionRepository extends JpaRepository<BelatQuestion, Long> {
 

@@ -19,11 +19,10 @@
 package com.belat.fineract.portfolio.projectparticipation.data;
 
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor
@@ -48,6 +47,7 @@ public class ProjectParticipationData {
     @Data
     @AllArgsConstructor
     public static class StatusEnum {
+
         private String code;
         private Integer value;
     }

@@ -20,7 +20,6 @@ import org.apache.fineract.portfolio.client.domain.Client;
 @Table(name = "e_answer")
 public class BelatAnswer extends AbstractAuditableWithUTCDateTimeCustom<Long> {
 
-
     @Column(name = "answer")
     private String answer;
 

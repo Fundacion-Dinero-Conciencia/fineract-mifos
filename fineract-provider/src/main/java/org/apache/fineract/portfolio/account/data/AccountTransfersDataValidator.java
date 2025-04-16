@@ -46,15 +46,15 @@ public class AccountTransfersDataValidator {
 
     private final FromJsonHelper fromApiJsonHelper;
     private final AccountTransfersDetailDataValidator accountTransfersDetailDataValidator;
-    private static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(
-            Arrays.asList(AccountDetailConstants.localeParamName, AccountDetailConstants.dateFormatParamName,
-                    AccountDetailConstants.fromOfficeIdParamName, AccountDetailConstants.fromClientIdParamName,
-                    AccountDetailConstants.fromAccountTypeParamName, AccountDetailConstants.fromAccountIdParamName,
-                    AccountDetailConstants.toOfficeIdParamName, AccountDetailConstants.toClientIdParamName,
-                    AccountDetailConstants.toAccountTypeParamName, AccountDetailConstants.toAccountIdParamName,
-                    AccountTransfersApiConstants.transferDateParamName, AccountTransfersApiConstants.transferAmountParamName,
-                    AccountTransfersApiConstants.transferDescriptionParamName, AccountTransfersApiConstants.transferIsInvestmentParamName,
-                    AccountTransfersApiConstants.investmentAgentIdParamName, AccountTransfersApiConstants.percentageInvestmentAgentParamName));
+    private static final Set<String> REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(AccountDetailConstants.localeParamName,
+            AccountDetailConstants.dateFormatParamName, AccountDetailConstants.fromOfficeIdParamName,
+            AccountDetailConstants.fromClientIdParamName, AccountDetailConstants.fromAccountTypeParamName,
+            AccountDetailConstants.fromAccountIdParamName, AccountDetailConstants.toOfficeIdParamName,
+            AccountDetailConstants.toClientIdParamName, AccountDetailConstants.toAccountTypeParamName,
+            AccountDetailConstants.toAccountIdParamName, AccountTransfersApiConstants.transferDateParamName,
+            AccountTransfersApiConstants.transferAmountParamName, AccountTransfersApiConstants.transferDescriptionParamName,
+            AccountTransfersApiConstants.transferIsInvestmentParamName, AccountTransfersApiConstants.investmentAgentIdParamName,
+            AccountTransfersApiConstants.percentageInvestmentAgentParamName));
 
     @Autowired
     public AccountTransfersDataValidator(final FromJsonHelper fromApiJsonHelper,

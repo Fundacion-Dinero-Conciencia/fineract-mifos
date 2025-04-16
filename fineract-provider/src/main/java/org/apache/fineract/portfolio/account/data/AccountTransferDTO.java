@@ -66,7 +66,8 @@ public class AccountTransferDTO {
             final PaymentDetail paymentDetail, final Integer fromTransferType, final Integer toTransferType, final Long chargeId,
             Integer loanInstallmentNumber, Integer transferType, final AccountTransferDetails accountTransferDetails, final String noteText,
             final ExternalId txnExternalId, final Loan loan, SavingsAccount toSavingsAccount, final SavingsAccount fromSavingsAccount,
-            final Boolean isRegularTransaction, Boolean isExceptionForBalanceCheck, Boolean isInvestment, BigDecimal percentageInvestmentAgent, Long investmentAgentId) {
+            final Boolean isRegularTransaction, Boolean isExceptionForBalanceCheck, Boolean isInvestment,
+            BigDecimal percentageInvestmentAgent, Long investmentAgentId) {
         this.transactionDate = transactionDate;
         this.transactionAmount = transactionAmount;
         this.fromAccountType = fromAccountType;

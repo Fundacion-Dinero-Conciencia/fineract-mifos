@@ -18,6 +18,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -27,13 +28,12 @@ import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSer
 import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Path("/v1/investmentproject")
 @Component
 @Tag(name = "investmentproject", description = "investmentproject")
 @RequiredArgsConstructor
 public class InvestmentProjectApiResource {
+
     private final PlatformUserRightsContext platformUserRightsContext;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DefaultToApiJsonSerializer<InvestmentProjectData> apiJsonSerializerService;
@@ -69,9 +69,8 @@ public class InvestmentProjectApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.GetInvestmentProjectResponse.class))) })
-    public String getInvestmentProjects(@QueryParam("id") final Long id,
-                                        @QueryParam("ownerId") final Long ownerId,
-                                        @QueryParam("categoryId") final Long categoryId) {
+    public String getInvestmentProjects(@QueryParam("id") final Long id, @QueryParam("ownerId") final Long ownerId,
+            @QueryParam("categoryId") final Long categoryId) {
         platformUserRightsContext.isAuthenticated();
 
         if (id != null) {
@@ -96,10 +95,11 @@ public class InvestmentProjectApiResource {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.PutInvestmentProjectResponse.class))) })
     public String update(@PathParam("projectId") @Parameter(description = "projectId") final Long projectId,
-                         @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         platformUserRightsContext.isAuthenticated();
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).updateInvestmentProject(projectId).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).updateInvestmentProject(projectId)
+                .build();
         CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return apiJsonSerializerService.serialize(result);
     }

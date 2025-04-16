@@ -18,18 +18,15 @@
  */
 package com.belat.fineract.portfolio.projectparticipation.mapper;
 
+import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipation;
-import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
-
-import org.apache.commons.lang3.time.DateUtils;
+import java.time.LocalDate;
+import java.util.List;
 import org.apache.fineract.infrastructure.core.config.MapstructMapperConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Mapper(config = MapstructMapperConfig.class)
 public interface ProjectParticipationMapper {

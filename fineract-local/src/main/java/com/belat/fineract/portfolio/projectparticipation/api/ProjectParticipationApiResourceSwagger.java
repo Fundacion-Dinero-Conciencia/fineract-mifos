@@ -1,11 +1,9 @@
 package com.belat.fineract.portfolio.projectparticipation.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.math.BigDecimal;
 
 public class ProjectParticipationApiResourceSwagger {
-
 
     private ProjectParticipationApiResourceSwagger() {}
 

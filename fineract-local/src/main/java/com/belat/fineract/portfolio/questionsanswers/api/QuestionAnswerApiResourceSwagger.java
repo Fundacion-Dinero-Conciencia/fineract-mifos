@@ -1,11 +1,9 @@
 package com.belat.fineract.portfolio.questionsanswers.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.List;
 
 public class QuestionAnswerApiResourceSwagger {
-
 
     private QuestionAnswerApiResourceSwagger() {}
 
@@ -32,7 +30,6 @@ public class QuestionAnswerApiResourceSwagger {
         @Schema(example = "1")
         public Long resourceId;
     }
-
 
     @Schema(description = "PostAddAnswerRequest")
     static final class PostAddAnswerRequest {
@@ -75,6 +72,7 @@ public class QuestionAnswerApiResourceSwagger {
         private static class User {
 
             private User() {}
+
             @Schema(example = "1")
             private Long id;
             @Schema(example = "username")
@@ -84,6 +82,7 @@ public class QuestionAnswerApiResourceSwagger {
         public User user;
 
         private static class Answer {
+
             @Schema(example = "1")
             private Long id;
             @Schema(example = "answer")
@@ -93,9 +92,5 @@ public class QuestionAnswerApiResourceSwagger {
 
         public List<Answer> answers;
     }
-
-
-
-
 
 }

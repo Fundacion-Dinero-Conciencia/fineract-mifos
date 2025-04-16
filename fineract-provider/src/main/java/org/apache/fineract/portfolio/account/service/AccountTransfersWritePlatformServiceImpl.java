@@ -24,7 +24,6 @@ import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAcc
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferIsInvestmentParamName;
 
 import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -134,7 +133,8 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         final Integer toAccountTypeId = command.integerValueSansLocaleOfParameterNamed(toAccountTypeParamName);
         final PortfolioAccountType toAccountType = PortfolioAccountType.fromInt(toAccountTypeId);
         final Long investmentAgentId = command.longValueOfParameterNamed(AccountTransfersApiConstants.investmentAgentIdParamName);
-        final BigDecimal percentageInvestmentAgent = command.bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.percentageInvestmentAgentParamName);
+        final BigDecimal percentageInvestmentAgent = command
+                .bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.percentageInvestmentAgentParamName);
         Boolean isInvestment = command.booleanObjectValueOfParameterNamed(AccountTransfersApiConstants.transferIsInvestmentParamName);
         if (isInvestment == null) {
             isInvestment = false;
@@ -206,19 +206,13 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
                 if (investmentAgentId == null && percentageInvestmentAgent != null) {
                     final String message = "If an investment agent is provided, the percentage must also be provided.";
-                    dataValidationErrors.add(ApiParameterError.parameterError(
-                            "error.msg.transaction.external.agent.missing.percentage",
-                            message,
-                            "percentageInvestmentAgent", percentageInvestmentAgent
-                    ));
+                    dataValidationErrors.add(ApiParameterError.parameterError("error.msg.transaction.external.agent.missing.percentage",
+                            message, "percentageInvestmentAgent", percentageInvestmentAgent));
                     throw new PlatformApiDataValidationException(dataValidationErrors);
                 } else if (investmentAgentId != null && percentageInvestmentAgent == null) {
                     final String message = "A percentage cannot be provided without specifying an investment agent.";
-                    dataValidationErrors.add(ApiParameterError.parameterError(
-                            "error.msg.transaction.external.percentage.without.agent",
-                            message,
-                            "investmentAgentId", investmentAgentId
-                    ));
+                    dataValidationErrors.add(ApiParameterError.parameterError("error.msg.transaction.external.percentage.without.agent",
+                            message, "investmentAgentId", investmentAgentId));
                     throw new PlatformApiDataValidationException(dataValidationErrors);
                 } else {
                     Map<String, Object> data = new HashMap<>();

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@CommandType( entity = "PROJECT_PARTICIPATION", action = "DELETE")
+@CommandType(entity = "PROJECT_PARTICIPATION", action = "DELETE")
 public class DeleteProjectParticipationCommandHandler implements NewCommandSourceHandler {
 
     private final ProjectParticipationWritePlatformService projectParticipationWritePlatformService;

@@ -21,7 +21,6 @@ package org.apache.fineract.portfolio.account.data.request;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

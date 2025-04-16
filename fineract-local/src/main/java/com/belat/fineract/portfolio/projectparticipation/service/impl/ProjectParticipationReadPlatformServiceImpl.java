@@ -7,6 +7,10 @@ import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipa
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
 import com.belat.fineract.portfolio.projectparticipation.mapper.ProjectParticipationMapper;
 import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticipationReadPlatformService;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
 import org.apache.fineract.portfolio.account.service.AccountTransfersReadPlatformService;
@@ -16,11 +20,6 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +32,7 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     private final AccountTransfersReadPlatformService accountTransfersReadPlatformService;
     private final LoanRepository loanRepository;
     private final ApplicationContext applicationContext;
+
     @Override
     public List<ProjectParticipationData> retrieveAll() {
         List<ProjectParticipation> projectParticipations = projectParticipationRepository.findAll();
@@ -82,23 +82,30 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
         return projectParticipationData;
     }
 
-    private void factoryData (ProjectParticipationData projectData, ProjectParticipation project, List<ProjectParticipationData> projectsData) {
+    private void factoryData(ProjectParticipationData projectData, ProjectParticipation project,
+            List<ProjectParticipationData> projectsData) {
         projectData.setParticipantId(project.getClient().getId());
         projectData.setProject(investmentProjectReadPlatformService.retrieveById(project.getInvestmentProject().getId()));
-        ProjectParticipationData.StatusEnum statusEnum = new ProjectParticipationData.StatusEnum(ProjectParticipationStatusEnum.fromInt(project.getStatusEnum()).toEnumOptionData().getCode(), ProjectParticipationStatusEnum.fromInt(project.getStatusEnum()).getValue());
-        projectData.setConfirmedParticipants(projectParticipationRepository.countParticipationByProjectIdWithStatus100(project.getInvestmentProject().getId()));
+        ProjectParticipationData.StatusEnum statusEnum = new ProjectParticipationData.StatusEnum(
+                ProjectParticipationStatusEnum.fromInt(project.getStatusEnum()).toEnumOptionData().getCode(),
+                ProjectParticipationStatusEnum.fromInt(project.getStatusEnum()).getValue());
+        projectData.setConfirmedParticipants(
+                projectParticipationRepository.countParticipationByProjectIdWithStatus100(project.getInvestmentProject().getId()));
         projectData.setStatus(statusEnum);
 
-        //Get investor saving account
-        Optional<SavingsAccount> account = savingsAccountRepositoryWrapper.findSavingAccountByClientId(project.getClient().getId()).stream().findFirst();
+        // Get investor saving account
+        Optional<SavingsAccount> account = savingsAccountRepositoryWrapper.findSavingAccountByClientId(project.getClient().getId()).stream()
+                .findFirst();
         if (account.isPresent()) {
-            //Get project owner credit name
-            Loan loan = loanRepository.findLoanByClientIdAmountAndApprovedStatus(project.getInvestmentProject().getOwner().getId(), project.getInvestmentProject().getAmount());
+            // Get project owner credit name
+            Loan loan = loanRepository.findLoanByClientIdAmountAndApprovedStatus(project.getInvestmentProject().getOwner().getId(),
+                    project.getInvestmentProject().getAmount());
 
             if (loan != null) {
-                //Get transactions to investor saving account
-                List<AccountTransferData> accountTransferData = accountTransfersReadPlatformService.retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(account.get().getId(),
-                        applicationContext.getEnvironment().getProperty("fineract.fund.client.name") + loan.getAccountNumber());
+                // Get transactions to investor saving account
+                List<AccountTransferData> accountTransferData = accountTransfersReadPlatformService
+                        .retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(account.get().getId(),
+                                applicationContext.getEnvironment().getProperty("fineract.fund.client.name") + loan.getAccountNumber());
 
                 BigDecimal principalEarned = BigDecimal.ZERO;
                 BigDecimal interestEarned = BigDecimal.ZERO;

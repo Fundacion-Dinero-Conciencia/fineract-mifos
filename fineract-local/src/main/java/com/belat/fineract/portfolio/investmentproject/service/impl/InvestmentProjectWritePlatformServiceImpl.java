@@ -14,6 +14,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,13 +41,6 @@ import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -69,7 +68,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject.setSubtitle(command.stringValueOfParameterNamed(InvestmentProjectConstants.subtitleParamName));
 
         final String ownerIdParam = command.stringValueOfParameterNamed(InvestmentProjectConstants.projectOwnerIdParamName);
-        Client owner = clientRepository.findById(Long.valueOf(ownerIdParam)).orElseThrow( () -> new ClientNotFoundException(Long.valueOf(ownerIdParam)));
+        Client owner = clientRepository.findById(Long.valueOf(ownerIdParam))
+                .orElseThrow(() -> new ClientNotFoundException(Long.valueOf(ownerIdParam)));
         if (!owner.isActive()) {
             throw new ClientNotActiveException(owner.getId());
         }
@@ -88,10 +88,12 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject.setCountry(countryValue);
 
         final String impactDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.impactDescriptionParamName);
-        final String institutionDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.institutionDescriptionParamName);
+        final String institutionDescription = command
+                .stringValueOfParameterNamed(InvestmentProjectConstants.institutionDescriptionParamName);
         final String teamDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.teamDescriptionParamName);
         final String financingDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.financingDescriptionParamName);
-        InvestmentProjectDescription description = new InvestmentProjectDescription(impactDescription, institutionDescription, teamDescription, financingDescription);
+        InvestmentProjectDescription description = new InvestmentProjectDescription(impactDescription, institutionDescription,
+                teamDescription, financingDescription);
         description = investmentProjectDescriptionRepository.save(description);
         investmentProject.setDescription(description);
 
@@ -110,7 +112,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
         List<CodeValue> codeSubCategories = getInvestmentProjectCategoryData(subcategories);
         InvestmentProject finalInvestmentProject = investmentProject;
-        codeSubCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
+        codeSubCategories
+                .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         final Long loanId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanIdParamName);
         investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
@@ -124,7 +127,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final Map<String, Object> changes = new LinkedHashMap<>(20);
 
-        InvestmentProject investmentProject = investmentProjectRepository.findById(projectId).orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
+        InvestmentProject investmentProject = investmentProjectRepository.findById(projectId)
+                .orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
         investmentProject.modifyApplication(command, changes);
 
         List<InvestmentProjectCategory> categoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
@@ -154,15 +158,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
     }
 
-    private void validateForCreate (final String json) {
+    private void validateForCreate(final String json) {
 
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
 
         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
-        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
-                InvestmentProjectConstants.INVESTMENT_PROJECT_PARAMETERS);
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, InvestmentProjectConstants.INVESTMENT_PROJECT_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("investmentProject");
@@ -192,20 +195,29 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String countryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.countryIdParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.countryIdParamName).value(countryId).notBlank().notNull();
 
-        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank().notNull();
+        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName,
+                jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank()
+                .notNull();
 
-        final String institutionDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription).notBlank().notNull();
+        final String institutionDescription = fromApiJsonHelper
+                .extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription)
+                .notBlank().notNull();
 
-        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank().notNull();
+        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName,
+                jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank()
+                .notNull();
 
-        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank().notNull();
+        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName,
+                jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank()
+                .notNull();
 
         final String isActive = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull().validateForBooleanValue();
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull()
+                .validateForBooleanValue();
 
         final String categoryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoryParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.categoryParamName).value(categoryId).notBlank().notNull();
@@ -226,7 +238,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
     }
 
-    private void validateForUpdate (final String json) {
+    private void validateForUpdate(final String json) {
 
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
@@ -249,17 +261,25 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String rate = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectRateParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectRateParamName).value(rate).notBlank().notNull();
 
-        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank().notNull();
+        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName,
+                jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank()
+                .notNull();
 
-        final String institutionDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription).notBlank().notNull();
+        final String institutionDescription = fromApiJsonHelper
+                .extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription)
+                .notBlank().notNull();
 
-        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank().notNull();
+        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName,
+                jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank()
+                .notNull();
 
-        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank().notNull();
+        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName,
+                jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank()
+                .notNull();
 
         final Boolean isActive = fromApiJsonHelper.extractBooleanNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull();
@@ -279,7 +299,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         }
     }
 
-    private List<CodeValue> getInvestmentProjectCategoryData (String categories) {
+    private List<CodeValue> getInvestmentProjectCategoryData(String categories) {
         List<CodeValue> codeCategories = new ArrayList<>();
         List<Long> categoriesId = getIdsFromJsonString(categories);
         if (!categoriesId.isEmpty()) {
@@ -288,7 +308,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         return codeCategories;
     }
 
-    private List<Long> getIdsFromJsonString (String list) {
+    private List<Long> getIdsFromJsonString(String list) {
         List<Long> categoriesId = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {

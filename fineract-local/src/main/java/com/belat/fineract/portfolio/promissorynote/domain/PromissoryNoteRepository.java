@@ -18,22 +18,16 @@
  */
 package com.belat.fineract.portfolio.promissorynote.domain;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-
 public interface PromissoryNoteRepository extends JpaRepository<PromissoryNote, Long> {
 
-
-    @Query(value = "SELECT * FROM public.e_promissory_note " +
-            "WHERE promissory_note_number LIKE ?1 " +
-            "ORDER BY promissory_note_number DESC " +
-            "LIMIT 1",
-            nativeQuery = true)
+    @Query(value = "SELECT * FROM public.e_promissory_note " + "WHERE promissory_note_number LIKE ?1 "
+            + "ORDER BY promissory_note_number DESC " + "LIMIT 1", nativeQuery = true)
     PromissoryNote retrieveOneByPromissoryNoteNumber(String number);
-
 
     @Query("SELECT p FROM PromissoryNote p WHERE p.fundSavingsAccount.id = :fundId")
     List<PromissoryNote> retrieveByFundAccountId(@Param("fundId") Long fundId);

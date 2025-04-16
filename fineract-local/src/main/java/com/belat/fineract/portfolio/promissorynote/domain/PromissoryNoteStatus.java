@@ -18,9 +18,7 @@
  */
 package com.belat.fineract.portfolio.promissorynote.domain;
 
-import lombok.Data;
 import lombok.Getter;
-
 
 @Getter
 public enum PromissoryNoteStatus {

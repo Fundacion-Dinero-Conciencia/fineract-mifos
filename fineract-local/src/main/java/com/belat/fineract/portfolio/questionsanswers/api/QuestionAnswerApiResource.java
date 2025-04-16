@@ -1,7 +1,5 @@
 package com.belat.fineract.portfolio.questionsanswers.api;
 
-import com.belat.fineract.portfolio.investmentproject.api.InvestmentProjectApiResourceSwagger;
-import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
 import com.belat.fineract.portfolio.questionsanswers.data.QuestionData;
 import com.belat.fineract.portfolio.questionsanswers.service.QuestionAnswerReadPlatformService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +17,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -27,8 +26,6 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Path("/v1/question")
 @Component
@@ -40,7 +37,6 @@ public class QuestionAnswerApiResource {
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DefaultToApiJsonSerializer<QuestionData> apiJsonSerializerService;
     private final QuestionAnswerReadPlatformService questionAnswerReadPlatformService;
-
 
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
@@ -64,8 +60,7 @@ public class QuestionAnswerApiResource {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = QuestionAnswerApiResourceSwagger.PostAddAnswerResponse.class))),
             @ApiResponse(responseCode = "403", description = "Project can not be created") })
-    public String addAnswer(@Parameter(hidden = true) final String apiRequestBodyAsJson,
-                            @PathParam("questionId") final Long questionId) {
+    public String addAnswer(@Parameter(hidden = true) final String apiRequestBodyAsJson, @PathParam("questionId") final Long questionId) {
         platformUserRightsContext.isAuthenticated();
         final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).createAnswer(questionId).build();
         CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
@@ -94,13 +89,13 @@ public class QuestionAnswerApiResource {
         if (id != null) {
             final QuestionData questionData = questionAnswerReadPlatformService.retrieveQuestionById(id);
             return apiJsonSerializerService.serialize(questionData);
-        } if (userId != null) {
+        }
+        if (userId != null) {
             final List<QuestionData> questionData = questionAnswerReadPlatformService.retrieveQuestionByUserId(userId);
             return apiJsonSerializerService.serialize(questionData);
         } else {
             throw new IllegalArgumentException("Not supported parameter");
         }
     }
-
 
 }

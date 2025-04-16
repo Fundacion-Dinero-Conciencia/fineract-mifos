@@ -18,6 +18,14 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -43,15 +51,6 @@ import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.CollectionUtils;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class AccountTransfersReadPlatformServiceImpl implements AccountTransfersReadPlatformService {
@@ -429,15 +428,18 @@ public class AccountTransfersReadPlatformServiceImpl implements AccountTransfers
     }
 
     @Override
-    public List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(Long toAccountId, String fromSavingsName) {
-        List<AccountTransferTransaction> accountTransferTransactions = accountTransferRepository.findToSavingsAccountTransactionsDependsOnFromSavingsName(toAccountId, fromSavingsName);
+    public List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(Long toAccountId,
+            String fromSavingsName) {
+        List<AccountTransferTransaction> accountTransferTransactions = accountTransferRepository
+                .findToSavingsAccountTransactionsDependsOnFromSavingsName(toAccountId, fromSavingsName);
         List<AccountTransferData> accountTransferData = new ArrayList<>();
 
         accountTransferTransactions.forEach(item -> {
-            AccountTransferData transferData = retrieveTemplate(null, item.getFromSavingsTransaction().getSavingsAccount().getClient().getId(),
+            AccountTransferData transferData = retrieveTemplate(null,
+                    item.getFromSavingsTransaction().getSavingsAccount().getClient().getId(),
                     item.getFromSavingsTransaction().getSavingsAccount().getId(), PortfolioAccountType.SAVINGS.getValue(), null,
-                    item.getToSavingsTransaction().getSavingsAccount().getClient().getId(), item.getToSavingsTransaction().getSavingsAccount().getId(),
-                    PortfolioAccountType.SAVINGS.getValue());
+                    item.getToSavingsTransaction().getSavingsAccount().getClient().getId(),
+                    item.getToSavingsTransaction().getSavingsAccount().getId(), PortfolioAccountType.SAVINGS.getValue());
             accountTransferData.add(transferData);
         });
 

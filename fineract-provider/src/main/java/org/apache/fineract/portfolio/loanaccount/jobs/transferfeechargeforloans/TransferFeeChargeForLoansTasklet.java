@@ -75,7 +75,8 @@ public class TransferFeeChargeForLoansTasklet implements Tasklet {
                                     portfolioAccountData.getId(), chargeData.getLoanId(), "Loan Charge Payment", null, null, null, null,
                                     LoanTransactionType.CHARGE_PAYMENT.getValue(), chargeData.getId(),
                                     installmentChargeData.getInstallmentNumber(), AccountTransferType.CHARGE_PAYMENT.getValue(), null, null,
-                                    ExternalId.empty(), null, null, null, isRegularTransaction, isExceptionForBalanceCheck, false, null, null);
+                                    ExternalId.empty(), null, null, null, isRegularTransaction, isExceptionForBalanceCheck, false, null,
+                                    null);
                             transferFeeCharge(accountTransferDTO, errors);
                         }
                     }

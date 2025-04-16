@@ -10,6 +10,10 @@ import com.belat.fineract.portfolio.investmentproject.domain.category.Investment
 import com.belat.fineract.portfolio.investmentproject.mapper.InvestmentProjectMapper;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
@@ -17,11 +21,6 @@ import org.apache.fineract.infrastructure.documentmanagement.service.DocumentRea
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -116,19 +115,21 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         return projectsData;
     }
 
-    private void factoryData (InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
+    private void factoryData(InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
         projectData.setOwnerId(project.getOwner().getId());
+        projectData.setOwnerName(project.getOwner().getDisplayName());
         projectData.setIsActive(project.isActive());
         projectData.setPeriod(project.getPeriod());
-        DataCode country = new DataCode(project.getCountry().getId(),
-                project.getCountry().getLabel(), project.getCountry().getDescription());
+        DataCode country = new DataCode(project.getCountry().getId(), project.getCountry().getLabel(),
+                project.getCountry().getDescription());
         projectData.setCountry(country);
         projectData.setImages(retrieveList(project.getId()));
         projectsData.add(projectData);
 
         BigDecimal projectParticipation = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(project.getId());
         BigDecimal projectAmount = project.getAmount();
-        BigDecimal occupancyPercentage = projectParticipation.multiply(BigDecimal.valueOf(100)).divide(projectAmount, 2, RoundingMode.HALF_UP);
+        BigDecimal occupancyPercentage = projectParticipation.multiply(BigDecimal.valueOf(100)).divide(projectAmount, 2,
+                RoundingMode.HALF_UP);
 
         projectData.setOccupancyPercentage(occupancyPercentage);
 
@@ -139,8 +140,8 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         List<DataCode> categories = new ArrayList<>();
         project.getSubCategories().forEach(item -> {
             if (item != null) {
-                categories.add(new DataCode(item.getCategory().getId(), item.getCategory().getLabel(),
-                        item.getCategory().getDescription()));
+                categories
+                        .add(new DataCode(item.getCategory().getId(), item.getCategory().getLabel(), item.getCategory().getDescription()));
             }
         });
         projectData.setSubCategories(categories);
@@ -148,12 +149,11 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
             projectData.setLoanId(project.getLoan().getId());
         }
         if (project.getCategory() != null) {
-            projectData.setCategory(new DataCode(project.getCategory().getId(), project.getCategory().getLabel(),
-                    project.getCategory().getDescription()));
+            projectData.setCategory(
+                    new DataCode(project.getCategory().getId(), project.getCategory().getLabel(), project.getCategory().getDescription()));
         }
         if (project.getArea() != null) {
-            projectData.setArea(new DataCode(project.getArea().getId(), project.getArea().getLabel(),
-                    project.getArea().getDescription()));
+            projectData.setArea(new DataCode(project.getArea().getId(), project.getArea().getLabel(), project.getArea().getDescription()));
         }
     }
 

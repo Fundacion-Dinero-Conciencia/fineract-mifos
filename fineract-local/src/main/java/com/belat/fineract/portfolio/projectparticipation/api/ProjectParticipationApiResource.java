@@ -17,6 +17,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -25,8 +26,6 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Path("/v1/projectparticipation")
 @Component
@@ -39,7 +38,6 @@ public class ProjectParticipationApiResource {
     private final DefaultToApiJsonSerializer<ProjectParticipationData> apiJsonSerializerService;
     private final ProjectParticipationReadPlatformService projectParticipationReadPlatformService;
 
-
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
@@ -49,7 +47,8 @@ public class ProjectParticipationApiResource {
             @ApiResponse(responseCode = "403", description = "Project can not be created") })
     public String addProjectParticipation(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         platformUserRightsContext.isAuthenticated();
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).createProjectParticipation().build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).createProjectParticipation()
+                .build();
         CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return apiJsonSerializerService.serialize(result);
     }
@@ -70,19 +69,20 @@ public class ProjectParticipationApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
-    public String getProjectParticipation(@QueryParam("id") final Long id,
-                                        @QueryParam("participantId") final Long participantId,
-                                        @QueryParam("projectId") final Long projectId) {
+    public String getProjectParticipation(@QueryParam("id") final Long id, @QueryParam("participantId") final Long participantId,
+            @QueryParam("projectId") final Long projectId) {
         platformUserRightsContext.isAuthenticated();
 
         if (id != null) {
             final ProjectParticipationData projectParticipationData = projectParticipationReadPlatformService.retrieveById(id);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (participantId != null) {
-            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService.retrieveByClientId(participantId);
+            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+                    .retrieveByClientId(participantId);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (projectId != null) {
-            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService.retrieveByProjectId(projectId);
+            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+                    .retrieveByProjectId(projectId);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else {
             throw new IllegalArgumentException("Not supported parameter");
@@ -97,10 +97,11 @@ public class ProjectParticipationApiResource {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.PutProjectParticipationResponse.class))) })
     public String update(@PathParam("id") @Parameter(description = "id") final Long id,
-                         @Parameter(hidden = true) final String apiRequestBodyAsJson) {
+            @Parameter(hidden = true) final String apiRequestBodyAsJson) {
 
         platformUserRightsContext.isAuthenticated();
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).updateProjectParticipation(id).build();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).updateProjectParticipation(id)
+                .build();
         CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return apiJsonSerializerService.serialize(result);
     }
