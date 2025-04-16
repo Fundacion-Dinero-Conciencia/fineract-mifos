@@ -1,10 +1,9 @@
 package com.belat.fineract.portfolio.projectparticipation.data;
 
-import org.apache.fineract.infrastructure.core.data.EnumOptionData;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 
 public enum ProjectParticipationStatusEnum {
 
@@ -14,10 +13,10 @@ public enum ProjectParticipationStatusEnum {
     DECLINED("ProjectParticipationStatusEnum.declined", 300), // //
     ;
 
-
     private static final ProjectParticipationStatusEnum[] VALUES = values();
 
-    private static final Map<Integer, ProjectParticipationStatusEnum> BY_ID = Arrays.stream(VALUES).collect(Collectors.toMap(ProjectParticipationStatusEnum::getValue, v -> v));
+    private static final Map<Integer, ProjectParticipationStatusEnum> BY_ID = Arrays.stream(VALUES)
+            .collect(Collectors.toMap(ProjectParticipationStatusEnum::getValue, v -> v));
 
     private final String code;
 
@@ -47,6 +46,5 @@ public enum ProjectParticipationStatusEnum {
     public EnumOptionData toEnumOptionData() {
         return new EnumOptionData(getValue().longValue(), code, name());
     }
-
 
 }

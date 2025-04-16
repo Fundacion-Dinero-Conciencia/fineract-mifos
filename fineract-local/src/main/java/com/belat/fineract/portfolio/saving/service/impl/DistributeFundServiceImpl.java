@@ -1,7 +1,16 @@
 package com.belat.fineract.portfolio.saving.service.impl;
 
+import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.fundSavingsAccountIdParamName;
+
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -14,16 +23,6 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.fundSavingsAccountIdParamName;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +46,7 @@ public class DistributeFundServiceImpl {
     }
 
     public void validateParams(final String json) {
-         final Set<String> DISTRIBUTE_FUNDS_REQUEST_DATA_PARAMETERS = new HashSet<>(
-                Arrays.asList(fundSavingsAccountIdParamName));
+        final Set<String> DISTRIBUTE_FUNDS_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(fundSavingsAccountIdParamName));
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }

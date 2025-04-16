@@ -48,6 +48,7 @@ import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.codes.data.CodeData;
 import org.apache.fineract.infrastructure.codes.service.CodeReadPlatformService;
+import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
@@ -71,6 +72,7 @@ public class CodesApiResource {
 
     private final PlatformSecurityContext context;
     private final CodeReadPlatformService readPlatformService;
+    private final CodeValueReadPlatformService readCodeValuePlatformService;
     private final DefaultToApiJsonSerializer<CodeData> toApiJsonSerializer;
     private final ApiRequestParameterHelper apiRequestParameterHelper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
@@ -131,9 +133,11 @@ public class CodesApiResource {
             + "codes/name/example")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CodesApiResourceSwagger.GetCodesResponse.class))) })
-    public String retrieveCodeByName(@PathParam("codeName") @Parameter(description = "codeName") final String codeName, @Context final UriInfo uriInfo) {
+    public String retrieveCodeByName(@PathParam("codeName") @Parameter(description = "codeName") final String codeName,
+            @Context final UriInfo uriInfo) {
 
         final CodeData code = this.readPlatformService.retriveCode(codeName);
+        code.setCodeValues(this.readCodeValuePlatformService.retrieveAllCodeValues(code.getId()));
 
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
         return this.toApiJsonSerializer.serialize(settings, code, RESPONSE_DATA_PARAMETERS);

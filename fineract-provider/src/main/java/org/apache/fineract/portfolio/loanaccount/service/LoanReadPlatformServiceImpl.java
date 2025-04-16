@@ -485,12 +485,13 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService, Loa
 
         BigDecimal adjustedChargeAmount = adjustPrepayInstallmentCharge(loan, onDate);
         BigDecimal amountPrepayCommission = calculatePrepayCommission(loan, outstandingAmounts.principal().getAmount());
-        BigDecimal totalAdjusted = amountPrepayCommission.add(outstandingAmounts.getTotalOutstanding().getAmount().subtract(adjustedChargeAmount));
-        LoanTransactionData loanTransactionData = new LoanTransactionData(null, null, null, transactionType, null, currencyData, earliestUnpaidInstallmentDate, totalAdjusted,
-                loan.getNetDisbursalAmount(), outstandingAmounts.principal().getAmount(), outstandingAmounts.interest().getAmount(),
-                outstandingAmounts.feeCharges().getAmount().subtract(adjustedChargeAmount), outstandingAmounts.penaltyCharges().getAmount(),
-                null, unrecognizedIncomePortion, paymentOptions, ExternalId.empty(), null, null, outstandingLoanBalance, false, loanId,
-                loan.getExternalId());
+        BigDecimal totalAdjusted = amountPrepayCommission
+                .add(outstandingAmounts.getTotalOutstanding().getAmount().subtract(adjustedChargeAmount));
+        LoanTransactionData loanTransactionData = new LoanTransactionData(null, null, null, transactionType, null, currencyData,
+                earliestUnpaidInstallmentDate, totalAdjusted, loan.getNetDisbursalAmount(), outstandingAmounts.principal().getAmount(),
+                outstandingAmounts.interest().getAmount(), outstandingAmounts.feeCharges().getAmount().subtract(adjustedChargeAmount),
+                outstandingAmounts.penaltyCharges().getAmount(), null, unrecognizedIncomePortion, paymentOptions, ExternalId.empty(), null,
+                null, outstandingLoanBalance, false, loanId, loan.getExternalId());
         loanTransactionData.setAmountPrepayCommission(amountPrepayCommission);
         return loanTransactionData;
     }
@@ -512,12 +513,11 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService, Loa
 
     private BigDecimal calculatePrepayCommission(Loan loan, BigDecimal principalPortion) {
         BigDecimal chargeAmount = BigDecimal.ZERO;
-        final BigDecimal interestPercentagePerMonth = retrieveAnnualNominalInterestRate(loan.getId()).divide(BigDecimal.valueOf(12), MoneyHelper.getMathContext()).divide(BigDecimal.valueOf(100));
+        final BigDecimal interestPercentagePerMonth = retrieveAnnualNominalInterestRate(loan.getId())
+                .divide(BigDecimal.valueOf(12), MoneyHelper.getMathContext()).divide(BigDecimal.valueOf(100));
         chargeAmount = principalPortion.multiply(interestPercentagePerMonth, MoneyHelper.getMathContext(2));
         return chargeAmount;
     }
-
-
 
     @Override
     public LoanTransactionData retrieveWaiveInterestDetails(final Long loanId) {

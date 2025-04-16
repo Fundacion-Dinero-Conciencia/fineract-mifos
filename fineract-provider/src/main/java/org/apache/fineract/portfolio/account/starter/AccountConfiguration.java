@@ -93,11 +93,13 @@ public class AccountConfiguration {
             LoanAccountDomainService loanAccountDomainService, SavingsAccountWritePlatformService savingsAccountWritePlatformService,
             AccountTransferDetailRepository accountTransferDetailRepository, LoanReadPlatformService loanReadPlatformService,
             GSIMRepositoy gsimRepository, ConfigurationDomainService configurationDomainService, ExternalIdFactory externalIdFactory,
-            FineractProperties fineractProperties, AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService, PromissoryNoteWritePlatformService promissoryNoteWritePlatformService) {
+            FineractProperties fineractProperties, AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService,
+            PromissoryNoteWritePlatformService promissoryNoteWritePlatformService) {
         return new AccountTransfersWritePlatformServiceImpl(accountTransfersDataValidator, accountTransferAssembler,
                 accountTransferRepository, savingsAccountAssembler, savingsAccountDomainService, loanAccountAssembler,
                 loanAccountDomainService, savingsAccountWritePlatformService, accountTransferDetailRepository, loanReadPlatformService,
-                gsimRepository, configurationDomainService, externalIdFactory, fineractProperties, accountAssociationsReadPlatformService, promissoryNoteWritePlatformService);
+                gsimRepository, configurationDomainService, externalIdFactory, fineractProperties, accountAssociationsReadPlatformService,
+                promissoryNoteWritePlatformService);
     }
 
     @Bean

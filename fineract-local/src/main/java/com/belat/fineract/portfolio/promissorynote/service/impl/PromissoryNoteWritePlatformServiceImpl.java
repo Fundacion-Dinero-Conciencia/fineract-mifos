@@ -74,14 +74,15 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
         String promissoryNumberInvestor = String.valueOf(promissoryNote.getInvestorSavingsAccount().getClient().getId());
 
         promissoryNote.setPromissoryNoteNumber(paddingNumberPromissory(promissoryNumberInvestor, promissoryNumberFund));
-        BigDecimal acumulatePercentage = noteRepository.retrieveByFundAccountIdAndStatus(promissoryNote.getFundSavingsAccount().getId(), PromissoryNoteStatus.ACTIVE)
-                .stream()
-                .map(PromissoryNote::getPercentageShare)
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
-        BigDecimal percentageCalculated = calculateParticipationPercentage(promissoryNote.getFundSavingsAccount().getMaxAllowedDepositLimit(), promissoryNote.getInvestmentAmount());
+        BigDecimal acumulatePercentage = noteRepository
+                .retrieveByFundAccountIdAndStatus(promissoryNote.getFundSavingsAccount().getId(), PromissoryNoteStatus.ACTIVE).stream()
+                .map(PromissoryNote::getPercentageShare).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal percentageCalculated = calculateParticipationPercentage(
+                promissoryNote.getFundSavingsAccount().getMaxAllowedDepositLimit(), promissoryNote.getInvestmentAmount());
 
         if (acumulatePercentage.add(percentageCalculated).compareTo(BigDecimal.valueOf(100)) > 0) {
-            throw new PlatformApiDataValidationException("error.msg.amount.fund", "The fund exceeds the percentage available", "available", BigDecimal.valueOf(100).subtract(acumulatePercentage));
+            throw new PlatformApiDataValidationException("error.msg.amount.fund", "The fund exceeds the percentage available", "available",
+                    BigDecimal.valueOf(100).subtract(acumulatePercentage));
         }
         promissoryNote.setPercentageShare(percentageCalculated);
 
@@ -126,9 +127,10 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
 
         promissoryNote.setStatus(PromissoryNoteStatus.ACTIVE);
         promissoryNote.setInvestmentAmount(getAmountFromJson(element));
-        promissoryNote.setFundSavingsAccount(savingsAccountRepository.findById(getFundSavingAccountIdFromJson(element)).orElseThrow(() -> new SavingsAccountNotFoundException(getFundSavingAccountIdFromJson(element))));
-        promissoryNote
-                .setInvestorSavingsAccount(savingsAccountRepository.findById(getInvestorSavingAccountIdFromJson(element)).orElseThrow(() -> new SavingsAccountNotFoundException(getInvestorSavingAccountIdFromJson(element))));
+        promissoryNote.setFundSavingsAccount(savingsAccountRepository.findById(getFundSavingAccountIdFromJson(element))
+                .orElseThrow(() -> new SavingsAccountNotFoundException(getFundSavingAccountIdFromJson(element))));
+        promissoryNote.setInvestorSavingsAccount(savingsAccountRepository.findById(getInvestorSavingAccountIdFromJson(element))
+                .orElseThrow(() -> new SavingsAccountNotFoundException(getInvestorSavingAccountIdFromJson(element))));
         promissoryNote.setCurrencyCode(getCurrencyCodeFromJson(element));
         promissoryNote.setPromissoryNoteNumber(promissoryNote.getFundSavingsAccount().getAccountNumber());
         promissoryNote.setInvestmentAgent(getInvestmentAgentFromJson(element));
@@ -176,7 +178,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
     }
 
     private String paddingNumberPromissory(String clientId, String numberFund) {
-        int number = 19 - (clientId.length() + numberFund.length())-3;
+        int number = 19 - (clientId.length() + numberFund.length()) - 3;
         String newNumber = "";
         for (int i = 0; i < number; i++) {
             newNumber = newNumber.concat("0");
@@ -191,7 +193,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
         String consecutive = "";
         if (promissoryNote != null && promissoryNote.getPromissoryNoteNumber().contains(".")) {
             consecutive = promissoryNote.getPromissoryNoteNumber().substring(promissoryNote.getPromissoryNoteNumber().indexOf(".") + 1);
-            int n = Integer.parseInt(consecutive) + 1 ;
+            int n = Integer.parseInt(consecutive) + 1;
             consecutive = n < 10 ? ".0".concat(String.valueOf(n)) : ".".concat(String.valueOf(n));
         } else {
             consecutive = ".00";
@@ -202,13 +204,14 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
 
     private BigDecimal calculateParticipationPercentage(BigDecimal totalFund, BigDecimal totalInvestment) {
         if (totalInvestment == null || totalInvestment.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new PlatformApiDataValidationException("error.msg.resource.amount", "The amount of the investment should be greater than 0", null);
+            throw new PlatformApiDataValidationException("error.msg.resource.amount",
+                    "The amount of the investment should be greater than 0", null);
         }
         if (totalFund == null || totalFund.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new PlatformApiDataValidationException("error.msg.resource.amount", "The amount of the fund should be greater than 0", null);
+            throw new PlatformApiDataValidationException("error.msg.resource.amount", "The amount of the fund should be greater than 0",
+                    null);
         }
-        return (totalInvestment.divide(totalFund, 2, MoneyHelper.getRoundingMode()))
-                .multiply(BigDecimal.valueOf(100));
+        return (totalInvestment.divide(totalFund, 2, MoneyHelper.getRoundingMode())).multiply(BigDecimal.valueOf(100));
 
     }
 }

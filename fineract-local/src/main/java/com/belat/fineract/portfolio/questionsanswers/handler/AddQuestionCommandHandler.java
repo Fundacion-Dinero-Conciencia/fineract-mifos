@@ -1,6 +1,5 @@
 package com.belat.fineract.portfolio.questionsanswers.handler;
 
-import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
 import com.belat.fineract.portfolio.questionsanswers.service.QuestionAnswerWritePlatformService;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.annotation.CommandType;

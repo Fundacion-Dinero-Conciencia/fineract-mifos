@@ -70,7 +70,7 @@ public class PromissoryNote extends AbstractAuditableWithUTCDateTimeCustom<Long>
     private String currencyCode;
 
     @ManyToOne
-    @JoinColumn (name = "investment_agent", referencedColumnName = "id")
+    @JoinColumn(name = "investment_agent", referencedColumnName = "id")
     private Staff investmentAgent;
 
     @Column(name = "percentage_investment_agent")

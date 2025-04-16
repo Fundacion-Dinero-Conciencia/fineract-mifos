@@ -1,9 +1,8 @@
 package com.belat.fineract.portfolio.questionsanswers.data;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +17,7 @@ public class QuestionData {
     @Data
     @AllArgsConstructor
     public static class User {
+
         private Long id;
         private String username;
     }
@@ -25,6 +25,7 @@ public class QuestionData {
     @Data
     @AllArgsConstructor
     public static class Answer {
+
         private Long id;
         private String answer;
         private User user;

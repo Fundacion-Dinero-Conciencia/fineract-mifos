@@ -4,7 +4,6 @@ import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjectNotFoundException;
 import com.belat.fineract.portfolio.projectparticipation.api.ProjectParticipationConstants;
-import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipation;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
@@ -13,6 +12,12 @@ import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticip
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,13 +35,6 @@ import org.apache.fineract.portfolio.client.domain.ClientRepository;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -47,7 +45,7 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
     private final ClientRepository clientRepository;
     private final InvestmentProjectRepository investmentProjectRepository;
     private final ProjectParticipationRepository projectParticipationRepository;
-    
+
     @Override
     public CommandProcessingResult createProjectParticipation(JsonCommand command) {
         this.validateForCreate(command.json());
@@ -58,7 +56,8 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         Client participant = clientRepository.findById(participantId).orElseThrow(() -> new ClientNotFoundException(participantId));
 
         final Long projectId = command.longValueOfParameterNamed(ProjectParticipationConstants.projectIdParamName);
-        InvestmentProject investmentProject = investmentProjectRepository.findById(projectId).orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
+        InvestmentProject investmentProject = investmentProjectRepository.findById(projectId)
+                .orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
 
         BigDecimal projectAmount = investmentProject.getAmount();
         BigDecimal projectParticipationAmount = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(projectId);
@@ -69,7 +68,8 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
             throw new GeneralPlatformDomainRuleException("err.msg.not.available.to.participate", "Project amount has been reached");
         }
         if (availableAmount.compareTo(clientAmount) < 0) {
-            throw new GeneralPlatformDomainRuleException("err.msg.not.amount.exceed.available.amount", "Amount exceeds available project amount");
+            throw new GeneralPlatformDomainRuleException("err.msg.not.amount.exceed.available.amount",
+                    "Amount exceeds available project amount");
         }
 
         projectParticipation.setClient(participant);
@@ -98,10 +98,12 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
 
         final Map<String, Object> changes = new LinkedHashMap<>(20);
 
-        ProjectParticipation projectParticipation = projectParticipationRepository.findById(id).orElseThrow(() -> new ProjectParticipationNotFoundException(id));
+        ProjectParticipation projectParticipation = projectParticipationRepository.findById(id)
+                .orElseThrow(() -> new ProjectParticipationNotFoundException(id));
 
         BigDecimal projectAmount = projectParticipation.getInvestmentProject().getAmount();
-        BigDecimal projectParticipationAmount = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(projectParticipation.getInvestmentProject().getId());
+        BigDecimal projectParticipationAmount = projectParticipationRepository
+                .retrieveTotalParticipationAmountByProjectId(projectParticipation.getInvestmentProject().getId());
         BigDecimal availableAmount = projectAmount.subtract(projectParticipationAmount);
         BigDecimal clientAmount = command.bigDecimalValueOfParameterNamed(ProjectParticipationConstants.amountParamName);
 
@@ -112,7 +114,8 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
                 throw new GeneralPlatformDomainRuleException("err.msg.not.available.to.participate", "Project amount has been reached");
             }
             if (availableAmount.compareTo(extraParticipantClientAmount) < 0) {
-                throw new GeneralPlatformDomainRuleException("err.msg.not.amount.exceed.available.amount", "Amount exceeds available project amount");
+                throw new GeneralPlatformDomainRuleException("err.msg.not.amount.exceed.available.amount",
+                        "Amount exceeds available project amount");
             }
         }
 
@@ -140,14 +143,13 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         return null;
     }
 
-    private void validateForCreate (final String json) {
+    private void validateForCreate(final String json) {
 
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ProjectParticipationConstants.PROJECT_PARTICIPATION_PARAMETERS);
 
@@ -155,8 +157,10 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("projectParticipation");
         final JsonElement jsonElement = fromApiJsonHelper.parse(json);
 
-        final String participantIdParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.participantIdParamName, jsonElement);
-        baseDataValidator.reset().parameter(ProjectParticipationConstants.participantIdParamName).value(participantIdParam).notBlank().notNull();
+        final String participantIdParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.participantIdParamName,
+                jsonElement);
+        baseDataValidator.reset().parameter(ProjectParticipationConstants.participantIdParamName).value(participantIdParam).notBlank()
+                .notNull();
 
         final String projectIdParam = fromApiJsonHelper.extractStringNamed(ProjectParticipationConstants.projectIdParamName, jsonElement);
         baseDataValidator.reset().parameter(ProjectParticipationConstants.projectIdParamName).value(projectIdParam).notBlank().notNull();
@@ -179,14 +183,13 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         }
     }
 
-    private void validateForUpdate (final String json) {
+    private void validateForUpdate(final String json) {
 
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
-        }.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
                 ProjectParticipationConstants.PROJECT_PARTICIPATION_PARAMETERS_FOR_UPDATE);
 

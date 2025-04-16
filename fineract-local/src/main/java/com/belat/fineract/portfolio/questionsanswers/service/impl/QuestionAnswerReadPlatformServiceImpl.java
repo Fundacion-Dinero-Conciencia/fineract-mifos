@@ -7,13 +7,12 @@ import com.belat.fineract.portfolio.questionsanswers.domain.question.BelatQuesti
 import com.belat.fineract.portfolio.questionsanswers.mapper.QuestionMapper;
 import com.belat.fineract.portfolio.questionsanswers.service.QuestionAnswerReadPlatformService;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class QuestionAnswerReadPlatformServiceImpl implements QuestionAnswerRead
         List<QuestionData> questionsData = new ArrayList<>();
 
         questions.forEach(question -> {
-            if (question != null){
+            if (question != null) {
                 QuestionData questionData = questionMapper.map(question);
                 factoryData(questionData, question.getBelatAnswers(), question.getUser(), questionsData);
             }
@@ -54,7 +53,7 @@ public class QuestionAnswerReadPlatformServiceImpl implements QuestionAnswerRead
         List<QuestionData> questionsData = new ArrayList<>();
 
         questions.forEach(question -> {
-            if (question != null){
+            if (question != null) {
                 QuestionData questionData = questionMapper.map(question);
                 factoryData(questionData, question.getBelatAnswers(), question.getUser(), questionsData);
             }
@@ -62,15 +61,15 @@ public class QuestionAnswerReadPlatformServiceImpl implements QuestionAnswerRead
         return questionsData;
     }
 
-
-    private void factoryData (QuestionData questionData, List<BelatAnswer> belatAnswers, Client questionClient,
-                              List<QuestionData> questionsData) {
+    private void factoryData(QuestionData questionData, List<BelatAnswer> belatAnswers, Client questionClient,
+            List<QuestionData> questionsData) {
         QuestionData.User questionUser = new QuestionData.User(questionClient.getId(), questionClient.getDisplayName());
         questionData.setUser(questionUser);
 
         List<QuestionData.Answer> answersQuestion = new ArrayList<>();
         belatAnswers.stream().forEach(item -> {
-            QuestionData.Answer answer = new QuestionData.Answer(item.getId(), item.getAnswer(), new QuestionData.User(item.getUser().getId(), item.getUser().getDisplayName()));
+            QuestionData.Answer answer = new QuestionData.Answer(item.getId(), item.getAnswer(),
+                    new QuestionData.User(item.getUser().getId(), item.getUser().getDisplayName()));
             answersQuestion.add(answer);
         });
         questionData.setAnswers(answersQuestion);

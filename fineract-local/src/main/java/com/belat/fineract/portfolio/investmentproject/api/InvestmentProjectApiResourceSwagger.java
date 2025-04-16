@@ -1,7 +1,6 @@
 package com.belat.fineract.portfolio.investmentproject.api;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -118,6 +117,7 @@ public class InvestmentProjectApiResourceSwagger {
             @Schema(example = "Example")
             public String description;
         }
+
         public GetCountry country;
 
         static final class GetImage {
@@ -152,6 +152,7 @@ public class InvestmentProjectApiResourceSwagger {
     public static final class PutInvestmentProjectRequest {
 
         private PutInvestmentProjectRequest() {}
+
         @Schema(example = "Name")
         public String name;
 
@@ -216,6 +217,5 @@ public class InvestmentProjectApiResourceSwagger {
         @Schema(example = "2")
         public PutInvestmentProjectChanges changes;
     }
-
 
 }

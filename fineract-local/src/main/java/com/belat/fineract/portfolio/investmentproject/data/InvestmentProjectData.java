@@ -1,10 +1,9 @@
 package com.belat.fineract.portfolio.investmentproject.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor
@@ -31,10 +30,12 @@ public class InvestmentProjectData {
     private BigDecimal maxAmount;
     private DataCode category;
     private DataCode area;
+    private String ownerName;
 
     @Data
     @AllArgsConstructor
     public static class ImageDocument {
+
         private String name;
         private String url;
     }
@@ -42,6 +43,7 @@ public class InvestmentProjectData {
     @Data
     @AllArgsConstructor
     public static class DataCode {
+
         private Long id;
         private String code;
         private String description;

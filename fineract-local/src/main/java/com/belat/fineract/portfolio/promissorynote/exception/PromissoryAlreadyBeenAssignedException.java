@@ -22,7 +22,6 @@ import org.apache.fineract.infrastructure.core.exception.AbstractPlatformExcepti
 
 public class PromissoryAlreadyBeenAssignedException extends AbstractPlatformException {
 
-
     protected PromissoryAlreadyBeenAssignedException(String globalisationMessageCode, String defaultUserMessage) {
         super(globalisationMessageCode, defaultUserMessage);
     }

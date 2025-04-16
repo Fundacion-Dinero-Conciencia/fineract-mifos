@@ -1,7 +1,6 @@
 package com.belat.fineract.portfolio.questionsanswers.service;
 
 import com.belat.fineract.portfolio.questionsanswers.data.QuestionData;
-
 import java.util.List;
 
 public interface QuestionAnswerReadPlatformService {

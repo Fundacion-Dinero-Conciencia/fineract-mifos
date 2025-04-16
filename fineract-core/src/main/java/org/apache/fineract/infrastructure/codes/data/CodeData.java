@@ -19,6 +19,8 @@
 package org.apache.fineract.infrastructure.codes.data;
 
 import java.io.Serializable;
+import java.util.Collection;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -29,6 +31,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
 public final class CodeData implements Serializable {
 
@@ -37,6 +40,8 @@ public final class CodeData implements Serializable {
     private String name;
     @SuppressWarnings("unused")
     private boolean systemDefined;
+    @SuppressWarnings("unused")
+    private Collection<CodeValueData> codeValues;
 
     public static CodeData instance(final Long id, final String name, final boolean systemDefined) {
         return new CodeData().setId(id).setName(name).setSystemDefined(systemDefined);

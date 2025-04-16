@@ -10,6 +10,10 @@ import com.belat.fineract.portfolio.questionsanswers.service.QuestionAnswerWrite
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,11 +31,6 @@ import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -42,14 +41,15 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
     private final BelatQuestionRepository belatQuestionRepository;
     private final BelatAnswerRepository belatAnswerRepository;
     private final ClientRepository clientRepository;
-    
+
     @Override
     public CommandProcessingResult createQuestion(JsonCommand command) {
         this.validateForCreateQuestion(command.json());
         BelatQuestion question = new BelatQuestion();
 
         final String userIdParam = command.stringValueOfParameterNamed(QuestionAnswerConstants.userIdParamName);
-        Client user = clientRepository.findById(Long.valueOf(userIdParam)).orElseThrow( () -> new ClientNotFoundException(Long.valueOf(userIdParam)));
+        Client user = clientRepository.findById(Long.valueOf(userIdParam))
+                .orElseThrow(() -> new ClientNotFoundException(Long.valueOf(userIdParam)));
         if (!user.isActive()) {
             throw new ClientNotActiveException(user.getId());
         }
@@ -69,12 +69,13 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
         BelatAnswer belatAnswer = new BelatAnswer();
 
         final String userIdParam = command.stringValueOfParameterNamed(QuestionAnswerConstants.userIdParamName);
-        Client user = clientRepository.findById(Long.valueOf(userIdParam)).orElseThrow( () -> new ClientNotFoundException(Long.valueOf(userIdParam)));
+        Client user = clientRepository.findById(Long.valueOf(userIdParam))
+                .orElseThrow(() -> new ClientNotFoundException(Long.valueOf(userIdParam)));
         if (!user.isActive()) {
             throw new ClientNotActiveException(user.getId());
         }
 
-        BelatQuestion question = belatQuestionRepository.findById(questionId).orElseThrow( () -> new QuestionNotFoundException(questionId));
+        BelatQuestion question = belatQuestionRepository.findById(questionId).orElseThrow(() -> new QuestionNotFoundException(questionId));
 
         belatAnswer.setQuestion(question);
         belatAnswer.setAnswer(command.stringValueOfParameterNamed(QuestionAnswerConstants.answerParamName));
@@ -85,15 +86,14 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(question.getId()).build();
     }
 
-    private void validateForCreateQuestion (final String json) {
+    private void validateForCreateQuestion(final String json) {
 
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
 
         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
-        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
-                QuestionAnswerConstants.QUESTION_PARAMETERS);
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, QuestionAnswerConstants.QUESTION_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("questionAnswers");
@@ -107,7 +107,7 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
 
         final String userIdParam = fromApiJsonHelper.extractStringNamed(QuestionAnswerConstants.userIdParamName, jsonElement);
         baseDataValidator.reset().parameter(QuestionAnswerConstants.userIdParamName).value(userIdParam).notBlank().notNull();
-        
+
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
                     dataValidationErrors);
@@ -115,15 +115,14 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
 
     }
 
-    private void validateForCreateAnswer (final String json) {
+    private void validateForCreateAnswer(final String json) {
 
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }
 
         final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
-        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json,
-                QuestionAnswerConstants.ANSWER_PARAMETERS);
+        this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, QuestionAnswerConstants.ANSWER_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("questionAnswers");
@@ -141,6 +140,5 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
         }
 
     }
-    
-    
+
 }
