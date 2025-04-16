@@ -147,10 +147,14 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         if (project.getLoan() != null) {
             projectData.setLoanId(project.getLoan().getId());
         }
-        projectData.setCategory(new DataCode(project.getCategory().getId(), project.getCategory().getLabel(),
-                project.getCategory().getDescription()));
-        projectData.setArea(new DataCode(project.getArea().getId(), project.getArea().getLabel(),
-                project.getArea().getDescription()));
+        if (project.getCategory() != null) {
+            projectData.setCategory(new DataCode(project.getCategory().getId(), project.getCategory().getLabel(),
+                    project.getCategory().getDescription()));
+        }
+        if (project.getArea() != null) {
+            projectData.setArea(new DataCode(project.getArea().getId(), project.getArea().getLabel(),
+                    project.getArea().getDescription()));
+        }
     }
 
 }
