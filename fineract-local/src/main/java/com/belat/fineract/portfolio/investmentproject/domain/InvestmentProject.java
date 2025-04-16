@@ -89,7 +89,17 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     private boolean isActive;
 
     @OneToMany(mappedBy = "investmentProject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<InvestmentProjectCategory> categories;
+    private List<InvestmentProjectCategory> subCategories;
+
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
+    private CodeValue category;
+
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "area_id", nullable = false, referencedColumnName = "id")
+    private CodeValue area;
 
     @ToString.Exclude
     @OneToOne

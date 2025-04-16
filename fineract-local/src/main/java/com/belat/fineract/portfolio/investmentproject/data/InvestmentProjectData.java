@@ -26,9 +26,11 @@ public class InvestmentProjectData {
     private BigDecimal occupancyPercentage;
     private DataCode country;
     private List<ImageDocument> images;
-    private List<DataCode> categories;
+    private List<DataCode> subCategories;
     private Long loanId;
     private BigDecimal maxAmount;
+    private DataCode category;
+    private DataCode area;
 
     @Data
     @AllArgsConstructor
