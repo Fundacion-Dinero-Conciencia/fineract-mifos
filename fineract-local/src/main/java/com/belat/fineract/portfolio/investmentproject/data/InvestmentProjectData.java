@@ -28,6 +28,7 @@ public class InvestmentProjectData {
     private List<ImageDocument> images;
     private List<DataCode> categories;
     private Long loanId;
+    private BigDecimal maxAmount;
 
     @Data
     @AllArgsConstructor
