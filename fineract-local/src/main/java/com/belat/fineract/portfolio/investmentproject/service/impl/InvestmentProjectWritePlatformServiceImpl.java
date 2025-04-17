@@ -7,6 +7,8 @@ import com.belat.fineract.portfolio.investmentproject.domain.category.Investment
 import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategoryRepository;
 import com.belat.fineract.portfolio.investmentproject.domain.description.InvestmentProjectDescription;
 import com.belat.fineract.portfolio.investmentproject.domain.description.InvestmentProjectDescriptionRepository;
+import com.belat.fineract.portfolio.investmentproject.domain.objective.InvestmentProjectObjective;
+import com.belat.fineract.portfolio.investmentproject.domain.objective.InvestmentProjectObjectiveRepository;
 import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjectNotFoundException;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -56,6 +58,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     private final InvestmentProjectDescriptionRepository investmentProjectDescriptionRepository;
     private final InvestmentProjectCategoryRepository investmentProjectCategoryRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
+    private final InvestmentProjectObjectiveRepository investmentProjectObjectiveRepository;
 
     @Override
     public CommandProcessingResult createInvestmentProject(JsonCommand command) {
@@ -116,7 +119,13 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
                 .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         final Long loanId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanIdParamName);
-        investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
+        //investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
+
+        final String objectives = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
+        List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectives);
+
+        codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject)));
+
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(investmentProject.getId()).build();
     }
 
@@ -131,9 +140,6 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
                 .orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
         investmentProject.modifyApplication(command, changes);
 
-        List<InvestmentProjectCategory> categoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
-        categoriesList.forEach(investmentProjectCategoryRepository::delete);
-
         final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
         investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
         changes.put(InvestmentProjectConstants.categoryParamName, categoryId);
@@ -142,9 +148,17 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
         changes.put(InvestmentProjectConstants.areaParamName, areaId);
 
+        List<InvestmentProjectCategory> subCategoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
+        subCategoriesList.forEach(investmentProjectCategoryRepository::delete);
         final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
         List<CodeValue> codeCategories = getInvestmentProjectCategoryData(subCategoriesString);
         codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, investmentProject)));
+
+        List<InvestmentProjectObjective> objectivesList = investmentProjectObjectiveRepository.retrieveByProjectId(investmentProject.getId());
+        objectivesList.forEach(investmentProjectObjectiveRepository::delete);
+        final String objectivesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
+        List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectivesString);
+        codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, investmentProject)));
 
         if (!changes.isEmpty()) {
             this.investmentProjectRepository.save(investmentProject);
@@ -164,7 +178,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
             throw new InvalidJsonException();
         }
 
-        final Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        final Type typeOfMap = new TypeToken<Map<String, Object>>() {
+        }.getType();
         this.fromApiJsonHelper.checkForUnsupportedParameters(typeOfMap, json, InvestmentProjectConstants.INVESTMENT_PROJECT_PARAMETERS);
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -224,6 +239,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
+
+        final String objectives = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.objectivesParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.objectivesParamName).value(objectives).notBlank().notNull();
 
         final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
@@ -292,6 +310,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
+
+        final String objectives = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.objectivesParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.objectivesParamName).value(objectives).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",

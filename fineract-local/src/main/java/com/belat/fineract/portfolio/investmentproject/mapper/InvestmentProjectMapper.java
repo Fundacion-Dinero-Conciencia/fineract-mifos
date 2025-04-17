@@ -25,6 +25,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "area", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "ownerName", ignore = true)
+    @Mapping(target = "objectives", ignore = true)
     InvestmentProjectData map(InvestmentProject source);
 
     List<InvestmentProjectData> map(List<InvestmentProject> sources);

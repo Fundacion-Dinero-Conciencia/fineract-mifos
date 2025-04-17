@@ -26,6 +26,7 @@ public class InvestmentProjectData {
     private DataCode country;
     private List<ImageDocument> images;
     private List<DataCode> subCategories;
+    private List<DataCode> objectives;
     private Long loanId;
     private BigDecimal maxAmount;
     private DataCode category;

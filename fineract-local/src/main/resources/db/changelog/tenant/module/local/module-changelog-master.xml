@@ -42,4 +42,5 @@
   <include relativeToChangelogFile="true" file="parts/9018_add_projects_participation_commission.xml"/>
   <include relativeToChangelogFile="true" file="parts/9019_add_investment_project_loan_id.xml"/>
   <include relativeToChangelogFile="true" file="parts/9020_add_investment_project_category_and_area_relation.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9021_add_investment_project_objectives.xml"/>
 </databaseChangeLog>

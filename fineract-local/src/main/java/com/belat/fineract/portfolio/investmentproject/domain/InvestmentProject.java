@@ -21,6 +21,7 @@ package com.belat.fineract.portfolio.investmentproject.domain;
 import com.belat.fineract.portfolio.investmentproject.api.InvestmentProjectConstants;
 import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategory;
 import com.belat.fineract.portfolio.investmentproject.domain.description.InvestmentProjectDescription;
+import com.belat.fineract.portfolio.investmentproject.domain.objective.InvestmentProjectObjective;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -89,6 +90,9 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
 
     @OneToMany(mappedBy = "investmentProject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<InvestmentProjectCategory> subCategories;
+
+    @OneToMany(mappedBy = "investmentProject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<InvestmentProjectObjective> objectives;
 
     @ToString.Exclude
     @OneToOne
