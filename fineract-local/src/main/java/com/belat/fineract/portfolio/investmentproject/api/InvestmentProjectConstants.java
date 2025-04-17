@@ -20,6 +20,7 @@ public class InvestmentProjectConstants {
     public static final String isActiveParamName = "isActive";
     public static final String categoryParamName = "categoryId";
     public static final String subCategoriesParamName = "subCategories";
+    public static final String objectivesParamName = "objectives";
     public static final String areaParamName = "areaId";
     public static final String loanIdParamName = "loanId";
 
@@ -36,7 +37,7 @@ public class InvestmentProjectConstants {
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS = new HashSet<>(Arrays.asList(projectNameParamName, subtitleParamName,
             projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName, periodParamName, countryIdParamName,
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
-            isActiveParamName, categoryParamName, loanIdParamName, subCategoriesParamName, areaParamName));
+            isActiveParamName, categoryParamName, loanIdParamName, subCategoriesParamName, areaParamName, objectivesParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -44,6 +45,6 @@ public class InvestmentProjectConstants {
      */
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(projectNameParamName,
             subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
-            financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName));
+            financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName));
 
 }

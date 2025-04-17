@@ -155,6 +155,15 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         if (project.getArea() != null) {
             projectData.setArea(new DataCode(project.getArea().getId(), project.getArea().getLabel(), project.getArea().getDescription()));
         }
+
+        List<DataCode> objectives = new ArrayList<>();
+        project.getObjectives().forEach(item -> {
+            if (item != null) {
+                objectives
+                        .add(new DataCode(item.getObjective().getId(), item.getObjective().getLabel(), item.getObjective().getDescription()));
+            }
+        });
+        projectData.setObjectives(objectives);
     }
 
 }
