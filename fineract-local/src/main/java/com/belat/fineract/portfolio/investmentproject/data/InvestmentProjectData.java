@@ -28,10 +28,12 @@ public class InvestmentProjectData {
     private List<DataCode> subCategories;
     private List<DataCode> objectives;
     private Long loanId;
-    private BigDecimal maxAmount;
+    private BigDecimal availableTotalAmount;
     private DataCode category;
     private DataCode area;
     private String ownerName;
+    private BigDecimal maxAmount;
+    private BigDecimal minAmount;
 
     @Data
     @AllArgsConstructor

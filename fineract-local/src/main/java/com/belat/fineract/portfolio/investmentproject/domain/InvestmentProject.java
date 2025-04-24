@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
@@ -109,6 +110,12 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     @JoinColumn(name = "loan_id", nullable = false, referencedColumnName = "id")
     private Loan loan;
 
+    @Column(name = "max_amount", nullable = false)
+    private BigDecimal maxAmount;
+
+    @Column(name = "min_amount", nullable = false)
+    private BigDecimal minAmount;
+
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.projectNameParamName, getName())) {
             final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.projectNameParamName);
@@ -132,6 +139,24 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
             final boolean newValue = command.booleanPrimitiveValueOfParameterNamed(InvestmentProjectConstants.isActiveParamName);
             actualChanges.put(InvestmentProjectConstants.isActiveParamName, newValue);
             this.isActive = newValue;
+        }
+
+        if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.maxAmountParamName, maxAmount)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.maxAmountParamName);
+            if (newValue.compareTo(amount) > 0) {
+                throw new GeneralPlatformDomainRuleException("err.msg.max.amount.is.higher.than.project.amount", "Max amount is higher than project amount");
+            }
+            actualChanges.put(InvestmentProjectConstants.maxAmountParamName, newValue);
+            this.maxAmount = newValue;
+        }
+
+        if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.minAmountParamName, minAmount)) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.minAmountParamName);
+            if (newValue.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new GeneralPlatformDomainRuleException("err.msg.min.amount.should.be.higher.than.zero", "Min amount should be higher than zero");
+            }
+            actualChanges.put(InvestmentProjectConstants.minAmountParamName, newValue);
+            this.minAmount = newValue;
         }
     }
 
