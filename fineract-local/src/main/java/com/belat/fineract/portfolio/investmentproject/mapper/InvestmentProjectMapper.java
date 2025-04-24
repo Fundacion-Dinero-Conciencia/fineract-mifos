@@ -21,7 +21,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "subCategories", ignore = true)
     @Mapping(target = "occupancyPercentage", ignore = true)
     @Mapping(target = "loanId", ignore = true)
-    @Mapping(target = "maxAmount", ignore = true)
+    @Mapping(target = "availableTotalAmount", ignore = true)
     @Mapping(target = "area", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "ownerName", ignore = true)

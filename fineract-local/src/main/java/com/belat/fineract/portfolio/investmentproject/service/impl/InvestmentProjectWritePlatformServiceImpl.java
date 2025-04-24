@@ -18,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -110,6 +111,24 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
         investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
 
+        final Long loanId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanIdParamName);
+        investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
+
+        final BigDecimal maxAmount = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.maxAmountParamName);
+
+        final BigDecimal minAmount = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.minAmountParamName);
+
+        if (maxAmount.compareTo(investmentProject.getAmount()) > 0) {
+            throw new GeneralPlatformDomainRuleException("err.msg.max.amount.is.higher.than.project.amount", "Max amount is higher than project amount");
+        }
+        if (minAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new GeneralPlatformDomainRuleException("err.msg.min.amount.should.be.higher.than.zero", "Min amount should be higher than zero");
+        }
+
+        investmentProject.setMaxAmount(maxAmount);
+
+        investmentProject.setMinAmount(minAmount);
+
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
 
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
@@ -117,9 +136,6 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         InvestmentProject finalInvestmentProject = investmentProject;
         codeSubCategories
                 .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
-
-        final Long loanId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanIdParamName);
-        //investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
 
         final String objectives = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
         List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectives);
@@ -249,6 +265,12 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String loanId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.loanIdParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.loanIdParamName).value(loanId).notBlank().notNull();
 
+        final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
+
+        final String minAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.minAmountParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.minAmountParamName).value(minAmount).notBlank().notNull();
+
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
                     dataValidationErrors);
@@ -313,6 +335,12 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String objectives = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.objectivesParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.objectivesParamName).value(objectives).notBlank().notNull();
+
+        final String minAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.minAmountParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.minAmountParamName).value(minAmount).notBlank().notNull();
+
+        final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",

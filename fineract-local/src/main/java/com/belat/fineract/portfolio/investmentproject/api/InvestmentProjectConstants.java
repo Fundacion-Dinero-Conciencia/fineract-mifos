@@ -23,6 +23,8 @@ public class InvestmentProjectConstants {
     public static final String objectivesParamName = "objectives";
     public static final String areaParamName = "areaId";
     public static final String loanIdParamName = "loanId";
+    public static final String maxAmountParamName = "maxAmount";
+    public static final String minAmountParamName = "minAmount";
 
     // Descriptions
     public static final String impactDescriptionParamName = "impactDescription";
@@ -37,7 +39,8 @@ public class InvestmentProjectConstants {
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS = new HashSet<>(Arrays.asList(projectNameParamName, subtitleParamName,
             projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName, periodParamName, countryIdParamName,
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
-            isActiveParamName, categoryParamName, loanIdParamName, subCategoriesParamName, areaParamName, objectivesParamName));
+            isActiveParamName, categoryParamName, loanIdParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
+            minAmountParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -45,6 +48,7 @@ public class InvestmentProjectConstants {
      */
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(projectNameParamName,
             subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
-            financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName));
+            financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName,
+            maxAmountParamName, minAmountParamName));
 
 }

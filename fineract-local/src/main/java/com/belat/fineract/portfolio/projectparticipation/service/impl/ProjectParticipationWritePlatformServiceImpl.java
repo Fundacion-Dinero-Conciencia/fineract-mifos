@@ -59,10 +59,21 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         InvestmentProject investmentProject = investmentProjectRepository.findById(projectId)
                 .orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
 
+
+        BigDecimal clientAmount = command.bigDecimalValueOfParameterNamed(ProjectParticipationConstants.amountParamName);
+        if (investmentProject.getMaxAmount() == null || investmentProject.getMinAmount() == null) {
+            throw new GeneralPlatformDomainRuleException("err.msg.project.should.have.max.and.min.amount", "Project should have max and min amount");
+        }
+        if (clientAmount.compareTo(investmentProject.getMinAmount()) < 0) {
+            throw new GeneralPlatformDomainRuleException("err.msg.amount.is.lower.than.project.min.amount", "Amount is lower than project min amount");
+        }
+        if (clientAmount.compareTo(investmentProject.getMaxAmount()) > 0) {
+            throw new GeneralPlatformDomainRuleException("err.msg.amount.is.higher.than.project.max.amount", "Amount is higher than project max amount");
+        }
+
         BigDecimal projectAmount = investmentProject.getAmount();
         BigDecimal projectParticipationAmount = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(projectId);
         BigDecimal availableAmount = projectAmount.subtract(projectParticipationAmount);
-        BigDecimal clientAmount = command.bigDecimalValueOfParameterNamed(ProjectParticipationConstants.amountParamName);
 
         if (availableAmount.compareTo(BigDecimal.ZERO) == 0) {
             throw new GeneralPlatformDomainRuleException("err.msg.not.available.to.participate", "Project amount has been reached");
