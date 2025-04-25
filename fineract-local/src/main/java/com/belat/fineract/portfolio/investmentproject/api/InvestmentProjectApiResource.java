@@ -1,6 +1,8 @@
 package com.belat.fineract.portfolio.investmentproject.api;
 
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
+import com.belat.fineract.portfolio.investmentproject.data.StatusHistoryProjectData;
+import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProject;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -64,6 +66,7 @@ public class InvestmentProjectApiResource {
         return apiJsonSerializerService.serialize(projects);
     }
 
+
     @GET
     @Path("/search")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -82,6 +85,22 @@ public class InvestmentProjectApiResource {
         } else if (categoryId != null) {
             final List<InvestmentProjectData> projectsData = investmentProjectReadPlatformService.retrieveByCategoryId(categoryId);
             return apiJsonSerializerService.serialize(projectsData);
+        } else {
+            throw new IllegalArgumentException("Not supported parameter");
+        }
+    }
+
+    @GET
+    @Path("/historyStatus")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.GetInvestmentProjectResponse.class))) })
+    public String getHistoryStatusInvestmentProjects(@QueryParam("id") final Long id) {
+        platformUserRightsContext.isAuthenticated();
+
+        if (id != null) {
+            final List<StatusHistoryProjectData> history = this.investmentProjectReadPlatformService.getAllStatusHistoryByInvestmentProjectId(id);
+            return apiJsonSerializerService.serialize(history);
         } else {
             throw new IllegalArgumentException("Not supported parameter");
         }

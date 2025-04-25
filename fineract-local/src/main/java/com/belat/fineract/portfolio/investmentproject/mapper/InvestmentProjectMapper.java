@@ -4,10 +4,12 @@ import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import java.util.List;
 import org.apache.fineract.infrastructure.core.config.MapstructMapperConfig;
+import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(config = MapstructMapperConfig.class)
+@Mapper(config = MapstructMapperConfig.class, uses = {StatusHistoryProjectMapper.class})
+@DecoratedWith(InvestmentProjectMapperDecorator.class)
 public interface InvestmentProjectMapper {
 
     @Mapping(target = "ownerId", ignore = true)
@@ -26,6 +28,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "ownerName", ignore = true)
     @Mapping(target = "objectives", ignore = true)
+    @Mapping(target = "status", ignore = true)
     InvestmentProjectData map(InvestmentProject source);
 
     List<InvestmentProjectData> map(List<InvestmentProject> sources);

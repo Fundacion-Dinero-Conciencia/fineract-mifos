@@ -3,11 +3,15 @@ package com.belat.fineract.portfolio.investmentproject.service.impl;
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData.DataCode;
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData.ImageDocument;
+import com.belat.fineract.portfolio.investmentproject.data.StatusHistoryProjectData;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategory;
 import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategoryRepository;
+import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProject;
+import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.mapper.InvestmentProjectMapper;
+import com.belat.fineract.portfolio.investmentproject.mapper.StatusHistoryProjectMapper;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
 import java.math.BigDecimal;
@@ -28,11 +32,13 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
 
     private final InvestmentProjectRepository investmentProjectRepository;
     private final InvestmentProjectMapper investmentProjectMapper;
+    private final StatusHistoryProjectMapper historyProjectMapper;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DocumentReadPlatformService documentReadPlatformService;
     private final InvestmentProjectCategoryRepository investmentProjectCategoryRepository;
     private final ProjectParticipationRepository projectParticipationRepository;
     private final ApplicationContext applicationContext;
+    private final StatusHistoryProjectRepository historyProjectRepository;
 
     @Override
     public List<InvestmentProjectData> retrieveAll() {
@@ -113,6 +119,12 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
             }
         });
         return projectsData;
+    }
+
+    @Override
+    public List<StatusHistoryProjectData> getAllStatusHistoryByInvestmentProjectId(Long investmentId) {
+        List<StatusHistoryProject> history = historyProjectRepository.getAllStatusHistoryByInvestmentProjectId(investmentId);
+        return historyProjectMapper.map(history);
     }
 
     private void factoryData(InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
