@@ -22,6 +22,7 @@ import com.belat.fineract.portfolio.investmentproject.api.InvestmentProjectConst
 import com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategory;
 import com.belat.fineract.portfolio.investmentproject.domain.description.InvestmentProjectDescription;
 import com.belat.fineract.portfolio.investmentproject.domain.objective.InvestmentProjectObjective;
+import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProject;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,9 +31,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,6 +43,10 @@ import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDa
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -115,6 +118,14 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
 
     @Column(name = "min_amount", nullable = false)
     private BigDecimal minAmount;
+
+//    @OneToMany(mappedBy = "investmentProject", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @OrderBy("createdDate DESC")
+//    private List<StatusHistoryProject> statusHistory = new ArrayList<>();
+
+    @Transient
+    private StatusHistoryProject status;
+
 
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.projectNameParamName, getName())) {

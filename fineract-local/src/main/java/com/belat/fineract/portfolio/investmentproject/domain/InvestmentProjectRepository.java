@@ -1,10 +1,13 @@
 package com.belat.fineract.portfolio.investmentproject.domain;
 
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface InvestmentProjectRepository extends JpaRepository<InvestmentProject, Long> {
 
     @Query("SELECT ip FROM InvestmentProject ip WHERE ip.owner.id = :clientId")

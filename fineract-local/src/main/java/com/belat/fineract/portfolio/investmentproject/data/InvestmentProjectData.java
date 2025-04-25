@@ -34,6 +34,7 @@ public class InvestmentProjectData {
     private String ownerName;
     private BigDecimal maxAmount;
     private BigDecimal minAmount;
+    private StatusHistoryProjectData status;
 
     @Data
     @AllArgsConstructor

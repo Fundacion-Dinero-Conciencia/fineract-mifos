@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+
+    <changeSet author="fineract" id="1">
+        <createTable tableName="e_project_status_history">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="investment_project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status_value_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on_utc" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_on_utc" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet author="fineract" id="2">
+        <addForeignKeyConstraint baseColumnNames="investment_project_id" baseTableName="e_project_status_history"
+                                 constraintName="FK_psh_investment_project_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="e_investment_project" validate="true"/>
+        <addForeignKeyConstraint baseTableName="e_project_status_history" baseColumnNames="status_value_id" constraintName="FK_psh_status_value_id"
+                                 referencedTableName="m_code_value" referencedColumnNames="id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet author="fineract" id="3">
+        <createIndex indexName="IDX_psh_investment_project_id" tableName="e_project_status_history">
+            <column name="investment_project_id"/>
+        </createIndex>
+        <createIndex tableName="e_project_status_history" indexName="IDX_psh_status_value_id">
+            <column name="status_value_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="fineract" author="4">
+        <insert tableName="m_code">
+            <column name="code_name" value="ProjectStatus"/>
+            <column name="is_system_defined" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
