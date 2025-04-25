@@ -21,6 +21,8 @@ package org.apache.fineract.useradministration.data;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import lombok.Data;
 import org.apache.fineract.organisation.office.data.OfficeData;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.client.data.ClientData;
@@ -28,6 +30,7 @@ import org.apache.fineract.portfolio.client.data.ClientData;
 /**
  * Immutable data object for application user data.
  */
+@Data
 public final class AppUserData {
 
     private final Long id;

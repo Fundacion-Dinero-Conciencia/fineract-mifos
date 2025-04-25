@@ -14,6 +14,7 @@ public class StatusHistoryProjectData {
     private CodeValueData statusValue;
     private Long createdBy;
     private OffsetDateTime createdDate;
+    private String personInCharge;
 
 
     public LocalDate getCreatedDate() {
