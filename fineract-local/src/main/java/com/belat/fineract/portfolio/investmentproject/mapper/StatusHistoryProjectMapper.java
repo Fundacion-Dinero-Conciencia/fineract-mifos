@@ -21,6 +21,7 @@ public interface StatusHistoryProjectMapper {
     @Mapping(source = "statusValue", target = "statusValue")
     @Mapping(source = "createdBy", target = "createdBy", qualifiedByName = "unwrapOptionalLong")
     @Mapping(source = "createdDate", target = "createdDate", qualifiedByName = "unwrapOffsetDateTime")
+    @Mapping(target = "personInCharge", ignore = true)
     StatusHistoryProjectData map(StatusHistoryProject entity);
 
     @Mapping(source = "investmentProjectId", target = "investmentProject", qualifiedByName = "mapIdToInvestmentProject")

@@ -14,17 +14,21 @@ import com.belat.fineract.portfolio.investmentproject.mapper.InvestmentProjectMa
 import com.belat.fineract.portfolio.investmentproject.mapper.StatusHistoryProjectMapper;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
+import org.apache.fineract.useradministration.domain.AppUser;
+import com.belat.fineract.useradministration.domain.AppUserRepositoryV2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +43,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     private final ProjectParticipationRepository projectParticipationRepository;
     private final ApplicationContext applicationContext;
     private final StatusHistoryProjectRepository historyProjectRepository;
+    private final AppUserRepositoryV2 appUserRepository;
 
     @Override
     public List<InvestmentProjectData> retrieveAll() {
@@ -124,8 +129,18 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     @Override
     public List<StatusHistoryProjectData> getAllStatusHistoryByInvestmentProjectId(Long investmentId) {
         List<StatusHistoryProject> history = historyProjectRepository.getAllStatusHistoryByInvestmentProjectId(investmentId);
-        return historyProjectMapper.map(history);
+
+        return history.stream().map(historyItem -> {
+            StatusHistoryProjectData dto = historyProjectMapper.map(historyItem);
+            Long userId = historyItem.getCreatedBy().orElse(null);
+            AppUser user = appUserRepository.findAppUserById(userId);
+            if (user != null) {
+                dto.setPersonInCharge(user.getFirstname().concat(" ").concat(user.getLastname()));
+            }
+            return dto;
+        }).collect(Collectors.toList());
     }
+
 
     private void factoryData(InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
         projectData.setOwnerId(project.getOwner().getId());
