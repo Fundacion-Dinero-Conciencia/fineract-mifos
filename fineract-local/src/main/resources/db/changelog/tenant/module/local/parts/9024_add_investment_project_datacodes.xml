@@ -20,7 +20,7 @@ under the License.
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 	<changeSet id="1" author="fineract">
 	    <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from m_code where `code_name`='INVESTMENT_PROJECT_AREA'</sqlCheck>
+            <sqlCheck expectedResult="0">select count(*) from m_code where code_name='INVESTMENT_PROJECT_AREA'</sqlCheck>
         </preConditions>
 		<insert tableName="m_code">
 			<column name="code_name" value="INVESTMENT_PROJECT_AREA" />
@@ -29,7 +29,7 @@ under the License.
 	</changeSet>
 	<changeSet id="2" author="fineract">
 	    <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from m_code where `code_name`='INVESTMENT_PROJECT_CATEGORY'</sqlCheck>
+            <sqlCheck expectedResult="0">select count(*) from m_code where code_name='INVESTMENT_PROJECT_CATEGORY'</sqlCheck>
         </preConditions>
 		<insert tableName="m_code">
 			<column name="code_name" value="INVESTMENT_PROJECT_CATEGORY" />
@@ -38,7 +38,7 @@ under the License.
 	</changeSet>
 	<changeSet id="3" author="fineract">
 	    <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from m_code where `code_name`='INVESTMENT_PROJECT_SUBCATEGORY'</sqlCheck>
+            <sqlCheck expectedResult="0">select count(*) from m_code where code_name='INVESTMENT_PROJECT_SUBCATEGORY'</sqlCheck>
         </preConditions>
 		<insert tableName="m_code">
 			<column name="code_name" value="INVESTMENT_PROJECT_SUBCATEGORY" />
@@ -47,7 +47,7 @@ under the License.
 	</changeSet>
 	<changeSet id="4" author="fineract">
 	    <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">select count(*) from m_code where `code_name`='INVESTMENT_PROJECT_OBJECTIVE'</sqlCheck>
+            <sqlCheck expectedResult="0">select count(*) from m_code where code_name='INVESTMENT_PROJECT_OBJECTIVE'</sqlCheck>
         </preConditions>
 		<insert tableName="m_code">
 			<column name="code_name" value="INVESTMENT_PROJECT_OBJECTIVE" />
