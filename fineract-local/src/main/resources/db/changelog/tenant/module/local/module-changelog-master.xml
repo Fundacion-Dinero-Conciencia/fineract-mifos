@@ -45,4 +45,5 @@
   <include relativeToChangelogFile="true" file="parts/9021_add_investment_project_objectives.xml"/>
   <include relativeToChangelogFile="true" file="parts/9022_add_investment_project_min_and_max_amount.xml"/>
   <include relativeToChangelogFile="true" file="parts/9023_add_table_project_history_status.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9024_add_investment_project_datacodes.xml"/>
 </databaseChangeLog>
