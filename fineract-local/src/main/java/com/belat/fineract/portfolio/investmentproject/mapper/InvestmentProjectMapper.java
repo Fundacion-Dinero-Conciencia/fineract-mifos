@@ -29,6 +29,8 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "ownerName", ignore = true)
     @Mapping(target = "objectives", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "littleSocioEnvironmentalDescription", ignore = true)
+    @Mapping(target = "detailedSocioEnvironmentalDescription", ignore = true)
     InvestmentProjectData map(InvestmentProject source);
 
     List<InvestmentProjectData> map(List<InvestmentProject> sources);

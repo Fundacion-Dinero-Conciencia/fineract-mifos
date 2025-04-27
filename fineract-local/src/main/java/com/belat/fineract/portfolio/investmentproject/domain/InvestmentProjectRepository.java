@@ -13,6 +13,9 @@ public interface InvestmentProjectRepository extends JpaRepository<InvestmentPro
     @Query("SELECT ip FROM InvestmentProject ip WHERE ip.owner.id = :clientId")
     List<InvestmentProject> retrieveByClientId(@Param("clientId") Long clientId);
 
+    @Query(value = "SELECT * FROM e_investment_project WHERE mnemonic = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
+    InvestmentProject retrieveOneByMnemonic(String mnemonic);
+
     @Query(value = "SELECT * FROM e_investment_project WHERE id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     InvestmentProject retrieveOneByProjectId(Long projectId);
 

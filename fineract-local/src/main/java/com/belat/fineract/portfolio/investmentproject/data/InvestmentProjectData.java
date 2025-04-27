@@ -35,6 +35,9 @@ public class InvestmentProjectData {
     private BigDecimal maxAmount;
     private BigDecimal minAmount;
     private StatusHistoryProjectData status;
+    private String mnemonic;
+    private String littleSocioEnvironmentalDescription;
+    private String detailedSocioEnvironmentalDescription;
 
     @Data
     @AllArgsConstructor

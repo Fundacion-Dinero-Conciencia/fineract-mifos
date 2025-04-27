@@ -9,6 +9,8 @@ import com.belat.fineract.portfolio.investmentproject.domain.description.Investm
 import com.belat.fineract.portfolio.investmentproject.domain.description.InvestmentProjectDescriptionRepository;
 import com.belat.fineract.portfolio.investmentproject.domain.objective.InvestmentProjectObjective;
 import com.belat.fineract.portfolio.investmentproject.domain.objective.InvestmentProjectObjectiveRepository;
+import com.belat.fineract.portfolio.investmentproject.domain.socioenvironmentaldescription.SocioEnvironmentalDescription;
+import com.belat.fineract.portfolio.investmentproject.domain.socioenvironmentaldescription.SocioEnvironmentalDescriptionRepository;
 import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProject;
 import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjectNotFoundException;
@@ -65,6 +67,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final InvestmentProjectObjectiveRepository investmentProjectObjectiveRepository;
     private final StatusHistoryProjectRepository statusHistoryProjectRepository;
+    private final SocioEnvironmentalDescriptionRepository socioEnvironmentalDescriptionRepository;
 
     @Override
     public CommandProcessingResult createInvestmentProject(JsonCommand command) {
@@ -101,9 +104,17 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
                 .stringValueOfParameterNamed(InvestmentProjectConstants.institutionDescriptionParamName);
         final String teamDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.teamDescriptionParamName);
         final String financingDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.financingDescriptionParamName);
+
+        final String littleSocioEnvironmentalDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName);
+        final String detailedSocioEnvironmentalDescription = command.stringValueOfParameterNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName);
+
+        SocioEnvironmentalDescription socioEnvironmentalDescription = new SocioEnvironmentalDescription(littleSocioEnvironmentalDescription, detailedSocioEnvironmentalDescription);
+
+        socioEnvironmentalDescription = socioEnvironmentalDescriptionRepository.save(socioEnvironmentalDescription);
+
         InvestmentProjectDescription description = new InvestmentProjectDescription(impactDescription, institutionDescription,
-                teamDescription, financingDescription);
-        description = investmentProjectDescriptionRepository.save(description);
+                teamDescription, financingDescription, socioEnvironmentalDescription);
+        description = investmentProjectDescriptionRepository.saveAndFlush(description);
         investmentProject.setDescription(description);
 
         investmentProject.setActive(command.booleanPrimitiveValueOfParameterNamed(InvestmentProjectConstants.isActiveParamName));
@@ -133,6 +144,16 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject.setMaxAmount(maxAmount);
 
         investmentProject.setMinAmount(minAmount);
+
+        final String mnemonic = command.stringValueOfParameterNamed(InvestmentProjectConstants.mnemonicParamName);
+
+        InvestmentProject investmentProjectByMnemonic = investmentProjectRepository.retrieveOneByMnemonic(mnemonic);
+
+        if (investmentProjectByMnemonic != null) {
+            throw new GeneralPlatformDomainRuleException("msg.err.mnemonic.already.in.use", "Mnemonic already in use");
+        }
+
+        investmentProject.setMnemonic(mnemonic);
 
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
 
@@ -167,7 +188,21 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         InvestmentProject investmentProject = investmentProjectRepository.findById(projectId)
                 .orElseThrow(() -> new InvestmentProjectNotFoundException(projectId, false));
+
+
         investmentProject.modifyApplication(command, changes);
+
+        if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.mnemonicParamName, investmentProject.getMnemonic())) {
+            final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.mnemonicParamName);
+            InvestmentProject investmentProjectByMnemonic = investmentProjectRepository.retrieveOneByMnemonic(newValue);
+
+            if (investmentProjectByMnemonic != null) {
+                throw new GeneralPlatformDomainRuleException("msg.err.mnemonic.already.in.use", "Mnemonic already in use");
+            }
+            
+            changes.put(InvestmentProjectConstants.mnemonicParamName, newValue);
+            investmentProject.setMnemonic(StringUtils.defaultIfEmpty(newValue, null));
+        }
 
         final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
         investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
@@ -301,6 +336,15 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final Long statusId = fromApiJsonHelper.extractLongNamed(InvestmentProjectConstants.statusIdParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.statusIdParamName).value(statusId).notNull();
 
+        final String mnemonic = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.mnemonicParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.mnemonicParamName).value(mnemonic).notBlank().notNull();
+
+        final String littleSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName).value(littleSocioEnvironmentalDescription).notBlank().notNull();
+
+        final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
+
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
                     dataValidationErrors);
@@ -371,6 +415,15 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
+
+        final String mnemonic = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.mnemonicParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.mnemonicParamName).value(mnemonic).notBlank().notNull();
+
+        final String littleSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName).value(littleSocioEnvironmentalDescription).notBlank().notNull();
+
+        final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",

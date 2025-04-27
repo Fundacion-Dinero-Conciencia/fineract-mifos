@@ -126,6 +126,8 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     @Transient
     private StatusHistoryProject status;
 
+    @Column(name = "mnemonic", nullable = false)
+    private String mnemonic;
 
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.projectNameParamName, getName())) {
@@ -151,7 +153,6 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
             actualChanges.put(InvestmentProjectConstants.isActiveParamName, newValue);
             this.isActive = newValue;
         }
-
         if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.maxAmountParamName, maxAmount)) {
             final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.maxAmountParamName);
             if (newValue.compareTo(amount) > 0) {
@@ -160,7 +161,6 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
             actualChanges.put(InvestmentProjectConstants.maxAmountParamName, newValue);
             this.maxAmount = newValue;
         }
-
         if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.minAmountParamName, minAmount)) {
             final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.minAmountParamName);
             if (newValue.compareTo(BigDecimal.ZERO) <= 0) {

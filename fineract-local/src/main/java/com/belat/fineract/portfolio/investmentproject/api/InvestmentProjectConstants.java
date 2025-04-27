@@ -26,6 +26,9 @@ public class InvestmentProjectConstants {
     public static final String statusIdParamName = "statusId";
     public static final String maxAmountParamName = "maxAmount";
     public static final String minAmountParamName = "minAmount";
+    public static final String mnemonicParamName = "mnemonic";
+    public static final String littleSocioEnvironmentalDescriptionParamName = "littleSocioEnvironmentalDescription";
+    public static final String detailedSocioEnvironmentalDescriptionParamName = "detailedSocioEnvironmentalDescription";
 
     // Descriptions
     public static final String impactDescriptionParamName = "impactDescription";
@@ -41,7 +44,7 @@ public class InvestmentProjectConstants {
             projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName, periodParamName, countryIdParamName,
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
             isActiveParamName, categoryParamName, loanIdParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
-            minAmountParamName, statusIdParamName));
+            minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -50,6 +53,7 @@ public class InvestmentProjectConstants {
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(projectNameParamName,
             subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
             financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName,
-            maxAmountParamName, minAmountParamName, statusIdParamName));
+            maxAmountParamName, minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName,
+            detailedSocioEnvironmentalDescriptionParamName));
 
 }
