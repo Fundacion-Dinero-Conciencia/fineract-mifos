@@ -166,7 +166,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
     @Query("select loan from Loan loan where loan.client.id = :clientId")
     List<Loan> findLoanByClientId(@Param("clientId") Long clientId);
 
-    @Query(value = "SELECT * FROM loan WHERE client_id = :clientId AND proposed_principal = :amount AND loan_status not in (100, 200) ORDER BY id DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM loan WHERE client_id = ?1 AND proposed_principal = ?2 AND loan_status NOT IN (100, 200) ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Loan findLoanByClientIdAmountAndApprovedStatus(@Param("clientId") Long clientId, @Param("amount") BigDecimal amount);
 
     @Query("select loan from Loan loan where loan.group.id = :groupId and loan.client.id is null")

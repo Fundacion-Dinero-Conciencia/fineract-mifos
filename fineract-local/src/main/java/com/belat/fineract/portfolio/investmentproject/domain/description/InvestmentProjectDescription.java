@@ -1,13 +1,18 @@
 package com.belat.fineract.portfolio.investmentproject.domain.description;
 
 import com.belat.fineract.portfolio.investmentproject.api.InvestmentProjectConstants;
+import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
+import com.belat.fineract.portfolio.investmentproject.domain.socioenvironmentaldescription.SocioEnvironmentalDescription;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Map;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
@@ -31,12 +36,18 @@ public class InvestmentProjectDescription extends AbstractAuditableWithUTCDateTi
     @Column(name = "financing_description", nullable = false)
     private String financingDescription;
 
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "socio_environmental_description_id", nullable = false, referencedColumnName = "id")
+    private SocioEnvironmentalDescription socioEnvironmentalDescription;
+
     public InvestmentProjectDescription(final String impactDescription, final String institutionDescription, final String teamDescription,
-            final String financingDescription) {
+            final String financingDescription, final SocioEnvironmentalDescription socioEnvironmentalDescription) {
         this.impactDescription = impactDescription;
         this.institutionDescription = institutionDescription;
         this.teamDescription = teamDescription;
         this.financingDescription = financingDescription;
+        this.socioEnvironmentalDescription = socioEnvironmentalDescription;
     }
 
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
@@ -61,6 +72,7 @@ public class InvestmentProjectDescription extends AbstractAuditableWithUTCDateTi
             actualChanges.put(InvestmentProjectConstants.financingDescriptionParamName, newValue);
             this.financingDescription = StringUtils.defaultIfEmpty(newValue, null);
         }
+        this.socioEnvironmentalDescription.modifyApplication(command, actualChanges);
     }
 
 }

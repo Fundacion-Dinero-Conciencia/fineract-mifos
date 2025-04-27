@@ -86,6 +86,8 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
             projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
             projectData.setTeamDescription(project.getDescription().getTeamDescription());
             projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
+            projectData.setLittleSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getLittleDescription());
+            projectData.setDetailedSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getDetailedDescription());
         }
         return projectData;
     }
