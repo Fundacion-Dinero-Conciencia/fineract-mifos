@@ -16,22 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.address.service;
+package org.apache.fineract.portfolio.investmentproject.domain;
 
-import com.google.gson.JsonObject;
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
+import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
+import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
 import org.apache.fineract.portfolio.address.domain.Address;
-import org.apache.fineract.portfolio.client.domain.Client;
 
-public interface AddressWritePlatformService {
+@Entity
+@Table(name = "m_investment_project_address")
+@Data
+public class InvestmentProjectAddress extends AbstractAuditableWithUTCDateTimeCustom<Long> {
 
-    CommandProcessingResult addClientAddress(Long clientId, Long addressTypeId, JsonCommand command);
+    @OneToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
 
-    CommandProcessingResult addNewClientAddress(Client client, JsonCommand command);
-
-    CommandProcessingResult updateClientAddress(Long clientId, JsonCommand command);
-
-    Address createAddress(JsonObject jsonObject);
-
+    @OneToOne
+    @JoinColumn(name = "investment_project_id", referencedColumnName = "id")
+    private InvestmentProject investmentProject;
 }

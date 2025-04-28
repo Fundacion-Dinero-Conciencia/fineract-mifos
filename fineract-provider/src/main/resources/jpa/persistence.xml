@@ -164,6 +164,12 @@
 
         <!-- Belat module-->
         <class>com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote</class>
+        <class>com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject</class>
+        <class>com.belat.fineract.portfolio.investmentproject.domain.category.InvestmentProjectCategory</class>
+        <class>com.belat.fineract.portfolio.investmentproject.domain.description.InvestmentProjectDescription</class>
+        <class>com.belat.fineract.portfolio.investmentproject.domain.objective.InvestmentProjectObjective</class>
+        <class>com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProject</class>
+        <class>com.belat.fineract.portfolio.investmentproject.domain.socioenvironmentaldescription.SocioEnvironmentalDescription</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.weaving" value="static" />

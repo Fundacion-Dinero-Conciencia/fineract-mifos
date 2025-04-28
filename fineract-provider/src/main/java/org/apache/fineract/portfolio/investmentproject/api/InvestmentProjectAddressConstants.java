@@ -16,22 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.address.service;
+package org.apache.fineract.portfolio.investmentproject.api;
 
-import com.google.gson.JsonObject;
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.address.domain.Address;
-import org.apache.fineract.portfolio.client.domain.Client;
+public final class InvestmentProjectAddressConstants {
 
-public interface AddressWritePlatformService {
+    private InvestmentProjectAddressConstants() {}
 
-    CommandProcessingResult addClientAddress(Long clientId, Long addressTypeId, JsonCommand command);
-
-    CommandProcessingResult addNewClientAddress(Client client, JsonCommand command);
-
-    CommandProcessingResult updateClientAddress(Long clientId, JsonCommand command);
-
-    Address createAddress(JsonObject jsonObject);
+    public static final String investmentProjectIdParamName = "investmentProjectId";
 
 }
