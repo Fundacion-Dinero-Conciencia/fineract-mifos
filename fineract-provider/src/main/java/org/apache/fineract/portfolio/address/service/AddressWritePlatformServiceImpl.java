@@ -107,7 +107,8 @@ public class AddressWritePlatformServiceImpl implements AddressWritePlatformServ
         return ClientAddress.fromJson(clientAddressIsActive, client, address, addressTypeIdCodeValue);
     }
 
-    private Address createAddress(JsonObject jsonObject) {
+    @Override
+    public Address createAddress(JsonObject jsonObject) {
         CodeValue stateIdCodeValue = null;
         if (jsonObject.get("stateProvinceId") != null) {
             long stateId = jsonObject.get("stateProvinceId").getAsLong();

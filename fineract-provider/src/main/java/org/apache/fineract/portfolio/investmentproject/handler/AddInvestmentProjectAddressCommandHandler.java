@@ -16,22 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.fineract.portfolio.address.service;
+package org.apache.fineract.portfolio.investmentproject.handler;
 
-import com.google.gson.JsonObject;
+import lombok.RequiredArgsConstructor;
+import org.apache.fineract.commands.annotation.CommandType;
+import org.apache.fineract.commands.handler.NewCommandSourceHandler;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
-import org.apache.fineract.portfolio.address.domain.Address;
-import org.apache.fineract.portfolio.client.domain.Client;
+import org.apache.fineract.portfolio.investmentproject.service.InvestmentProjectAddressWritePlatformService;
+import org.springframework.stereotype.Service;
 
-public interface AddressWritePlatformService {
+@Service
+@RequiredArgsConstructor
+@CommandType(entity = "INVESTMENT_PROJECT_ADDRESS", action = "CREATE")
+public class AddInvestmentProjectAddressCommandHandler implements NewCommandSourceHandler {
 
-    CommandProcessingResult addClientAddress(Long clientId, Long addressTypeId, JsonCommand command);
+    private final InvestmentProjectAddressWritePlatformService investmentProjectAddressWritePlatformService;
 
-    CommandProcessingResult addNewClientAddress(Client client, JsonCommand command);
-
-    CommandProcessingResult updateClientAddress(Long clientId, JsonCommand command);
-
-    Address createAddress(JsonObject jsonObject);
-
+    @Override
+    public CommandProcessingResult processCommand(JsonCommand command) {
+        return investmentProjectAddressWritePlatformService.createAddress(command);
+    }
 }

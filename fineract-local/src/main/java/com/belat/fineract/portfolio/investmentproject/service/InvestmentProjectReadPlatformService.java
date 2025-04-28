@@ -19,4 +19,5 @@ public interface InvestmentProjectReadPlatformService {
 
     List<StatusHistoryProjectData> getAllStatusHistoryByInvestmentProjectId(Long investmentId);
 
+    InvestmentProject retrieveInvestmentById(Long id);
 }

@@ -3884,4 +3884,12 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createInvestmentProjectAddress() {
+        this.actionName = "CREATE";
+        this.entityName = "INVESTMENT_PROJECT_ADDRESS";
+        this.entityId = null;
+        this.href = "/v1/investmentProjectAddress";
+        return this;
+    }
+
 }

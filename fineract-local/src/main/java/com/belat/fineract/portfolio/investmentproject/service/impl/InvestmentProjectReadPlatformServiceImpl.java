@@ -143,6 +143,11 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public InvestmentProject retrieveInvestmentById(Long id) {
+        return investmentProjectRepository.retrieveOneByProjectId(id);
+    }
+
 
     private void factoryData(InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
         projectData.setOwnerId(project.getOwner().getId());
