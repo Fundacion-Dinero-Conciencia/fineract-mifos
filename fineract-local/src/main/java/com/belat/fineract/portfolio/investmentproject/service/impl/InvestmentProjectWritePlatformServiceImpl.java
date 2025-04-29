@@ -155,6 +155,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         investmentProject.setMnemonic(mnemonic);
 
+        final Integer position = command.integerValueSansLocaleOfParameterNamed(InvestmentProjectConstants.positionParamName);
+
+        if (position <= 0) {
+            throw new GeneralPlatformDomainRuleException("err.msg.position.should.be.higher.than.zero", "Position should be higher than zero");
+        }
+
+        investmentProject.setPosition(position);
+
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
 
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
@@ -345,6 +353,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
 
+        final String position = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.positionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.positionParamName).value(position).notBlank().notNull();
+
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
                     dataValidationErrors);
@@ -424,6 +435,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
+
+        final String position = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.positionParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.positionParamName).value(position).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",

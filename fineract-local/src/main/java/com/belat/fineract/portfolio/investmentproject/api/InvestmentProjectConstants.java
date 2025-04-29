@@ -27,14 +27,15 @@ public class InvestmentProjectConstants {
     public static final String maxAmountParamName = "maxAmount";
     public static final String minAmountParamName = "minAmount";
     public static final String mnemonicParamName = "mnemonic";
-    public static final String littleSocioEnvironmentalDescriptionParamName = "littleSocioEnvironmentalDescription";
-    public static final String detailedSocioEnvironmentalDescriptionParamName = "detailedSocioEnvironmentalDescription";
+    public static final String positionParamName = "position";
 
     // Descriptions
     public static final String impactDescriptionParamName = "impactDescription";
     public static final String institutionDescriptionParamName = "institutionDescription";
     public static final String teamDescriptionParamName = "teamDescription";
     public static final String financingDescriptionParamName = "financingDescription";
+    public static final String littleSocioEnvironmentalDescriptionParamName = "littleSocioEnvironmentalDescription";
+    public static final String detailedSocioEnvironmentalDescriptionParamName = "detailedSocioEnvironmentalDescription";
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -44,7 +45,8 @@ public class InvestmentProjectConstants {
             projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName, periodParamName, countryIdParamName,
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
             isActiveParamName, categoryParamName, loanIdParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
-            minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName));
+            minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName,
+            positionParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -54,6 +56,6 @@ public class InvestmentProjectConstants {
             subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
             financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName,
             maxAmountParamName, minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName,
-            detailedSocioEnvironmentalDescriptionParamName));
+            detailedSocioEnvironmentalDescriptionParamName, positionParamName));
 
 }
