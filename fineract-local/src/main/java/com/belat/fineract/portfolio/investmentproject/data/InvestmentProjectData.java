@@ -36,6 +36,7 @@ public class InvestmentProjectData {
     private BigDecimal minAmount;
     private StatusHistoryProjectData status;
     private String mnemonic;
+    private Integer position;
     private String littleSocioEnvironmentalDescription;
     private String detailedSocioEnvironmentalDescription;
 

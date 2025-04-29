@@ -129,6 +129,9 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     @Column(name = "mnemonic", nullable = false)
     private String mnemonic;
 
+    @Column(name = "position", nullable = false)
+    private Integer position;
+
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.projectNameParamName, getName())) {
             final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.projectNameParamName);
@@ -168,6 +171,11 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
             }
             actualChanges.put(InvestmentProjectConstants.minAmountParamName, newValue);
             this.minAmount = newValue;
+        }
+        if (command.isChangeInIntegerSansLocaleParameterNamed(InvestmentProjectConstants.positionParamName, position)) {
+            final Integer newValue = command.integerValueSansLocaleOfParameterNamed(InvestmentProjectConstants.positionParamName);
+            actualChanges.put(InvestmentProjectConstants.positionParamName, newValue);
+            this.position = newValue;
         }
     }
 
