@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -39,6 +40,10 @@ import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformS
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
+import org.apache.fineract.portfolio.address.AddressMapper;
+import org.apache.fineract.portfolio.address.data.AddressDTO;
+import org.apache.fineract.portfolio.investmentproject.domain.InvestmentProjectAddress;
+import org.apache.fineract.portfolio.investmentproject.service.InvestmentProjectAddressReadPlatformService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,6 +57,9 @@ public class InvestmentProjectAddressApiResource {
     private final PlatformUserRightsContext platformUserRightsContext;
     private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DefaultToApiJsonSerializer<PromissoryNoteData> apiJsonSerializerService;
+    private final InvestmentProjectAddressReadPlatformService readPlatformService;
+    private final AddressMapper addressMapper;
+
 
 
     @POST
@@ -68,5 +76,24 @@ public class InvestmentProjectAddressApiResource {
         final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson).withSubEntityId(Long.valueOf(investmentProjectId)).createInvestmentProjectAddress().build();
         CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return apiJsonSerializerService.serialize(result);
+    }
+
+    @GET
+    @Path("{investmentProjectId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = InvestmentProjectAddressApiResourceSwagger.PostInvestmentProjectAddressRequest.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectAddressApiResourceSwagger.PostInvestmentProjectAddressResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Investment project address can not be retrieved") })
+    public String retrieveByInvestmentProjectId(@PathParam("investmentProjectId") final String investmentProjectId) {
+        platformUserRightsContext.isAuthenticated();
+
+        InvestmentProjectAddress investmentProjectAddress = readPlatformService.getByInvestmentProjectId(Long.valueOf(investmentProjectId));
+        AddressDTO addressDTO = null;
+        if (investmentProjectAddress != null) {
+            addressDTO = addressMapper.toDto(investmentProjectAddress.getAddress());
+        }
+        return apiJsonSerializerService.serialize(addressDTO);
     }
 }
