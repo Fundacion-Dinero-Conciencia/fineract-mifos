@@ -72,7 +72,6 @@ public class InvestmentProjectDescription extends AbstractAuditableWithUTCDateTi
             actualChanges.put(InvestmentProjectConstants.financingDescriptionParamName, newValue);
             this.financingDescription = StringUtils.defaultIfEmpty(newValue, null);
         }
-        this.socioEnvironmentalDescription.modifyApplication(command, actualChanges);
     }
 
 }
