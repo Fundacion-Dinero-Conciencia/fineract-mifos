@@ -200,6 +200,32 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         investmentProject.modifyApplication(command, changes);
 
+        SocioEnvironmentalDescription socioEnvironmentalDescription;
+
+        if (investmentProject.getDescription().getSocioEnvironmentalDescription() == null) {
+            socioEnvironmentalDescription = new SocioEnvironmentalDescription();
+        } else {
+            socioEnvironmentalDescription = socioEnvironmentalDescriptionRepository.getReferenceById(investmentProject.getDescription().getSocioEnvironmentalDescription().getId());
+        }
+
+        if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, socioEnvironmentalDescription.getLittleDescription())) {
+            final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName);
+            changes.put(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, newValue);
+            socioEnvironmentalDescription.setLittleDescription(newValue);
+        }
+
+        if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, socioEnvironmentalDescription.getDetailedDescription())) {
+            final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName);
+            changes.put(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, newValue);
+            socioEnvironmentalDescription.setDetailedDescription(newValue);
+        }
+
+        if (investmentProject.getDescription().getSocioEnvironmentalDescription() == null) {
+            investmentProject.getDescription().setSocioEnvironmentalDescription(socioEnvironmentalDescription);
+        } else {
+            socioEnvironmentalDescriptionRepository.save(socioEnvironmentalDescription);
+        }
+
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.mnemonicParamName, investmentProject.getMnemonic())) {
             final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.mnemonicParamName);
             InvestmentProject investmentProjectByMnemonic = investmentProjectRepository.retrieveOneByMnemonic(newValue);
@@ -237,7 +263,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final Long statusCodeId = command.longValueOfParameterNamed(InvestmentProjectConstants.statusIdParamName);
         final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
         if (!changes.isEmpty() || newStatus != null) {
-            investmentProject = this.investmentProjectRepository.save(investmentProject);
+            investmentProject = this.investmentProjectRepository.saveAndFlush(investmentProject);
 
             StatusHistoryProject historyProject = statusHistoryProjectRepository.getLastStatusByInvestmentProjectId(investmentProject.getId());
             if (!Objects.equals(historyProject.getStatusValue().getId(), newStatus.getId())) {
