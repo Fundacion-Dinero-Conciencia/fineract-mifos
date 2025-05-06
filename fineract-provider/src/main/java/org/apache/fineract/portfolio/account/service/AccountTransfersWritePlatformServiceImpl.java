@@ -30,7 +30,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -65,6 +67,7 @@ import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
 import org.apache.fineract.portfolio.account.data.AccountTransfersDataValidator;
+import org.apache.fineract.portfolio.account.data.request.AccountTransferRequest;
 import org.apache.fineract.portfolio.account.domain.AccountTransferAssembler;
 import org.apache.fineract.portfolio.account.domain.AccountTransferDetailRepository;
 import org.apache.fineract.portfolio.account.domain.AccountTransferDetails;
@@ -112,6 +115,20 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private FromJsonHelper fromJsonHelper = new FromJsonHelper();
     private final AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService;
     private final PromissoryNoteWritePlatformService promissoryNoteWritePlatformService;
+
+    @Override
+    public CommandProcessingResult createMultipleInvestments(JsonCommand command) {
+        Map<String, Object> changes = new HashMap<>();
+        List<AccountTransferRequest> investmentsList = new Gson().fromJson(command.json(), new TypeToken<List<AccountTransferRequest>>(){}.getType());
+        for (int i = 0; i < investmentsList.size() ; i++) {
+            String json = new Gson().toJson(investmentsList.get(0));
+            JsonElement jsonElement = this.fromJsonHelper.parse(json);
+            JsonCommand jsonCommand = JsonCommand.from(json, jsonElement, this.fromJsonHelper);
+            changes.put("transaction".concat(String.valueOf((i + 1))), create(jsonCommand).getSavingsId());
+        }
+        final CommandProcessingResultBuilder builder = new CommandProcessingResultBuilder();
+        return builder.with(changes).build();
+    }
 
     @Transactional
     @Override
