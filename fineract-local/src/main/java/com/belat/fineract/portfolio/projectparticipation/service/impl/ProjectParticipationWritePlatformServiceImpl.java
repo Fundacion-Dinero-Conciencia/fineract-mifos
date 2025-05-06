@@ -12,12 +12,6 @@ import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticip
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +28,13 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -91,7 +92,6 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         final Integer status = command.integerValueSansLocaleOfParameterNamed(ProjectParticipationConstants.statusParamName);
         if (ProjectParticipationStatusEnum.fromInt(status) == null) {
             throw new GeneralPlatformDomainRuleException("msg.err.not.valid.status", "Status is not valid");
-
         }
 
         projectParticipation.setStatusEnum(status);

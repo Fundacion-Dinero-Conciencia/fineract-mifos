@@ -1,16 +1,18 @@
 package com.belat.fineract.portfolio.projectparticipation.data;
 
+import org.apache.fineract.infrastructure.core.data.EnumOptionData;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 
 public enum ProjectParticipationStatusEnum {
 
     ACCEPTED("ProjectParticipationStatusEnum.accepted", 100), //
 
     PENDING("ProjectParticipationStatusEnum.pending", 200), //
-    DECLINED("ProjectParticipationStatusEnum.declined", 300), // //
+    DECLINED("ProjectParticipationStatusEnum.declined", 300), //
+    RESERVED("ProjectParticipationStatusEnum.reserved", 400), // //
     ;
 
     private static final ProjectParticipationStatusEnum[] VALUES = values();

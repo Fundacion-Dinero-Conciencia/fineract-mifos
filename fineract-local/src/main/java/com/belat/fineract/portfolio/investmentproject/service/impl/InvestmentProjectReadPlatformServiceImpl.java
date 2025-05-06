@@ -14,12 +14,12 @@ import com.belat.fineract.portfolio.investmentproject.mapper.InvestmentProjectMa
 import com.belat.fineract.portfolio.investmentproject.mapper.StatusHistoryProjectMapper;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
+import com.belat.fineract.useradministration.domain.AppUserRepositoryV2;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.useradministration.domain.AppUser;
-import com.belat.fineract.useradministration.domain.AppUserRepositoryV2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +37,6 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     private final InvestmentProjectRepository investmentProjectRepository;
     private final InvestmentProjectMapper investmentProjectMapper;
     private final StatusHistoryProjectMapper historyProjectMapper;
-    private final PortfolioCommandSourceWritePlatformService commandsSourceWritePlatformService;
     private final DocumentReadPlatformService documentReadPlatformService;
     private final InvestmentProjectCategoryRepository investmentProjectCategoryRepository;
     private final ProjectParticipationRepository projectParticipationRepository;
