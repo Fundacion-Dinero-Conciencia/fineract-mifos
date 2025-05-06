@@ -55,6 +55,7 @@ import org.apache.fineract.portfolio.common.service.DropdownReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanAccountDomainService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformService;
+import org.apache.fineract.portfolio.paymentdetail.service.PaymentDetailWritePlatformService;
 import org.apache.fineract.portfolio.savings.domain.GSIMRepositoy;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService;
@@ -95,12 +96,12 @@ public class AccountConfiguration {
             AccountTransferDetailRepository accountTransferDetailRepository, LoanReadPlatformService loanReadPlatformService,
             GSIMRepositoy gsimRepository, ConfigurationDomainService configurationDomainService, ExternalIdFactory externalIdFactory,
             FineractProperties fineractProperties, AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService,
-            PromissoryNoteWritePlatformService promissoryNoteWritePlatformService, ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService) {
+            PromissoryNoteWritePlatformService promissoryNoteWritePlatformService, ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService, PaymentDetailWritePlatformService paymentDetailWritePlatformService) {
         return new AccountTransfersWritePlatformServiceImpl(accountTransfersDataValidator, accountTransferAssembler,
                 accountTransferRepository, savingsAccountAssembler, savingsAccountDomainService, loanAccountAssembler,
                 loanAccountDomainService, savingsAccountWritePlatformService, accountTransferDetailRepository, loanReadPlatformService,
                 gsimRepository, configurationDomainService, externalIdFactory, fineractProperties, accountAssociationsReadPlatformService,
-                promissoryNoteWritePlatformService, projectParticipationWritePlatformService);
+                promissoryNoteWritePlatformService, projectParticipationWritePlatformService, paymentDetailWritePlatformService);
     }
 
     @Bean

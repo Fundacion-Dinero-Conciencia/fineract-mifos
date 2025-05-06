@@ -26,5 +26,6 @@ public final class DistributeFundConstants {
     public static final String COMMISSION_CPD = "Commission CPD";
     public static final String COMMISSION_CAI = "Commission CAI";
     public static final String PAYMENT_FUND_INVESTMENT = "Payment for fund investment";
+    public static final Integer INVESTMENT_PAYMENT_TYPE = 12;
 
 }

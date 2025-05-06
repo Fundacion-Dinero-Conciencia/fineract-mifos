@@ -18,18 +18,9 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
-import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
-
-import com.belat.fineract.portfolio.projectparticipation.api.ProjectParticipationConstants;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
 import com.belat.fineract.portfolio.projectparticipation.service.impl.ProjectParticipationWritePlatformServiceImpl;
 import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -37,17 +28,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
@@ -60,7 +40,6 @@ import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
-import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
 import org.apache.fineract.infrastructure.core.service.MathUtil;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
@@ -86,7 +65,9 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionType;
 import org.apache.fineract.portfolio.loanaccount.exception.InvalidPaidInAdvanceAmountException;
 import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformService;
+import org.apache.fineract.portfolio.paymentdetail.PaymentDetailConstants;
 import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
+import org.apache.fineract.portfolio.paymentdetail.service.PaymentDetailWritePlatformService;
 import org.apache.fineract.portfolio.savings.SavingsTransactionBooleanValues;
 import org.apache.fineract.portfolio.savings.domain.GSIMRepositoy;
 import org.apache.fineract.portfolio.savings.domain.GroupSavingsIndividualMonitoring;
@@ -95,8 +76,26 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
-import org.springframework.cglib.core.Local;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -120,6 +119,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private final AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService;
     private final PromissoryNoteWritePlatformService promissoryNoteWritePlatformService;
     private final ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService;
+    private final PaymentDetailWritePlatformService paymentDetailWritePlatformService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -158,6 +158,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         final Integer toAccountTypeId = command.integerValueSansLocaleOfParameterNamed(toAccountTypeParamName);
         final PortfolioAccountType toAccountType = PortfolioAccountType.fromInt(toAccountTypeId);
         final Long investmentAgentId = command.longValueOfParameterNamed(AccountTransfersApiConstants.investmentAgentIdParamName);
+        final Integer transferType = command.integerValueOfParameterNamed(PaymentDetailConstants.paymentTypeParamName);
         final BigDecimal percentageInvestmentAgent = command
                 .bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.percentageInvestmentAgentParamName);
         Boolean isInvestment = command.booleanObjectValueOfParameterNamed(AccountTransfersApiConstants.transferIsInvestmentParamName);
@@ -221,7 +222,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                         toSavingsAccount.getCurrency().getCode());
             }
             final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(command,
-                    fromSavingsAccount, toSavingsAccount, withdrawal, deposit);
+                    fromSavingsAccount, toSavingsAccount, withdrawal, deposit, transferType);
             this.accountTransferDetailRepository.save(accountTransferDetails);
             transferDetailId = accountTransferDetails.getId();
 
@@ -379,7 +380,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         }
 
         final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(jsonCommand,
-                investorAccount, toSavingsAccount, withdrawal, deposit);
+                investorAccount, toSavingsAccount, withdrawal, deposit, null);
         this.accountTransferDetailRepository.saveAndFlush(accountTransferDetails);
     }
 

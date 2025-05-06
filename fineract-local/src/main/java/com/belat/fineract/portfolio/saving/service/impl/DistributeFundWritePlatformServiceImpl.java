@@ -72,11 +72,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
         final List<SavingsAccountTransaction> transactions = savingsAccountFund.getTransactions().stream()
                 .filter(tr -> (tr.getTransactionType().isCapitalPayment() || tr.getTransactionType().isCurrentInterest()
-                        || tr.getTransactionType().isArrearsInterest() || tr.getTransactionType().isInvestmentFee())// FIXME
-                                                                                                                    // ->
-                                                                                                                    // isCurrent,
-                                                                                                                    // isArrears
-                                                                                                                    // ...
+                        || tr.getTransactionType().isArrearsInterest() || tr.getTransactionType().isInvestmentFee())
                         && !tr.isReversed() && (tr.getWasDistribute() == null || !tr.getWasDistribute())
                         && (tr.getTransactionDate().isAfter(tr.getSavingsAccount().getActivationDate())
                                 || tr.getTransactionDate().equals(tr.getSavingsAccount().getActivationDate())))
@@ -99,7 +95,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                 if (amountEarned.doubleValue() > 0) {
                     amountEarned = Money.of(savingBelat.getCurrency(), amountEarned).getAmount();
                     Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned,
-                            DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()));
+                            DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()), null);
                     transactionsList.add(transactionPercentage);
                 }
 
@@ -116,7 +112,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                     SavingsAccount savingInvestmentAgent = savingsAccountRepository.findByStaffId(item.getInvestmentAgent().getId());
                     Long transactionId = sendTransaction(savingsAccountFund, savingInvestmentAgent, amountCAI,
                             DistributeFundConstants.COMMISSION_CAI
-                                    .concat("-" + item.getInvestorSavingsAccount().getClient().getDisplayName()));
+                                    .concat("-" + item.getInvestorSavingsAccount().getClient().getDisplayName()), null);
                     transactionsList.add(transactionId);
 
                 }
@@ -131,7 +127,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                 }
 
                 Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend,
-                        DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()));
+                        DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()), DistributeFundConstants.INVESTMENT_PAYMENT_TYPE);
                 transactionsList.add(transactionId);
             }
             tr.setWasDistribute(true);
@@ -145,7 +141,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
     @Transactional
     public Long sendTransaction(SavingsAccount accountFund, SavingsAccount accountInvestor, BigDecimal amount,
-            String observationTransaction) {
+                                String observationTransaction, Integer paymentTypeId) {
 
         Map<String, Object> transferData = new HashMap<>();
 
@@ -165,6 +161,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         transferData.put("fromClientId", accountFund.getClient().getId());
         transferData.put("fromAccountType", "2");
         transferData.put("fromOfficeId", accountFund.officeId());
+        transferData.put("paymentTypeId", paymentTypeId);
 
         final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(new Gson().toJson(transferData));
         final CommandWrapper commandRequest = builder.createAccountTransfer().build();
@@ -193,14 +190,15 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
             error = ApiParameterError.parameterError("error.msg." + ".transaction.account.is.not.active", defaultUserMessage, "accountId",
                     savingsAccount.getId());
             dataValidationErrors.add(error);
-
-        } else if (!Objects.equals(savingsAccount.getClient().getClientType().getId(), clientTypeFund)) {
-            defaultUserMessage = "Transaction is not allowed. the account does not belong to a fund.";
-            error = ApiParameterError.parameterError("error.msg." + ".account.does.not.belong.to.fund", defaultUserMessage, "accountId",
-                    savingsAccount.getId());
-            dataValidationErrors.add(error);
-
         }
+
+//        } else if (!Objects.equals(savingsAccount.getClient().getClientType().getId(), clientTypeFund)) {
+//            defaultUserMessage = "Transaction is not allowed. the account does not belong to a fund.";
+//            error = ApiParameterError.parameterError("error.msg." + ".account.does.not.belong.to.fund", defaultUserMessage, "accountId",
+//                    savingsAccount.getId());
+//            dataValidationErrors.add(error);
+//
+//        }
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException(dataValidationErrors);
