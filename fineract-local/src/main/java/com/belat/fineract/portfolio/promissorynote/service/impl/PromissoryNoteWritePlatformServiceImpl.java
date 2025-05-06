@@ -68,7 +68,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
 
         PromissoryNote promissoryNote = createPromissoryNote(fromApiJsonHelper.parse(command.json()));
 
-        String promissoryNumberFund = promissoryNote.getFundSavingsAccount().getClient().getDisplayName();
+        String promissoryNumberFund = promissoryNote.getFundSavingsAccount().getAccountNumber();
         promissoryNumberFund = promissoryNumberFund.substring(promissoryNumberFund.indexOf("_") + 1);
 
         String promissoryNumberInvestor = String.valueOf(promissoryNote.getInvestorSavingsAccount().getClient().getId());

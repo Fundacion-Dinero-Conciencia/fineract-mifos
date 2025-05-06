@@ -57,18 +57,11 @@ public class LoanFundServiceImpl {
         // To format date in specific format
         DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
 
-        // Build client data
-        JsonObject clientJson = createFundClientData(loan.getOfficeId(), loan.getAccountNumber(), formatter);
-
-        JsonCommand clientCommand = JsonCommand.from(String.valueOf(clientJson), JsonParser.parseString(clientJson.toString()),
-                command.getFromApiJsonHelper());
-
-        // Create client
-        CommandProcessingResult result = clientWritePlatformService.createClient(clientCommand);
+        final String savingsName = applicationContext.getEnvironment().getProperty("fineract.fund.client.name").concat(String.valueOf(loan.getAccountNumber()));
 
         // Build saving data
-        JsonObject savingJson = createSavingAccountData(loan.getApprovedPrincipal(), result.getClientId(),
-                clientJson.get("fullname").getAsString(), loan.getCurrencyCode(), formatter);
+        JsonObject savingJson = createSavingAccountData(loan.getApprovedPrincipal(), loan.getClientId(),
+                savingsName, loan.getCurrencyCode(), formatter);
 
         JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()),
                 command.getFromApiJsonHelper());
@@ -76,7 +69,7 @@ public class LoanFundServiceImpl {
         // Create saving account
         CommandProcessingResult savingResult = savingsApplicationProcessWritePlatformService.submitApplication(savingCommand);
 
-        SavingsAccount account = savingsAccountRepository.findSavingAccountByClientId(result.getClientId()).stream()
+        SavingsAccount account = savingsAccountRepository.findSavingAccountByClientId(loan.getClientId()).stream()
                 .filter(saving -> Objects.equals(saving.getId(), savingResult.getSavingsId())).findFirst()
                 .orElseThrow(() -> new SavingsAccountNotFoundException("Saving account not found"));
 
