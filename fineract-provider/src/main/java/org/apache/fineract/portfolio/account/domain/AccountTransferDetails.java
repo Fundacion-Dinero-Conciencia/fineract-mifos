@@ -29,6 +29,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.Setter;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.organisation.office.domain.Office;
 import org.apache.fineract.portfolio.client.domain.Client;
@@ -72,6 +74,7 @@ public class AccountTransferDetails extends AbstractPersistableCustom<Long> {
     private Loan fromLoanAccount;
 
     @Column(name = "transfer_type")
+    @Setter
     private Integer transferType;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "accountTransferDetails", orphanRemoval = true, fetch = FetchType.EAGER)
