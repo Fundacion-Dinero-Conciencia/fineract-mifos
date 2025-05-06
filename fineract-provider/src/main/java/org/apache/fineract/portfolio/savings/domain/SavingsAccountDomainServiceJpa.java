@@ -224,7 +224,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                 account.approveAndActivateApplication(DateUtils.getBusinessLocalDate(), context.authenticatedUser());
             }
         }
-        this.savingsAccountRepository.saveAndFlush(account);
+        this.savingsAccountRepository.save(account);
 
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer, backdatedTxnsAllowedTill);
         businessEventNotifierService.notifyPostBusinessEvent(new SavingsDepositBusinessEvent(deposit));

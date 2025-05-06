@@ -34,8 +34,9 @@ public class CreateMultipleInvestmentCommandHandler implements NewCommandSourceH
 
     private final AccountTransfersWritePlatformService writePlatformService;
 
-    @Transactional
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommandProcessingResult processCommand(final JsonCommand command) {
 
         return this.writePlatformService.createMultipleInvestments(command);

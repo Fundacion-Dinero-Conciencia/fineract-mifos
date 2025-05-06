@@ -25,6 +25,9 @@ import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAcc
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 
+import com.belat.fineract.portfolio.projectparticipation.api.ProjectParticipationConstants;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
+import com.belat.fineract.portfolio.projectparticipation.service.impl.ProjectParticipationWritePlatformServiceImpl;
 import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,6 +95,7 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
+import org.springframework.cglib.core.Local;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -115,22 +119,26 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private FromJsonHelper fromJsonHelper = new FromJsonHelper();
     private final AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService;
     private final PromissoryNoteWritePlatformService promissoryNoteWritePlatformService;
+    private final ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommandProcessingResult createMultipleInvestments(JsonCommand command) {
         Map<String, Object> changes = new HashMap<>();
         List<AccountTransferRequest> investmentsList = new Gson().fromJson(command.json(), new TypeToken<List<AccountTransferRequest>>(){}.getType());
         for (int i = 0; i < investmentsList.size() ; i++) {
-            String json = new Gson().toJson(investmentsList.get(0));
+            String json = new Gson().toJson(investmentsList.get(i));
             JsonElement jsonElement = this.fromJsonHelper.parse(json);
             JsonCommand jsonCommand = JsonCommand.from(json, jsonElement, this.fromJsonHelper);
-            changes.put("transaction".concat(String.valueOf((i + 1))), create(jsonCommand).getSavingsId());
+            Long projectId = jsonCommand.longValueOfParameterNamed(AccountTransfersApiConstants.projectIdParamName);
+            BigDecimal amount = jsonCommand.bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.amountProjectParamName);
+            changes.put("transaction".concat(String.valueOf((i + 1))), create(jsonCommand).getSavingsId().toString());
+            updateStatusProject(projectId, amount);
         }
-        final CommandProcessingResultBuilder builder = new CommandProcessingResultBuilder();
-        return builder.with(changes).build();
+        return new CommandProcessingResultBuilder().with(changes).build();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public CommandProcessingResult create(final JsonCommand command) {
 
@@ -191,7 +199,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     SavingsAccount belatAccount = this.savingsAccountAssembler
                             .assembleFrom(configurationDomainService.getDefaultAccountId(), false);
                     sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount,
-                            Money.of(belatAccount.getCurrency(), feeAmount).getAmount());
+                            Money.of(belatAccount.getCurrency(), feeAmount).getAmount(), transactionDate);
                     transactionAmount = Money.of(belatAccount.getCurrency(), baseAmount).getAmount();
                 } else {
                     validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
@@ -214,7 +222,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             }
             final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(command,
                     fromSavingsAccount, toSavingsAccount, withdrawal, deposit);
-            this.accountTransferDetailRepository.saveAndFlush(accountTransferDetails);
+            this.accountTransferDetailRepository.save(accountTransferDetails);
             transferDetailId = accountTransferDetails.getId();
 
             if (isInvestment) {
@@ -309,7 +317,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     }
 
     @Transactional
-    public void sendTransactionFeeToBelatAccount(SavingsAccount belatAccount, SavingsAccount investorAccount, BigDecimal amount) {
+    public void sendTransactionFeeToBelatAccount(SavingsAccount belatAccount, SavingsAccount investorAccount, BigDecimal amount, LocalDate transactionDate) {
 
         Map<String, Object> transferData = new HashMap<>();
 
@@ -322,7 +330,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
         transferData.put("transferAmount", amount);
         transferData.put("transferDate",
-                DateUtils.getBusinessLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
+                transactionDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
         transferData.put("transferDescription",
                 "investment commission of investor ".concat(investorAccount.getClient().getAccountNumber()));
         transferData.put("dateFormat", "dd MMMM yyyy");
@@ -334,8 +342,6 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         transferData.put("fromOfficeId", investorAccount.officeId());
 
         boolean isRegularTransaction = true;
-
-        final LocalDate transactionDate = DateUtils.getBusinessLocalDate();
 
         final Locale locale = Locale.forLanguageTag("es");
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMMM yyyy").withLocale(locale);
@@ -775,12 +781,24 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         }
     }
 
+    private void updateStatusProject(Long projectId, BigDecimal amount) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", ProjectParticipationStatusEnum.ACCEPTED.getValue());
+        map.put("amount", amount);
+        projectParticipationWritePlatformService.updateProjectParticipation(projectId, createJsonCommand(map));
+    }
+
     @NotNull
-    private JsonCommand createJsonCommand(Map<String, Object> jsonMap) throws JsonProcessingException {
+    private JsonCommand createJsonCommand(Map<String, Object> jsonMap) {
         ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMap);
-        JsonCommand command = JsonCommand.from(json, JsonParser.parseString(json), fromJsonHelper, null, 1L, 2L, 3L, 4L, null, null, null,
+        String json = "";
+
+        try {
+            json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMap);
+        } catch (Exception e) {
+            log.error("Error in cast to Json {}", e.getMessage());
+        }
+        return JsonCommand.from(json, JsonParser.parseString(json), fromJsonHelper, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null);
-        return command;
     }
 }

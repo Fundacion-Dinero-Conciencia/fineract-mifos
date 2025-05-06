@@ -54,7 +54,7 @@ public class AccountTransfersDataValidator {
             AccountDetailConstants.toAccountIdParamName, AccountTransfersApiConstants.transferDateParamName,
             AccountTransfersApiConstants.transferAmountParamName, AccountTransfersApiConstants.transferDescriptionParamName,
             AccountTransfersApiConstants.transferIsInvestmentParamName, AccountTransfersApiConstants.investmentAgentIdParamName,
-            AccountTransfersApiConstants.percentageInvestmentAgentParamName));
+            AccountTransfersApiConstants.percentageInvestmentAgentParamName, AccountTransfersApiConstants.amountProjectParamName, AccountTransfersApiConstants.projectIdParamName));
 
     @Autowired
     public AccountTransfersDataValidator(final FromJsonHelper fromApiJsonHelper,
