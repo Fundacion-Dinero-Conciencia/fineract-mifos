@@ -3892,4 +3892,12 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createMultipleInvestments() {
+        this.actionName = "CREATE_MULTIPLE_INVESTMENT";
+        this.entityName = "ACCOUNTTRANSFER";
+        this.entityId = null;
+        this.href = "/multiple";
+        return this;
+    }
+
 }

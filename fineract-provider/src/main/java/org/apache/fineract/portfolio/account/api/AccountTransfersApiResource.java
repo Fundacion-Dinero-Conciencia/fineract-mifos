@@ -54,6 +54,8 @@ import org.apache.fineract.portfolio.account.data.request.AccountTransferRequest
 import org.apache.fineract.portfolio.account.service.AccountTransfersReadPlatformService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Path("/v1/accounttransfers")
 @Component
 @Tag(name = "Account Transfers", description = "Ability to be able to transfer monetary funds from one account to another.\n\nNote: At present only savings account to savings account transfers are supported.")
@@ -96,6 +98,20 @@ public class AccountTransfersApiResource {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AccountTransfersApiResourceSwagger.PostAccountTransfersResponse.class)))
     public CommandProcessingResult create(@Parameter(hidden = true) AccountTransferRequest accountTransferRequest) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createAccountTransfer()
+                .withJson(toApiJsonSerializer.serialize(accountTransferRequest)).build();
+
+        return commandsSourceWritePlatformService.logCommandSource(commandRequest);
+    }
+
+    @POST
+    @Path("multiple")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Create new Transfer", description = "Ability to create multiple transfer of monetary funds from one account to another.")
+    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AccountTransferRequest.class)))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AccountTransfersApiResourceSwagger.PostAccountTransfersResponse.class)))
+    public CommandProcessingResult createMultipleInvestments(@Parameter(hidden = true) List<AccountTransferRequest> accountTransferRequest) {
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().createMultipleInvestments()
                 .withJson(toApiJsonSerializer.serialize(accountTransferRequest)).build();
 
         return commandsSourceWritePlatformService.logCommandSource(commandRequest);

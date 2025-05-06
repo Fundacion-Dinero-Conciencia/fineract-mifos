@@ -27,6 +27,8 @@ import org.apache.fineract.portfolio.account.domain.AccountTransferDetails;
 
 public interface AccountTransfersWritePlatformService {
 
+    CommandProcessingResult createMultipleInvestments(JsonCommand command);
+
     CommandProcessingResult create(JsonCommand command);
 
     void reverseTransfersWithFromAccountType(Long accountNumber, PortfolioAccountType accountTypeId);
