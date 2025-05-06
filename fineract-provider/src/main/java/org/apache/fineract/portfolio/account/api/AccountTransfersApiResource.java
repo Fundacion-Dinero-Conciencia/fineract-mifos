@@ -110,11 +110,12 @@ public class AccountTransfersApiResource {
     @Operation(summary = "Create new Transfer", description = "Ability to create multiple transfer of monetary funds from one account to another.")
     @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AccountTransferRequest.class)))
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AccountTransfersApiResourceSwagger.PostAccountTransfersResponse.class)))
-    public CommandProcessingResult createMultipleInvestments(@Parameter(hidden = true) List<AccountTransferRequest> accountTransferRequest) {
+    public String createMultipleInvestments(@Parameter(hidden = true) List<AccountTransferRequest> accountTransferRequest) {
         final CommandWrapper commandRequest = new CommandWrapperBuilder().createMultipleInvestments()
                 .withJson(toApiJsonSerializer.serialize(accountTransferRequest)).build();
 
-        return commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        final CommandProcessingResult result = commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return this.toApiJsonSerializer.serialize(result.getChanges());
     }
 
     @GET

@@ -62,6 +62,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
     private final StaffReadPlatformServiceLocal staffReadService;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public CommandProcessingResult addPromissoryNote(JsonCommand command) {
 
         validatePromissoryNoteRequestBody(command);

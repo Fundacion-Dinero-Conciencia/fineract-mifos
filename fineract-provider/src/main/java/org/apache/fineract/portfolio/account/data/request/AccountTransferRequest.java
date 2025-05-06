@@ -47,4 +47,7 @@ public class AccountTransferRequest implements Serializable {
     private Boolean isInvestment;
     private BigDecimal percentageInvestmentAgent;
     private Long investmentAgentId;
+
+    private BigDecimal amount;
+    private Long projectId;
 }

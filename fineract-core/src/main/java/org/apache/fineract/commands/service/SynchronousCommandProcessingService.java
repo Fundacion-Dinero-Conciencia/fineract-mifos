@@ -23,13 +23,18 @@ import static org.apache.fineract.commands.domain.CommandProcessingResultType.PR
 import static org.apache.http.HttpStatus.SC_OK;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import io.github.resilience4j.retry.annotation.Retry;
 import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.batch.exception.ErrorInfo;
@@ -58,6 +63,7 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
 @Service
 @Slf4j
@@ -287,11 +293,11 @@ public class SynchronousCommandProcessingService implements CommandProcessingSer
 
             Map<String, Object> myMap;
 
-            try {
+            JsonElement element = JsonParser.parseString(command.json());
+            if (element.isJsonArray()) {
+                myMap = Map.of("items", gson.fromJson(element, List.class));
+            } else {
                 myMap = gson.fromJson(command.json(), type);
-            } catch (Exception e) {
-                throw new PlatformApiDataValidationException("error.msg.invalid.json", "The provided JSON is invalid.", new ArrayList<>(),
-                        e);
             }
 
             Map<String, Object> reqmap = new HashMap<>();
