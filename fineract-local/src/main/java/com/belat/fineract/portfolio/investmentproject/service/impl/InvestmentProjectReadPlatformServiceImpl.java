@@ -130,6 +130,19 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     }
 
     @Override
+    public List<InvestmentProjectData> retrieveByName(String name) {
+        List<InvestmentProject> projects = investmentProjectRepository.retrieveByName(name);
+        List<InvestmentProjectData> projectsData = new ArrayList<>();
+        projects.forEach(project -> {
+            if (project != null) {
+                InvestmentProjectData projectData = investmentProjectMapper.map(project);
+                factoryData(projectData, project, projectsData);
+            }
+        });
+        return projectsData;
+    }
+
+    @Override
     public List<StatusHistoryProjectData> getAllStatusHistoryByInvestmentProjectId(Long investmentId) {
         List<StatusHistoryProject> history = historyProjectRepository.getAllStatusHistoryByInvestmentProjectId(investmentId);
 

@@ -19,4 +19,7 @@ public interface InvestmentProjectRepository extends JpaRepository<InvestmentPro
     @Query(value = "SELECT * FROM e_investment_project WHERE id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     InvestmentProject retrieveOneByProjectId(Long projectId);
 
+    @Query("SELECT ip FROM InvestmentProject ip WHERE LOWER(ip.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<InvestmentProject> retrieveByName(@Param("name") String name);
+
 }
