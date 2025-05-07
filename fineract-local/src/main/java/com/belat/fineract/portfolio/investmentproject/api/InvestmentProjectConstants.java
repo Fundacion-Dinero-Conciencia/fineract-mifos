@@ -44,7 +44,7 @@ public class InvestmentProjectConstants {
     public static final Set<String> INVESTMENT_PROJECT_PARAMETERS = new HashSet<>(Arrays.asList(projectNameParamName, subtitleParamName,
             projectOwnerIdParamName, amountParamName, currencyCodeParamName, projectRateParamName, periodParamName, countryIdParamName,
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
-            isActiveParamName, categoryParamName, loanIdParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
+            isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
             minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName,
             positionParamName));
 

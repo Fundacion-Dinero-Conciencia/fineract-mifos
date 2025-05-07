@@ -49,4 +49,5 @@
   <include relativeToChangelogFile="true" file="parts/9025_add_investment_project_mnemonic_and_socio_environmental_description.xml"/>
   <include relativeToChangelogFile="true" file="parts/9026_add_table_investment_project_address.xml"/>
   <include relativeToChangelogFile="true" file="parts/9027_add_investment_project_position.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9028_add_default_loan_product_configuration.xml"/>
 </databaseChangeLog>
