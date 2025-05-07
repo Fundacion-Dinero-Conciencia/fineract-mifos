@@ -73,7 +73,7 @@ public class InvestmentProjectApiResource {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.GetInvestmentProjectResponse.class))) })
     public String getInvestmentProjects(@QueryParam("id") final Long id, @QueryParam("ownerId") final Long ownerId,
-            @QueryParam("categoryId") final Long categoryId) {
+            @QueryParam("categoryId") final Long categoryId, @QueryParam("name") final String name) {
         platformUserRightsContext.isAuthenticated();
 
         if (id != null) {
@@ -84,6 +84,9 @@ public class InvestmentProjectApiResource {
             return apiJsonSerializerService.serialize(projectsData);
         } else if (categoryId != null) {
             final List<InvestmentProjectData> projectsData = investmentProjectReadPlatformService.retrieveByCategoryId(categoryId);
+            return apiJsonSerializerService.serialize(projectsData);
+        } else if (name != null) {
+            final List<InvestmentProjectData> projectsData = investmentProjectReadPlatformService.retrieveByName(name);
             return apiJsonSerializerService.serialize(projectsData);
         } else {
             throw new IllegalArgumentException("Not supported parameter");

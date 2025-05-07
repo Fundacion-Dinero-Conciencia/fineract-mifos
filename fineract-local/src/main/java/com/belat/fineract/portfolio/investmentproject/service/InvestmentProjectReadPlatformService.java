@@ -17,6 +17,8 @@ public interface InvestmentProjectReadPlatformService {
 
     List<InvestmentProjectData> retrieveByCategoryId(Long categoryId);
 
+    List<InvestmentProjectData> retrieveByName(String name);
+
     List<StatusHistoryProjectData> getAllStatusHistoryByInvestmentProjectId(Long investmentId);
 
     InvestmentProject retrieveInvestmentById(Long id);
