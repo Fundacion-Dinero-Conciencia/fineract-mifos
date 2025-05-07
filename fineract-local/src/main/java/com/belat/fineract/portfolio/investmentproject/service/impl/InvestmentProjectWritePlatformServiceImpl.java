@@ -17,15 +17,22 @@ import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjec
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
+import java.lang.module.Configuration;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,6 +41,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -43,12 +52,18 @@ import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRu
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.organisation.monetary.domain.ApplicationCurrencyRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
+import org.apache.fineract.portfolio.loanaccount.service.LoanApplicationWritePlatformService;
+import org.apache.fineract.portfolio.loanaccount.service.LoanWritePlatformService;
+import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
+import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
+import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -68,6 +83,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     private final InvestmentProjectObjectiveRepository investmentProjectObjectiveRepository;
     private final StatusHistoryProjectRepository statusHistoryProjectRepository;
     private final SocioEnvironmentalDescriptionRepository socioEnvironmentalDescriptionRepository;
+    private final LoanApplicationWritePlatformService loanApplicationWritePlatformService;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
+    private final LoanProductReadPlatformService loanProductReadPlatformService;
 
     @Override
     public CommandProcessingResult createInvestmentProject(JsonCommand command) {
@@ -127,9 +145,6 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
         investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
 
-        final Long loanId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanIdParamName);
-        investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanId));
-
         final BigDecimal maxAmount = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.maxAmountParamName);
 
         final BigDecimal minAmount = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.minAmountParamName);
@@ -163,6 +178,15 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         investmentProject.setPosition(position);
 
+        //Validate global configuration for default-belat-investment-project-loan-product before create investment project
+        GlobalConfigurationPropertyData configurationData = configurationReadPlatformService.retrieveGlobalConfiguration("default-belat-investment-project-loan-product");
+        if (!configurationData.isEnabled()) {
+            throw new GeneralPlatformDomainRuleException("err.msg.fist.enable.default.belat.investment.project.loan.product", "First enable default-belat-investment-project-loan-product global configuration");
+        }
+        if (configurationData.getValue() == null || configurationData.getValue() == 0) {
+            throw new GeneralPlatformDomainRuleException("err.msg.fist.define.default.belat.investment.project.loan.product", "First define value for default-belat-investment-project-loan-product global configuration");
+        }
+
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
 
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
@@ -183,6 +207,19 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         historyProject.setInvestmentProject(investmentProject);
         historyProject.setStatusValue(newStatus);
         statusHistoryProjectRepository.save(historyProject);
+
+        // Build loan data
+        JsonObject loanJson = createLoanAccountData(investmentProject.getOwner().getId(), configurationData.getValue(), investmentProject.getAmount(),
+                investmentProject.getRate(), investmentProject.getPeriod());
+
+        JsonCommand loanCommand = JsonCommand.from(String.valueOf(loanJson), JsonParser.parseString(loanJson.toString()),
+                command.getFromApiJsonHelper());
+
+        // Create saving account
+        CommandProcessingResult loanResult = loanApplicationWritePlatformService.submitApplication(loanCommand);
+
+        investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanResult.getResourceId()));
+        investmentProjectRepository.saveAndFlush(investmentProject);
 
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(investmentProject.getId()).build();
     }
@@ -358,9 +395,6 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
 
-        final String loanId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.loanIdParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.loanIdParamName).value(loanId).notBlank().notNull();
-
         final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
 
@@ -489,5 +523,54 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
             throw new GeneralPlatformDomainRuleException("err.msg.obtain.long.list.from.string", "Error when get long list from string");
         }
         return categoriesId;
+    }
+
+    private JsonObject createLoanAccountData(final Long clientId, final Long loanProductId, final BigDecimal amount,
+                                             final BigDecimal interest, final Integer periods) {
+        JsonObject accountJson = new JsonObject();
+        // To format date in specific format
+        DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
+
+        LoanProductData loanProductData = loanProductReadPlatformService.retrieveLoanProduct(loanProductId);
+
+        accountJson.addProperty("productId", loanProductData.getId());
+        accountJson.addProperty("loanOfficerId", "");
+        accountJson.addProperty("loanPurposeId", "");
+        accountJson.addProperty("fundId", "");
+        accountJson.addProperty("submittedOnDate", DateUtils.getBusinessLocalDate().format(formatter));
+        accountJson.addProperty("expectedDisbursementDate", DateUtils.getBusinessLocalDate().format(formatter));
+        accountJson.addProperty("externalId", "");
+        accountJson.addProperty("linkAccountId", "");
+        accountJson.addProperty("createStandingInstructionAtDisbursement", "");
+        accountJson.addProperty("loanTermFrequency", periods);
+        accountJson.addProperty("loanTermFrequencyType", 2);
+        accountJson.addProperty("numberOfRepayments", periods);
+        accountJson.addProperty("repaymentEvery", loanProductData.getRepaymentEvery());
+        accountJson.addProperty("repaymentFrequencyType", loanProductData.getRepaymentFrequencyType().getId());
+        accountJson.addProperty("repaymentFrequencyNthDayType", "");
+        accountJson.addProperty("repaymentFrequencyDayOfWeekType", "");
+        accountJson.add("repaymentsStartingFromDate", JsonNull.INSTANCE);
+        accountJson.add("interestChargedFromDate", JsonNull.INSTANCE);
+        accountJson.addProperty("interestType", loanProductData.getInterestType().getId());
+        accountJson.addProperty("isEqualAmortization", loanProductData.isEqualAmortization());
+        accountJson.addProperty("amortizationType", loanProductData.getAmortizationType().getId());
+        accountJson.addProperty("interestCalculationPeriodType", loanProductData.getInterestCalculationPeriodType().getId());
+        accountJson.addProperty("graceOnPrincipalPayment", loanProductData.getGraceOnPrincipalPayment());
+        accountJson.addProperty("graceOnArrearsAgeing", loanProductData.getGraceOnArrearsAgeing());
+        accountJson.addProperty("loanIdToClose", "");
+        accountJson.addProperty("isTopup", "");
+        accountJson.addProperty("transactionProcessingStrategyCode", loanProductData.getTransactionProcessingStrategyCode());
+        accountJson.addProperty("interestRateFrequencyType", loanProductData.getInterestRateFrequencyType().getId());
+        accountJson.addProperty("interestRatePerPeriod", interest);
+        accountJson.add("charges", new JsonArray());
+        accountJson.add("collateral", new JsonArray());
+        accountJson.add("disbursementData", new JsonArray());
+        accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
+        accountJson.addProperty("locale", Locale.ENGLISH.toString());
+        accountJson.addProperty("clientId", clientId);
+        accountJson.addProperty("loanType", "individual");
+        accountJson.addProperty("principal", amount);
+        accountJson.addProperty("allowPartialPeriodInterestCalcualtion", loanProductData.getAllowPartialPeriodInterestCalculation());
+        return accountJson;
     }
 }
