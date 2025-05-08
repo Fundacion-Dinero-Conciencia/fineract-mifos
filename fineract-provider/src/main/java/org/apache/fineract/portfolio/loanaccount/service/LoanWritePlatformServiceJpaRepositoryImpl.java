@@ -18,13 +18,6 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service;
 
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.ACTUAL_DISBURSEMENT_DATE;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.CLOSED_ON_DATE;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.EXTERNAL_ID;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.PARAM_STATUS;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.TRANSACTION_DATE;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.WRITTEN_OFF_ON_DATE;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -35,23 +28,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.resilience4j.retry.annotation.Retry;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -230,6 +206,31 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.apache.fineract.portfolio.loanaccount.domain.Loan.ACTUAL_DISBURSEMENT_DATE;
+import static org.apache.fineract.portfolio.loanaccount.domain.Loan.CLOSED_ON_DATE;
+import static org.apache.fineract.portfolio.loanaccount.domain.Loan.EXTERNAL_ID;
+import static org.apache.fineract.portfolio.loanaccount.domain.Loan.PARAM_STATUS;
+import static org.apache.fineract.portfolio.loanaccount.domain.Loan.TRANSACTION_DATE;
+import static org.apache.fineract.portfolio.loanaccount.domain.Loan.WRITTEN_OFF_ON_DATE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -3158,8 +3159,9 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(command.json());
-            String dateStr = root.get(LoanApiConstants.dateOfCreationParamName).asText();
+            JsonNode root = mapper.readTree(commandSource.getCommandAsJson());
+            JsonNode rootForDate = mapper.readTree(command.json());
+            String dateStr = rootForDate.get(LoanApiConstants.dateOfCreationParamName).asText();
             format = root.get(LoanApiConstants.dateFormatParameterName).asText();
             locale = root.get(LoanApiConstants.localeParameterName).asText();
             date = OffsetDateTime.parse(dateStr).toLocalDate();
