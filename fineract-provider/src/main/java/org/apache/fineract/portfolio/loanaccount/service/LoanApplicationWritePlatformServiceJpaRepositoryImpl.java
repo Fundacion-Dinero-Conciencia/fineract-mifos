@@ -18,21 +18,10 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service;
 
-import static org.apache.fineract.portfolio.loanproduct.domain.RecalculationFrequencyType.SAME_AS_REPAYMENT_PERIOD;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jakarta.persistence.PersistenceException;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -98,6 +87,18 @@ import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.apache.fineract.portfolio.loanproduct.domain.RecalculationFrequencyType.SAME_AS_REPAYMENT_PERIOD;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -175,6 +176,7 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     .withOfficeId(loan.getOfficeId()) //
                     .withClientId(loan.getClientId()) //
                     .withGroupId(loan.getGroupId()) //
+                    .withEntityExternalId(loan.getExternalId()) //
                     .withLoanId(loan.getId()).withGlimId(loan.getGlimId()).build();
         } catch (final JpaSystemException | DataIntegrityViolationException dve) {
             handleDataIntegrityIssues(command, dve.getMostSpecificCause(), dve);

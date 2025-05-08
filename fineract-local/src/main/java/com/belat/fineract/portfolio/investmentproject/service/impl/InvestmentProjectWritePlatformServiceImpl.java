@@ -17,6 +17,7 @@ import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjec
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -28,6 +29,10 @@ import java.io.IOException;
 import java.lang.module.Configuration;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -39,6 +44,11 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.commands.domain.CommandSource;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandSourceService;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.commands.service.IdempotencyKeyGenerator;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
@@ -53,6 +63,7 @@ import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
+import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.monetary.domain.ApplicationCurrencyRepositoryWrapper;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
@@ -64,6 +75,7 @@ import org.apache.fineract.portfolio.loanaccount.service.LoanWritePlatformServic
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -86,6 +98,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     private final LoanApplicationWritePlatformService loanApplicationWritePlatformService;
     private final ConfigurationReadPlatformService configurationReadPlatformService;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
+    private final CommandSourceService commandSourceService;
+    @Autowired
+    private PlatformSecurityContext context;
 
     @Override
     public CommandProcessingResult createInvestmentProject(JsonCommand command) {
@@ -220,6 +235,11 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanResult.getResourceId()));
         investmentProjectRepository.saveAndFlush(investmentProject);
+        CommandSource commandSource = commandSourceService.saveInitialNewTransaction(new CommandWrapperBuilder().createLoanApplication().build(), loanCommand, context.authenticatedUser(), new IdempotencyKeyGenerator().create());
+        commandSource.setResourceExternalId(loanResult.getResourceExternalId());
+        commandSource.setLoanId(loanResult.getResourceId());
+        commandSource.setClientId(owner.getId());
+        commandSourceService.saveResultNewTransaction(commandSource);
 
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(investmentProject.getId()).build();
     }
