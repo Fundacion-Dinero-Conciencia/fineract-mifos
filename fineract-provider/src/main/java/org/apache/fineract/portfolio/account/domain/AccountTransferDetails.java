@@ -156,6 +156,10 @@ public class AccountTransferDetails extends AbstractPersistableCustom<Long> {
         return AccountTransferType.fromInt(this.transferType);
     }
 
+    public Integer transferTypeNetValue() {
+        return this.transferType;
+    }
+
     public static AccountTransferDetails loanToLoanTransfer(Office fromOffice, Client fromClient, Loan fromLoanAccount, Office toOffice,
             Client toClient, Loan toLoanAccount, Integer transferType) {
         return new AccountTransferDetails(fromOffice, fromClient, null, fromLoanAccount, toOffice, toClient, null, toLoanAccount,

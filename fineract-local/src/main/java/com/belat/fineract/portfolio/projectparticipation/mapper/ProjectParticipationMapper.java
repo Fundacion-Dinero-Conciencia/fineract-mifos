@@ -38,6 +38,7 @@ public interface ProjectParticipationMapper {
     @Mapping(target = "interestsEarned", ignore = true)
     @Mapping(target = "commissionEarned", ignore = true)
     @Mapping(target = "principalEarned", ignore = true)
+    @Mapping(target = "pendingAmount", ignore = true)
     @Mapping(target = "participantName", source = "client.displayName")
     @Mapping(target = "projectName", source = "investmentProject.name")
     @Mapping(target = "currencyCode", source = "investmentProject.currencyCode")

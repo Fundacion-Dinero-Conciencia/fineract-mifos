@@ -19,6 +19,8 @@
 package org.apache.fineract.portfolio.loanaccount.domain;
 
 import com.google.common.collect.Lists;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -308,5 +310,9 @@ public class LoanRepositoryWrapper {
 
     public boolean existsByLoanId(Long loanId) {
         return repository.existsById(loanId);
+    }
+
+    public BigDecimal retrieveTotalOutstanding(Long loanId) {
+        return repository.retrieveTotalOutstanding(loanId);
     }
 }

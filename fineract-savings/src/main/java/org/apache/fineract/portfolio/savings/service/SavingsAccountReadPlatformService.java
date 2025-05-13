@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.service.Page;
 import org.apache.fineract.infrastructure.core.service.SearchParameters;
+import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 import org.apache.fineract.portfolio.savings.DepositAccountType;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
 import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
@@ -69,4 +70,6 @@ public interface SavingsAccountReadPlatformService {
     List<SavingsAccountTransactionData> retrieveAllTransactionData(List<String> refNo);
 
     Long retrieveAccountIdByExternalId(ExternalId externalId);
+
+    PortfolioAccountData retriveSavingsLinkedAssociation(Long savingsId);
 }

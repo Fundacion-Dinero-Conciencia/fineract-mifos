@@ -67,4 +67,9 @@ public class PromissoryNoteReadPlatformServiceImpl implements PromissoryNoteRead
     public List<PromissoryNote> retrieveByFundAccountId(Long fundAccountId) {
         return promissoryNoteRepository.retrieveByFundAccountId(fundAccountId);
     }
+
+    @Override
+    public List<PromissoryNote> retrieveByInvestorAccountId(Long investorAccountId) {
+        return promissoryNoteRepository.retrieveByInvestorAccountId(investorAccountId);
+    }
 }

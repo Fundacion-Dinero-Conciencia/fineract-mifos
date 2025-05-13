@@ -32,6 +32,9 @@ public interface PromissoryNoteRepository extends JpaRepository<PromissoryNote, 
     @Query("SELECT p FROM PromissoryNote p WHERE p.fundSavingsAccount.id = :fundId")
     List<PromissoryNote> retrieveByFundAccountId(@Param("fundId") Long fundId);
 
+    @Query("SELECT p FROM PromissoryNote p WHERE p.investorSavingsAccount.id = :investorId")
+    List<PromissoryNote> retrieveByInvestorAccountId(@Param("investorId") Long investorId);
+
     @Query("SELECT p FROM PromissoryNote p WHERE p.fundSavingsAccount.id = :fundId AND p.status = :status")
     List<PromissoryNote> retrieveByFundAccountIdAndStatus(@Param("fundId") Long fundId, @Param("status") PromissoryNoteStatus status);
 

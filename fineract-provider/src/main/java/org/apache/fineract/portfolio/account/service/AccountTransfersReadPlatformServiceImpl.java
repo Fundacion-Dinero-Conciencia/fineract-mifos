@@ -428,21 +428,19 @@ public class AccountTransfersReadPlatformServiceImpl implements AccountTransfers
     }
 
     @Override
-    public List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(Long toAccountId,
-            String fromSavingsName) {
+    public List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsAccount(Long fromAccountId, Long toAccountId) {
         List<AccountTransferTransaction> accountTransferTransactions = accountTransferRepository
-                .findToSavingsAccountTransactionsDependsOnFromSavingsName(toAccountId, fromSavingsName);
-        List<AccountTransferData> accountTransferData = new ArrayList<>();
+                .findToSavingsAccountTransactionsDependsOnFromSavingsAccount(fromAccountId, toAccountId);
+        List<AccountTransferData> accountTransferDataList = new ArrayList<>();
 
         accountTransferTransactions.forEach(item -> {
-            AccountTransferData transferData = retrieveTemplate(null,
-                    item.getFromSavingsTransaction().getSavingsAccount().getClient().getId(),
-                    item.getFromSavingsTransaction().getSavingsAccount().getId(), PortfolioAccountType.SAVINGS.getValue(), null,
-                    item.getToSavingsTransaction().getSavingsAccount().getClient().getId(),
-                    item.getToSavingsTransaction().getSavingsAccount().getId(), PortfolioAccountType.SAVINGS.getValue());
-            accountTransferData.add(transferData);
+            AccountTransferData accountTransferData = retrieveOne(item.getId());
+            if (item.getAccountTransferDetails().transferTypeNetValue() != null) {
+                accountTransferData.setTransferType(item.getAccountTransferDetails().transferTypeNetValue());
+            }
+            accountTransferDataList.add(accountTransferData);
         });
 
-        return accountTransferData;
+        return accountTransferDataList;
     }
 }
