@@ -7,20 +7,38 @@ import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipa
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
 import com.belat.fineract.portfolio.projectparticipation.mapper.ProjectParticipationMapper;
 import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticipationReadPlatformService;
+import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote;
+import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteReadPlatformService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.fineract.organisation.monetary.data.CurrencyData;
+import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
+import org.apache.fineract.organisation.monetary.domain.Money;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
+import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 import org.apache.fineract.portfolio.account.service.AccountTransfersReadPlatformService;
+import org.apache.fineract.portfolio.loanaccount.data.RepaymentScheduleRelatedLoanData;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepository;
+import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
+import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleHistoryReadPlatformService;
+import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformServiceCommon;
+import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
+import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +51,9 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     private final AccountTransfersReadPlatformService accountTransfersReadPlatformService;
     private final LoanRepository loanRepository;
     private final ApplicationContext applicationContext;
+    private final PromissoryNoteReadPlatformService promissoryNoteReadPlatformService;
+    private final SavingsAccountReadPlatformService savingsAccountReadPlatformService;
+    private final LoanReadPlatformServiceCommon loanReadPlatformServiceCommon;
 
     @Override
     public List<ProjectParticipationData> retrieveAll() {
@@ -85,7 +106,7 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
 
     private void factoryData(ProjectParticipationData projectData, ProjectParticipation project,
             List<ProjectParticipationData> projectsData) {
-        projectData.setParticipantId(project.getClient().getId());
+         projectData.setParticipantId(project.getClient().getId());
         projectData.setProject(investmentProjectReadPlatformService.retrieveById(project.getInvestmentProject().getId()));
         ProjectParticipationData.StatusEnum statusEnum = new ProjectParticipationData.StatusEnum(
                 ProjectParticipationStatusEnum.fromInt(project.getStatusEnum()).toEnumOptionData().getCode(),
@@ -98,34 +119,88 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
         Optional<SavingsAccount> account = savingsAccountRepositoryWrapper.findSavingAccountByClientId(project.getClient().getId()).stream()
                 .findFirst();
         if (account.isPresent()) {
-            // Get project owner credit name
-            Loan loan = loanRepository.findLoanByClientIdAmountAndApprovedStatus(project.getInvestmentProject().getOwner().getId(),
-                    project.getInvestmentProject().getAmount());
 
-            if (loan != null) {
-                // Get transactions to investor saving account
-                List<AccountTransferData> accountTransferData = accountTransfersReadPlatformService
-                        .retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(account.get().getId(),
-                                applicationContext.getEnvironment().getProperty("fineract.fund.client.name") + loan.getAccountNumber());
+            //Get promissoryNotes by investor saving account
+            List<PromissoryNote> promissoryNotes = promissoryNoteReadPlatformService.retrieveByInvestorAccountId(account.get().getId());
+
+            //Get project owner savingsAccounts funds
+            List<SavingsAccount> savingsAccounts = savingsAccountRepositoryWrapper.findFundSavingAccountByClientId(
+                    applicationContext.getEnvironment().getProperty("fineract.fund.client.name"),
+                    project.getInvestmentProject().getOwner().getId());
+
+            List<PromissoryNote> filteredPromissoryNotes = new ArrayList<>();
+
+            //Filter by savingsAccounts and promissoryNotes
+            for (PromissoryNote promissoryNote : promissoryNotes) {
+                for (SavingsAccount savingsAccount : savingsAccounts) {
+                    if (promissoryNote.getFundSavingsAccount().getId().equals(savingsAccount.getId())) {
+                        filteredPromissoryNotes.add(promissoryNote);
+                    }
+                }
+            }
+
+            if (!filteredPromissoryNotes.isEmpty()) {
+                //Delete duplicates
+                //TODO -> no filtrarlos si no obtener el porcentaje por cada monto
+                List<PromissoryNote> filtered = filteredPromissoryNotes.stream()
+                    .collect(Collectors.collectingAndThen(
+                            Collectors.toMap(PromissoryNote::getInvestorSavingsAccount, Function.identity(), (e1, e2) -> e1),
+                            map -> new ArrayList<>(map.values())
+                    ));
 
                 BigDecimal principalEarned = BigDecimal.ZERO;
                 BigDecimal interestEarned = BigDecimal.ZERO;
                 BigDecimal commissionEarned = BigDecimal.ZERO;
+                BigDecimal pendingAmount = BigDecimal.ZERO;
 
-                for (var item : accountTransferData) {
-                    if (item.getTransferDescription().contains("P")) {
-                        principalEarned = principalEarned.add(item.getTransferAmount());
-                    }
-                    if (item.getTransferDescription().contains("I")) {
-                        interestEarned = interestEarned.add(item.getTransferAmount());
-                    }
-                    if (item.getTransferDescription().contains("C")) {
-                        commissionEarned = commissionEarned.add(item.getTransferAmount());
+                //Get total earned
+                for (PromissoryNote promissoryNote : filtered) {
+                    // Get transactions to investor saving account
+                    List<AccountTransferData> accountTransferData = accountTransfersReadPlatformService
+                            .retrieveToSavingsAccountTransactionsDependsOnFromSavingsAccount(promissoryNote.getFundSavingsAccount().getId(), account.get().getId());
+                    if (!accountTransferData.isEmpty()) {
+                        //
+                        for (var item : accountTransferData) {
+                            if (item.getTransferType() != null) {
+                                if (SavingsAccountTransactionType.CURRENT_INTEREST.getValue().equals(item.getTransferType())) {
+                                    interestEarned = interestEarned.add(item.getTransferAmount());
+                                } else if (SavingsAccountTransactionType.ARREARS_INTEREST.getValue().equals(item.getTransferType()) ||
+                                        SavingsAccountTransactionType.INVESTMENT_FEE.getValue().equals(item.getTransferType())) {
+                                    commissionEarned = commissionEarned.add(item.getTransferAmount());
+                                } else {
+                                    principalEarned = principalEarned.add(item.getTransferAmount());
+                                }
+                            } else {
+                                principalEarned = principalEarned.add(item.getTransferAmount());
+                            }
+                        }
+                        PortfolioAccountData accountData = savingsAccountReadPlatformService.retriveSavingsLinkedAssociation(promissoryNote.getFundSavingsAccount().getId());
+                        if (accountData != null) {
+                            Optional <Loan> loan = loanRepository.findById(accountData.getId()).stream().findFirst();
+                            if (loan.isPresent()) {
+                                BigDecimal totalOutstanding = loanReadPlatformServiceCommon.getLoanTotalExpectedRepaymentDerived(loan.get().getId());
+                                BigDecimal disbursedAmount = loan.get().getDisbursedAmount();
+                                BigDecimal participationAmount = project.getAmount();
+
+                                BigDecimal participationPercentage = participationAmount
+                                        .divide(disbursedAmount, 4, RoundingMode.HALF_UP)  // 4 decimales de precisión
+                                        .multiply(BigDecimal.valueOf(100));                // convertir a porcentaje
+
+                                BigDecimal participationValue = totalOutstanding
+                                        .multiply(participationPercentage)
+                                        .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+
+                                pendingAmount = pendingAmount.add(participationValue);
+
+                            }
+                        }
                     }
                 }
+
                 projectData.setPrincipalEarned(principalEarned);
                 projectData.setInterestsEarned(interestEarned);
                 projectData.setCommissionEarned(commissionEarned);
+                projectData.setPendingAmount(pendingAmount);
             }
         }
         projectsData.add(projectData);

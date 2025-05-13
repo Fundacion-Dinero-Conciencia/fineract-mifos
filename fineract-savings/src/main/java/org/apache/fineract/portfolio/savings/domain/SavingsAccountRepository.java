@@ -35,6 +35,9 @@ public interface SavingsAccountRepository extends JpaRepository<SavingsAccount, 
     @Query("select s_acc from SavingsAccount s_acc where s_acc.client.id = :clientId")
     List<SavingsAccount> findSavingAccountByClientId(@Param("clientId") Long clientId);
 
+    @Query("SELECT s_acc FROM SavingsAccount s_acc WHERE s_acc.client.id = :clientId AND s_acc.accountNumber LIKE CONCAT('%', :fundName, '%')")
+    List<SavingsAccount> findFundSavingAccountByClientId(@Param("fundName") String fundName, @Param("clientId") Long clientId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select sa from SavingsAccount sa where sa.id = :savingsId")
     SavingsAccount findOneLocked(@Param("savingsId") Long id);

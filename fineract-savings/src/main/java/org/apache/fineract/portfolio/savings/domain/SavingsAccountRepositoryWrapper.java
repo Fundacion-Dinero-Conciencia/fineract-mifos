@@ -98,6 +98,13 @@ public class SavingsAccountRepositoryWrapper {
     }
 
     @Transactional(readOnly = true)
+    public List<SavingsAccount> findFundSavingAccountByClientId(@Param("fundName") String fundName, @Param("clientId") Long clientId) {
+        List<SavingsAccount> accounts = this.repository.findFundSavingAccountByClientId(fundName, clientId);
+        loadLazyCollections(accounts);
+        return accounts;
+    }
+
+    @Transactional(readOnly = true)
     public List<SavingsAccount> findSavingAccountByStatus(@Param("status") Integer status) {
         List<SavingsAccount> accounts = this.repository.findSavingAccountByStatus(status);
         loadLazyCollections(accounts);

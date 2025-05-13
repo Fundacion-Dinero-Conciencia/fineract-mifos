@@ -43,6 +43,7 @@ public class ProjectParticipationData {
     private BigDecimal principalEarned;
     private BigDecimal commissionEarned;
     private BigDecimal interestsEarned;
+    private BigDecimal pendingAmount;
 
     @Data
     @AllArgsConstructor

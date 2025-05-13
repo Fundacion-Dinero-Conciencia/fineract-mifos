@@ -40,7 +40,6 @@ public interface AccountTransferRepository
     @Query("select att from AccountTransferTransaction att where att.fromLoanTransaction.id IN :loanTransactions and att.reversed=false")
     List<AccountTransferTransaction> findByFromLoanTransactions(@Param("loanTransactions") Collection<Long> loanTransactions);
 
-    @Query("select att from AccountTransferTransaction att where att.toSavingsTransaction.savingsAccount.id = :toSavingsId and att.fromSavingsTransaction.savingsAccount.accountNumber like '%:fromSavingsName%' and att.reversed=false")
-    List<AccountTransferTransaction> findToSavingsAccountTransactionsDependsOnFromSavingsName(@Param("toSavingsId") Long toSavingsId,
-            @Param("fromSavingsName") String fromSavingsName);
+    @Query("select att from AccountTransferTransaction att where att.toSavingsTransaction.savingsAccount.id = :toSavingsId and att.fromSavingsTransaction.savingsAccount.id = :fromSavingsId and att.reversed=false")
+    List<AccountTransferTransaction> findToSavingsAccountTransactionsDependsOnFromSavingsAccount(@Param("fromSavingsId") Long fromSavingsId, @Param("toSavingsId") Long toSavingsId);
 }

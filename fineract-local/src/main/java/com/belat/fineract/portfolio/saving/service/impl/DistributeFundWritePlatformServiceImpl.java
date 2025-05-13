@@ -127,7 +127,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                 }
 
                 Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend,
-                        DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()), DistributeFundConstants.INVESTMENT_PAYMENT_TYPE);
+                        DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()), tr.getTransactionType().getValue());
                 transactionsList.add(transactionId);
             }
             tr.setWasDistribute(true);

@@ -49,5 +49,5 @@ public interface AccountTransfersReadPlatformService {
 
     BigDecimal getTotalTransactionAmount(Long accountId, Integer accountType, LocalDate transactionDate);
 
-    List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsName(Long toAccountId, String fromSavingsName);
+    List<AccountTransferData> retrieveToSavingsAccountTransactionsDependsOnFromSavingsAccount(Long fromAccountId, Long toAccountId);
 }

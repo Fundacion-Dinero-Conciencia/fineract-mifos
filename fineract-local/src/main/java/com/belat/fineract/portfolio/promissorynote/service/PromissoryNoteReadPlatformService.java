@@ -33,4 +33,7 @@ public interface PromissoryNoteReadPlatformService {
     PromissoryNoteData retrieveOneByPromissoryNoteNumber(String promissoryNoteNumber);
 
     List<PromissoryNote> retrieveByFundAccountId(Long fundAccountId);
+
+    List<PromissoryNote> retrieveByInvestorAccountId(Long investorAccountId);
+
 }

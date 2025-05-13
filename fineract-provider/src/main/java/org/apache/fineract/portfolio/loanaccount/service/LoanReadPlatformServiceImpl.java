@@ -21,6 +21,8 @@ package org.apache.fineract.portfolio.loanaccount.service;
 import static java.lang.Boolean.TRUE;
 import static org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations.interestType;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
@@ -47,6 +49,7 @@ import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.data.StringEnumOptionData;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
 import org.apache.fineract.infrastructure.core.service.Page;
@@ -643,6 +646,11 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService, Loa
             throw new LoanNotFoundException(loanExternalId);
         }
         return loanId;
+    }
+
+    @Override
+    public BigDecimal getLoanTotalExpectedRepaymentDerived(Long loanId) {
+        return loanRepositoryWrapper.retrieveTotalOutstanding(loanId);
     }
 
     private static final class LoanMapper implements RowMapper<LoanAccountData> {

@@ -18,7 +18,11 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service;
 
+import java.math.BigDecimal;
+
 public interface LoanReadPlatformServiceCommon {
 
     Long getLoanIdByLoanExternalId(String externalId);
+
+    BigDecimal getLoanTotalExpectedRepaymentDerived(Long loanId);
 }

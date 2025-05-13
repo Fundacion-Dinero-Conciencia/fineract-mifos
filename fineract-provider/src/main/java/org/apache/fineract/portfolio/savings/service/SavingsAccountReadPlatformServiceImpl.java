@@ -46,6 +46,8 @@ import org.apache.fineract.infrastructure.security.service.PlatformSecurityConte
 import org.apache.fineract.infrastructure.security.utils.ColumnValidator;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
+import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
+import org.apache.fineract.portfolio.account.service.AccountAssociationsReadPlatformService;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.group.data.GroupGeneralData;
 import org.apache.fineract.portfolio.paymentdetail.data.PaymentDetailData;
@@ -103,9 +105,11 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
 
     private final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper;
 
+    private final AccountAssociationsReadPlatformService accountAssociationsReadPlatformService;
+
     public SavingsAccountReadPlatformServiceImpl(final PlatformSecurityContext context, final JdbcTemplate jdbcTemplate,
-            final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper, ColumnValidator columnValidator,
-            DatabaseSpecificSQLGenerator sqlGenerator, SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper) {
+                                                 final SavingsAccountAssembler savingAccountAssembler, PaginationHelper paginationHelper, ColumnValidator columnValidator,
+                                                 DatabaseSpecificSQLGenerator sqlGenerator, SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper, AccountAssociationsReadPlatformService accountAssociationsReadPlatformService) {
         this.context = context;
         this.jdbcTemplate = jdbcTemplate;
         this.sqlGenerator = sqlGenerator;
@@ -118,6 +122,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         this.paginationHelper = paginationHelper;
         this.savingAccountMapperForInterestPosting = new SavingAccountMapperForInterestPosting();
         this.savingAccountAssembler = savingAccountAssembler;
+        this.accountAssociationsReadPlatformService = accountAssociationsReadPlatformService;
     }
 
     @Override
@@ -1386,5 +1391,10 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
     @Override
     public Long retrieveAccountIdByExternalId(final ExternalId externalId) {
         return savingsAccountRepositoryWrapper.findIdByExternalId(externalId);
+    }
+
+    @Override
+    public PortfolioAccountData retriveSavingsLinkedAssociation(Long savingsId) {
+        return accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(savingsId);
     }
 }

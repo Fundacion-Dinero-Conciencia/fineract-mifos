@@ -277,4 +277,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
     @Query(value = "SELECT * FROM public.m_loan " + "WHERE account_no LIKE ?1 " + "ORDER BY account_no DESC "
             + "LIMIT 1", nativeQuery = true)
     Loan retrieveOneByAccountNumber(String number);
+
+    @Query(value = "SELECT (total_expected_repayment_derived - total_repayment_derived) FROM public.m_loan " + "WHERE id = ?1 ", nativeQuery = true)
+    BigDecimal retrieveTotalOutstanding(Long loanId);
 }
