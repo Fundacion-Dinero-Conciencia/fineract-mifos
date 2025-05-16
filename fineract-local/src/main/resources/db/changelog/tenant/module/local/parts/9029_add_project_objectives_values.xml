@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="1" author="fineract">
+        <sql>
+            DELETE FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE');
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Fin de la pobreza',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Hambre cero',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Salud y bienestar',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Educación de calidad',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Igualdad de género',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Agua limpia y saneamiento',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Energía asequible y no contaminante',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Trabajo decente y crecimiento económico',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Industria, innovación e infraestructura',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Reducción de las desigualdades',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Ciudades y comunidades sostenibles',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Producción y consumo responsables',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Acción por el clima',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Vida submarina',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Vida de ecosistemas terrestres',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Paz, justicia e instituciones sólidas',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+
+            INSERT INTO m_code_value (code_id, code_value, order_position, is_active)
+            VALUES (
+                (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE'),
+                'Alianzas para lograr los objetivos',
+                COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_OBJECTIVE')), 1),
+                true
+            );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
