@@ -28,6 +28,7 @@ public class InvestmentProjectConstants {
     public static final String minAmountParamName = "minAmount";
     public static final String mnemonicParamName = "mnemonic";
     public static final String positionParamName = "position";
+    public static final String basedInLoanProductIdParamName = "basedInLoanProductId";
 
     // Descriptions
     public static final String impactDescriptionParamName = "impactDescription";
@@ -46,7 +47,7 @@ public class InvestmentProjectConstants {
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
             isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
             minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName,
-            positionParamName));
+            positionParamName, basedInLoanProductIdParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
