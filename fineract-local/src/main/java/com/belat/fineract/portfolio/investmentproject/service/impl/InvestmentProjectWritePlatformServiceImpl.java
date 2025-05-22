@@ -17,7 +17,6 @@ import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjec
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -25,34 +24,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
-import java.io.IOException;
-import java.lang.module.Configuration;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.commands.domain.CommandSource;
-import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandSourceService;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.commands.service.IdempotencyKeyGenerator;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
-import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
-import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -71,12 +51,21 @@ import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.service.LoanApplicationWritePlatformService;
-import org.apache.fineract.portfolio.loanaccount.service.LoanWritePlatformService;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
-import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -96,7 +85,6 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     private final StatusHistoryProjectRepository statusHistoryProjectRepository;
     private final SocioEnvironmentalDescriptionRepository socioEnvironmentalDescriptionRepository;
     private final LoanApplicationWritePlatformService loanApplicationWritePlatformService;
-    private final ConfigurationReadPlatformService configurationReadPlatformService;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
     private final CommandSourceService commandSourceService;
     @Autowired
@@ -193,15 +181,6 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         investmentProject.setPosition(position);
 
-        //Validate global configuration for default-belat-investment-project-loan-product before create investment project
-        GlobalConfigurationPropertyData configurationData = configurationReadPlatformService.retrieveGlobalConfiguration("default-belat-investment-project-loan-product");
-        if (!configurationData.isEnabled()) {
-            throw new GeneralPlatformDomainRuleException("err.msg.fist.enable.default.belat.investment.project.loan.product", "First enable default-belat-investment-project-loan-product global configuration");
-        }
-        if (configurationData.getValue() == null || configurationData.getValue() == 0) {
-            throw new GeneralPlatformDomainRuleException("err.msg.fist.define.default.belat.investment.project.loan.product", "First define value for default-belat-investment-project-loan-product global configuration");
-        }
-
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
 
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
@@ -223,8 +202,10 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         historyProject.setStatusValue(newStatus);
         statusHistoryProjectRepository.save(historyProject);
 
+        Long basedInLoanProductId = command.longValueOfParameterNamed(InvestmentProjectConstants.basedInLoanProductIdParamName);
+
         // Build loan data
-        JsonObject loanJson = createLoanAccountData(investmentProject.getOwner().getId(), configurationData.getValue(), investmentProject.getAmount(),
+        JsonObject loanJson = createLoanAccountData(investmentProject.getOwner().getId(), basedInLoanProductId, investmentProject.getAmount(),
                 investmentProject.getRate(), investmentProject.getPeriod());
 
         JsonCommand loanCommand = JsonCommand.from(String.valueOf(loanJson), JsonParser.parseString(loanJson.toString()),
@@ -435,6 +416,9 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final String position = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.positionParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.positionParamName).value(position).notBlank().notNull();
+
+        final String basedInLoanProductId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.basedInLoanProductIdParamName, jsonElement);
+        baseDataValidator.reset().parameter(InvestmentProjectConstants.basedInLoanProductIdParamName).value(basedInLoanProductId).notBlank().notNull();
 
         if (!dataValidationErrors.isEmpty()) {
             throw new PlatformApiDataValidationException("validation.msg.validation.errors.exist", "Validation errors exist.",
