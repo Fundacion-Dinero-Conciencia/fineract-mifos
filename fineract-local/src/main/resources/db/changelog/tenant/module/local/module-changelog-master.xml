@@ -52,4 +52,5 @@
   <include relativeToChangelogFile="true" file="parts/9028_add_default_loan_product_configuration.xml"/>
   <include relativeToChangelogFile="true" file="parts/9029_add_project_objectives_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9030_add_configuration_currency.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9031_add_project_status_values.xml"/>
 </databaseChangeLog>
