@@ -20,6 +20,8 @@ package org.apache.fineract.portfolio.loanaccount.api;
 
 import static org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations.interestType;
 
+import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
+import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.google.gson.JsonElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -66,7 +68,9 @@ import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookP
 import org.apache.fineract.infrastructure.bulkimport.service.BulkImportWorkbookService;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.ApiParameterHelper;
 import org.apache.fineract.infrastructure.core.api.ApiRequestParameterHelper;
 import org.apache.fineract.infrastructure.core.api.JsonQuery;
@@ -74,6 +78,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
 import org.apache.fineract.infrastructure.core.data.UploadRequest;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.apache.fineract.infrastructure.core.serialization.ApiRequestJsonSerializationSettings;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
@@ -293,6 +298,8 @@ public class LoansApiResource {
     private final ClientReadPlatformService clientReadPlatformService;
     private final LoanTermVariationsRepository loanTermVariationsRepository;
     private final LoanSummaryProviderDelegate loanSummaryProviderDelegate;
+    private final InvestmentProjectReadPlatformService investmentProjectReadPlatformService;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
 
     /*
      * This template API is used for loan approval, ideally this should be invoked on loan that are pending for
@@ -1146,6 +1153,22 @@ public class LoansApiResource {
             final String apiRequestBodyAsJson) {
         final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(apiRequestBodyAsJson);
         CommandWrapper commandRequest;
+        //Validate if project is in accepted status
+        InvestmentProjectData investmentProjectData = investmentProjectReadPlatformService.retrieveByLinkedLoan(loanId);
+
+        if (investmentProjectData != null) {
+            GlobalConfigurationPropertyData configurationData = configurationReadPlatformService.retrieveGlobalConfiguration("default-belat-editable-project-status");
+
+            if (configurationData.getStringValue() == null) {
+                throw new GeneralPlatformDomainRuleException("error.msg.first.configure.default.editable.project.status", "Global configuration 'default-belat-editable-project-status' should be configured");
+            }
+
+            if (investmentProjectData.getStatus() != null && investmentProjectData.getStatus().getStatusValue() != null &&
+                    !(investmentProjectData.getStatus().getStatusValue()).getName().equalsIgnoreCase(configurationData.getStringValue())) {
+                throw new GeneralPlatformDomainRuleException("error.msg.project.not.in.editable.status", "Project not in editable status");
+            }
+        }
+
         ExternalId loanExternalId = ExternalIdFactory.produce(loanExternalIdStr);
         Long resolvedLoanId = getResolvedLoanId(loanId, loanExternalId);
         if (CommandParameterUtil.is(commandParam, LoanApiConstants.MARK_AS_FRAUD_COMMAND)) {

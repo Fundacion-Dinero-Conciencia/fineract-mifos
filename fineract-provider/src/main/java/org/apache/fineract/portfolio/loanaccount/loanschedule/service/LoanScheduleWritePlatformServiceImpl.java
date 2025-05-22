@@ -23,10 +23,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
+import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import lombok.RequiredArgsConstructor;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.event.business.domain.loan.LoanScheduleVariationsAddedBusinessEvent;
 import org.apache.fineract.infrastructure.event.business.domain.loan.LoanScheduleVariationsDeletedBusinessEvent;
 import org.apache.fineract.infrastructure.event.business.service.BusinessEventNotifierService;
@@ -54,9 +60,28 @@ public class LoanScheduleWritePlatformServiceImpl implements LoanScheduleWritePl
     private final LoanAccrualsProcessingService loanAccrualsProcessingService;
     private final LoanScheduleService loanScheduleService;
     private final LoanAccountService loanAccountService;
+    private final InvestmentProjectReadPlatformService investmentProjectReadPlatformService;
+    private  final ConfigurationReadPlatformService configurationReadPlatformService;
 
     @Override
     public CommandProcessingResult addLoanScheduleVariations(final Long loanId, final JsonCommand command) {
+
+        //Validate if project is in accepted status
+        InvestmentProjectData investmentProjectData = investmentProjectReadPlatformService.retrieveByLinkedLoan(loanId);
+
+        if (investmentProjectData != null) {
+            GlobalConfigurationPropertyData configurationData = configurationReadPlatformService.retrieveGlobalConfiguration("default-belat-editable-project-status");
+
+            if (configurationData.getStringValue() == null) {
+                throw new GeneralPlatformDomainRuleException("error.msg.first.configure.default.editable.project.status", "Global configuration 'default-belat-editable-project-status' should be configured");
+            }
+
+            if (investmentProjectData.getStatus() != null && investmentProjectData.getStatus().getStatusValue() != null &&
+                    !(investmentProjectData.getStatus().getStatusValue()).getName().equalsIgnoreCase(configurationData.getStringValue())) {
+                throw new GeneralPlatformDomainRuleException("error.msg.project.not.in.editable.status", "Project not in editable status");
+            }
+        }
+
         final Loan loan = loanAssembler.assembleFrom(loanId);
         Map<Long, LoanTermVariations> loanTermVariations = new HashMap<>();
         for (LoanTermVariations termVariations : loan.getLoanTermVariations()) {
@@ -89,6 +114,8 @@ public class LoanScheduleWritePlatformServiceImpl implements LoanScheduleWritePl
 
     @Override
     public CommandProcessingResult deleteLoanScheduleVariations(final Long loanId) {
+        //TODO -> Validate if loan has sub-credits
+
         final Loan loan = loanAssembler.assembleFrom(loanId);
         List<LoanTermVariations> variations = loan.getLoanTermVariations();
         List<Long> deletedVariations = new ArrayList<>(variations.size());
