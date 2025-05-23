@@ -23,11 +23,11 @@ import lombok.Getter;
 @Getter
 public enum StatusHistoryProjectEnum {
 
-    DRAFT(0, "projectStatusHistoryEnum.draft"), //
-    FUNDING(100, "projectStatusHistoryEnum.funding"), //
-    IN_FORMALIZATION(200, "projectStatusHistoryEnum.inFormalization"), //
-    CANCELLED(201, "projectStatusHistoryEnum.cancelled"), //
-    CLOSED(400, "projectStatusHistoryEnum.closed");
+    DRAFT(0, "En Borrador"), //
+    FUNDING(100, "En Financiamiento"), //
+    IN_FORMALIZATION(200, "En Formalización"), //
+    CANCELLED(201, "Anulado"), //
+    CLOSED(400, "Cerrado");
 
     @Getter
     private final String code;
