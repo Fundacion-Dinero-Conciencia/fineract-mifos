@@ -304,7 +304,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
             investmentProject = this.investmentProjectRepository.saveAndFlush(investmentProject);
 
             StatusHistoryProject historyProject = statusHistoryProjectRepository.getLastStatusByInvestmentProjectId(investmentProject.getId());
-            if (!Objects.equals(historyProject.getStatusValue().getId(), newStatus.getId())) {
+            if (historyProject == null || !Objects.equals(historyProject.getStatusValue().getId(), newStatus.getId())) {
                 historyProject = new StatusHistoryProject();
                 historyProject.setInvestmentProject(investmentProject);
                 historyProject.setStatusValue(newStatus);

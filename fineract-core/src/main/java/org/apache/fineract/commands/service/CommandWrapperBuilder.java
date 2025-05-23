@@ -3900,4 +3900,20 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder createAdditionalExpenses() {
+        this.actionName = "CREATE";
+        this.entityName = "ADDITIONAL_EXPENSES";
+        this.entityId = null;
+        this.href = "/v1/additionalExpenses";
+        return this;
+    }
+
+    public CommandWrapperBuilder updateAdditionalExpenses() {
+        this.actionName = "UPDATE";
+        this.entityName = "ADDITIONAL_EXPENSES";
+        this.entityId = null;
+        this.href = "/v1/additionalExpenses";
+        return this;
+    }
+
 }
