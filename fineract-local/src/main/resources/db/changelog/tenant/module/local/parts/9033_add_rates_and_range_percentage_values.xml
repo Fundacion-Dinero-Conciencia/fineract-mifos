@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- Comisión AEF -->
+    <changeSet id="1" author="fineract">
+        <insert tableName="m_code">
+            <column name="code_name" value="COMMISSION_AEF"/>
+            <column name="is_system_defined" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="0 a 3 Meses"/>
+            <column name="order_position" valueNumeric="0"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="10.00"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="4 a 6 Meses"/>
+            <column name="order_position" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="9.00"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="7 a 12 Meses"/>
+            <column name="order_position" valueNumeric="2"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="7.20"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="13 a 24 Meses"/>
+            <column name="order_position" valueNumeric="3"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="7.20"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="25 a 35 Meses"/>
+            <column name="order_position" valueNumeric="4"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="6.40"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="36 a 47 Meses"/>
+            <column name="order_position" valueNumeric="5"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="4.00"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="48 a 59 Meses"/>
+            <column name="order_position" valueNumeric="6"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="3.00"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COMMISSION_AEF')"/>
+            <column name="code_value" value="60 o más Meses"/>
+            <column name="order_position" valueNumeric="7"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="2.50"/>
+        </insert>
+    </changeSet>
+
+
+    <!-- Código para configuración IVA e ITE -->
+    <changeSet id="2" author="fineract">
+        <insert tableName="m_code">
+            <column name="code_name" value="CONFIG_COMMISSION_TAXES"/>
+            <column name="is_system_defined" valueBoolean="false"/>
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'CONFIG_COMMISSION_TAXES')"/>
+            <column name="code_value" value="IVA"/>
+            <column name="code_description" value="19.0"/>
+            <column name="order_position" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'CONFIG_COMMISSION_TAXES')"/>
+            <column name="code_value" value="ITE"/>
+            <column name="code_description" value="0.066"/>
+            <column name="order_position" valueNumeric="2"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!-- Código para tasas de interés corriente -->
+    <changeSet id="3" author="fineract">
+        <insert tableName="m_code">
+            <column name="code_name" value="INTEREST_RATE_TABLE"/>
+            <column name="is_system_defined" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INTEREST_RATE_TABLE')"/>
+            <column name="code_value" value="0 a 3 Meses"/>
+            <column name="order_position" valueNumeric="0"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="10.00"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INTEREST_RATE_TABLE')"/>
+            <column name="code_value" value="4 a 6 Meses"/>
+            <column name="order_position" valueNumeric="1"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="10.50"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INTEREST_RATE_TABLE')"/>
+            <column name="code_value" value="7 a 9 Meses"/>
+            <column name="order_position" valueNumeric="2"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="10.80"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INTEREST_RATE_TABLE')"/>
+            <column name="code_value" value="10 a 24 Meses"/>
+            <column name="order_position" valueNumeric="3"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="11.00"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INTEREST_RATE_TABLE')"/>
+            <column name="code_value" value="Más de 24 Meses"/>
+            <column name="order_position" valueNumeric="4"/>
+            <column name="is_active" valueBoolean="true"/>
+            <column name="code_description" value="11.00"/>
+        </insert>
+    </changeSet>
+
+
+</databaseChangeLog>

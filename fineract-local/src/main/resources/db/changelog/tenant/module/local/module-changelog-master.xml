@@ -54,4 +54,5 @@
   <include relativeToChangelogFile="true" file="parts/9030_add_configuration_currency.xml"/>
   <include relativeToChangelogFile="true" file="parts/9031_add_project_status_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9032_add_table_additional_expenses.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9033_add_rates_and_range_percentage_values.xml"/>
 </databaseChangeLog>
