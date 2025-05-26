@@ -13,21 +13,23 @@ public class AdditionalExpensesConstants {
     private AdditionalExpensesConstants() {}
 
     public static final String projectIdParamName = "projectId";
-    public static final String nameParamName = "name";
+    public static final String descriptionParamName = "description";
     public static final String netAmountParamName = "netAmount";
     public static final String vatParamName = "vat";
     public static final String expenseIdParamName = "expenseId";
+    public static final String commissionTypeParamName = "commissionTypeId";
+    public static final String totalAmountParamName = "total";
 
     /**
      * These parameters will match the class level parameters of {@link AdditionalExpensesData}. Where possible, we try
      * to get response parameters to match those of request parameters.
      */
-    public static final Set<String> ADDITIONAL_EXPENSES_DATA_PARAMETERS = new HashSet<>(Arrays.asList(projectIdParamName, nameParamName, netAmountParamName, vatParamName));
+    public static final Set<String> ADDITIONAL_EXPENSES_DATA_PARAMETERS = new HashSet<>(Arrays.asList(projectIdParamName, commissionTypeParamName, descriptionParamName, netAmountParamName, vatParamName, totalAmountParamName));
 
     /**
      * These parameters will match the class level parameters of {@link AdditionalExpensesData}. Where possible, we try
      * to get response parameters to match those of request parameters.
      */
-    public static final Set<String> ADDITIONAL_EXPENSES_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(expenseIdParamName, nameParamName, netAmountParamName, vatParamName));
+    public static final Set<String> ADDITIONAL_EXPENSES_PARAMETERS_FOR_UPDATE = new HashSet<>(Arrays.asList(expenseIdParamName, commissionTypeParamName, descriptionParamName, netAmountParamName, vatParamName));
 
 }

@@ -34,19 +34,19 @@ public class AdditionalExpensesApiResource {
     private final DefaultToApiJsonSerializer<InvestmentProjectData> apiJsonSerializerService;
     private final AdditionalExpensesReadPlatformService additionalExpensesReadPlatformService;
 
-    @POST
-    @Consumes({ MediaType.APPLICATION_JSON })
-    @Produces({ MediaType.APPLICATION_JSON })
-    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AdditionalExpensesApiResourceSwagger.PostAdditionalExpenseResponse.class)))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AdditionalExpensesApiResourceSwagger.PostAdditionalExpenseResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Project can not be created") })
-    public String addAdditionalExpenses(@Parameter(hidden = true) final AdditionalExpensesData data) {
-        platformUserRightsContext.isAuthenticated();
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiJsonSerializerService.serializeResult(data)).createAdditionalExpenses().build();
-        CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-        return apiJsonSerializerService.serialize(result);
-    }
+//    @POST
+//    @Consumes({ MediaType.APPLICATION_JSON })
+//    @Produces({ MediaType.APPLICATION_JSON })
+//    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AdditionalExpensesApiResourceSwagger.PostAdditionalExpenseResponse.class)))
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AdditionalExpensesApiResourceSwagger.PostAdditionalExpenseResponse.class))),
+//            @ApiResponse(responseCode = "403", description = "Project can not be created") })
+//    public String addAdditionalExpenses(@Parameter(hidden = true) final AdditionalExpensesData data) {
+//        platformUserRightsContext.isAuthenticated();
+//        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiJsonSerializerService.serializeResult(data)).createAdditionalExpenses().build();
+//        CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+//        return apiJsonSerializerService.serialize(result);
+//    }
 
 
     @PUT
@@ -91,6 +91,18 @@ public class AdditionalExpensesApiResource {
         return apiJsonSerializerService.serialize(list);
     }
 
-
+    @POST
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @RequestBody(required = true, content = @Content(schema = @Schema(implementation = AdditionalExpensesApiResourceSwagger.PostAdditionalExpenseResponse.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AdditionalExpensesApiResourceSwagger.PostAdditionalExpenseResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Project can not be created") })
+    public String addAdditionalExpenses(@Parameter(hidden = true) final List<AdditionalExpensesData> data) {
+        platformUserRightsContext.isAuthenticated();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiJsonSerializerService.serializeResult(data)).createAdditionalExpenses().build();
+        CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return apiJsonSerializerService.serialize(result);
+    }
 
 }

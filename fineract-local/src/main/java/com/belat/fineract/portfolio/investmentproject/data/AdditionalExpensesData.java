@@ -1,6 +1,7 @@
 package com.belat.fineract.portfolio.investmentproject.data;
 
 import lombok.Data;
+import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 
 import java.math.BigDecimal;
 
@@ -9,15 +10,15 @@ public class AdditionalExpensesData {
 
     private Long id;
 
+    private Integer commissionTypeId;
+
     private Long projectId;
 
-    private String name;
+    private String description;
 
     private BigDecimal netAmount;
 
     private BigDecimal vat;
 
-    private BigDecimal getTotal() {
-        return this.netAmount.multiply(this.vat);
-    }
+    private BigDecimal total;
 }
