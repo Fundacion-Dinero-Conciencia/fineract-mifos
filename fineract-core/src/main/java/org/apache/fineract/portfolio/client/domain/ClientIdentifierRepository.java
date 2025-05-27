@@ -20,7 +20,14 @@ package org.apache.fineract.portfolio.client.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface ClientIdentifierRepository extends JpaRepository<ClientIdentifier, Long>, JpaSpecificationExecutor<ClientIdentifier> {
-    // no behaviour
+
+    @Query(value = "SELECT * FROM m_client_identifier WHERE client_id = ?1 LIMIT 1", nativeQuery = true)
+    ClientIdentifier retrieveByClientId(@Param("clientId") Long clientId);
+
 }
