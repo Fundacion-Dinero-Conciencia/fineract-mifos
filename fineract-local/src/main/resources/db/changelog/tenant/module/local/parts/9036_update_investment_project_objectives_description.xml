@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="1" author="belat">
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/1.png"/>
+            <where>code_value = 'Fin de la pobreza'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/2.png"/>
+            <where>code_value = 'Hambre cero'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/3.png"/>
+            <where>code_value = 'Salud y bienestar'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/4.png"/>
+            <where>code_value = 'Educación de calidad'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/5.png"/>
+            <where>code_value = 'Igualdad de género'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/6.png"/>
+            <where>code_value = 'Agua limpia y saneamiento'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/7.png"/>
+            <where>code_value = 'Energía asequible y no contaminante'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/8.png"/>
+            <where>code_value = 'Trabajo decente y crecimiento económico'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/9.png"/>
+            <where>code_value = 'Industria, innovación e infraestructura'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/10.png"/>
+            <where>code_value = 'Reducción de las desigualdades'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/11.png"/>
+            <where>code_value = 'Ciudades y comunidades sostenibles'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/12.png"/>
+            <where>code_value = 'Producción y consumo responsables'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/13.png"/>
+            <where>code_value = 'Acción por el clima'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/14.png"/>
+            <where>code_value = 'Vida submarina'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/15.png"/>
+            <where>code_value = 'Vida de ecosistemas terrestres'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/16.png"/>
+            <where>code_value = 'Paz, justicia e instituciones sólidas'</where>
+        </update>
+        <update tableName="m_code_value">
+            <column name="code_description" value="https://s3.us-east-2.amazonaws.com/fineract.dev.public/17.png"/>
+            <where>code_value = 'Alianzas para lograr los objetivos'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
