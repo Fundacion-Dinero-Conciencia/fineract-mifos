@@ -53,4 +53,12 @@ public class AdditionalExpenses extends AbstractAuditableWithUTCDateTimeCustom<L
     public static AdditionalExpenses createAdditionalExpenses(final InvestmentProject project, final CodeValue commissionType, final String description, final BigDecimal netAmount, final BigDecimal vat, final BigDecimal total) {
         return new AdditionalExpenses(project, commissionType, description, netAmount, vat, total);
     }
+
+    public void updateAdditionalExpenses(String description, BigDecimal netAmount, BigDecimal vat, BigDecimal total) {
+        this.description = description;
+        this.netAmount = netAmount;
+        this.vat = vat;
+        this.total = total;
+    }
+
 }

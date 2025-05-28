@@ -3,6 +3,7 @@ package com.belat.fineract.portfolio.investmentproject.service;
 import com.belat.fineract.portfolio.investmentproject.data.AdditionalExpensesData;
 import com.belat.fineract.portfolio.investmentproject.domain.commission.AdditionalExpenses;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface AdditionalExpensesReadPlatformService {
@@ -13,4 +14,5 @@ public interface AdditionalExpensesReadPlatformService {
 
     AdditionalExpenses getAdditionalExpensesById(Long id);
 
+    BigDecimal getTir(List<BigDecimal> periods);
 }

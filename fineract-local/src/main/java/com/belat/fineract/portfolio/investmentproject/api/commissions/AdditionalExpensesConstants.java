@@ -16,7 +16,7 @@ public class AdditionalExpensesConstants {
     public static final String descriptionParamName = "description";
     public static final String netAmountParamName = "netAmount";
     public static final String vatParamName = "vat";
-    public static final String expenseIdParamName = "expenseId";
+    public static final String expenseIdParamName = "id";
     public static final String commissionTypeParamName = "commissionTypeId";
     public static final String totalAmountParamName = "total";
 
@@ -24,7 +24,7 @@ public class AdditionalExpensesConstants {
      * These parameters will match the class level parameters of {@link AdditionalExpensesData}. Where possible, we try
      * to get response parameters to match those of request parameters.
      */
-    public static final Set<String> ADDITIONAL_EXPENSES_DATA_PARAMETERS = new HashSet<>(Arrays.asList(projectIdParamName, commissionTypeParamName, descriptionParamName, netAmountParamName, vatParamName, totalAmountParamName));
+    public static final Set<String> ADDITIONAL_EXPENSES_DATA_PARAMETERS = new HashSet<>(Arrays.asList(projectIdParamName, commissionTypeParamName, descriptionParamName, netAmountParamName, vatParamName, totalAmountParamName, expenseIdParamName));
 
     /**
      * These parameters will match the class level parameters of {@link AdditionalExpensesData}. Where possible, we try
