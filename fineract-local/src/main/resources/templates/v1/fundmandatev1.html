@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <title>Mandato Fondo</title>
+    <style>
+        @page {
+          margin: 60px 30px 40px 30px;
+        }
+
+        body {
+          font-family: "Times New Roman", Times, serif;
+          line-height: 1.5;
+          margin: 0;
+          padding: 0 20px 20px 20px;
+          text-align: left; /* cambia de justify a left para evitar confusión */
+          font-size: 11pt;
+        }
+
+.signatures {
+  display: table;
+  width: 100%;
+  margin-top: 40px;
+}
+
+.signature-col {
+  display: table-cell;
+  width: 50%;
+  vertical-align: top;
+  text-align: center;
+  padding: 0 20px;
+}
+.signature-line {
+  border-bottom: 1px solid black;
+  margin-bottom: 8px;
+}
+
+        p {
+          text-indent: 0;
+          margin-top: 0;
+          margin-bottom: 1em;
+          text-align: justify;
+        }
+
+        .page-break {
+          page-break-before: always;
+        }
+
+        header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 100px;
+          font-size: 14pt;
+          text-align: left;
+          padding: 0 20px 0 20px;
+          z-index: 1000;
+          background: transparent;
+          color: #183B59;
+        }
+
+        ol.lower-alpha {
+            list-style-type: lower-alpha;
+            margin-left: 2em;
+            padding-left: 0;
+        }
+
+        ol.lower-alpha li {
+            margin-bottom: 0.5em;
+        }
+
+        .imagen-top {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .content {
+          margin-top: 80px; /* deja espacio bajo el header */
+        }
+
+        @media screen {
+          @page {
+            margin: 0;
+          }
+
+          header {
+            position: static;
+            background: none;
+            height: auto;
+            padding: 0;
+          }
+
+          .content {
+            margin-top: 0;
+          }
+
+          body {
+            padding-top: 60px;
+          }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        MANDATO Y DECLARACIÓN
+    </header>
+
+    <div class="content">
+        <p>
+            En Santiago, Chile, ${date}, comparecen <strong>Fondo Quest Inversión De Impacto</strong>
+            RUT 77.054.124-7, fondo de inversión público administrado por Quest Administradora General de Fondos S.A.,
+            RUT 76.798.260-7, debidamente representada por Gustavo Avaria Decombe, cédula nacional de identidad 10.390.153-7
+            y Gutenberg Martinez Alvear, cédula nacional de identidad 15.312.688-7, todos con domicilio en Avenida las Condes
+            11.700, torre A, piso 10, comuna de Vitacura, Santiago en adelante el <strong>“Mandante”</strong>, por una parte,
+            y, por la otra, Doble Impacto SpA, RUT N° 76.792.913-7, debidamente representada por Jorge Muñoz Vivanco, cédula
+            nacional de identidad N° 15.129.192-9, todos domiciliados en Los Jesuitas N° 727, comuna de Providencia, Santiago
+            en adelante el <strong>“Mandatario”</strong> y conjuntamente con el Mandante, como las <strong>“Partes”</strong>,
+            quienes celebran un contrato de mandato en los términos que se indican a continuación:
+        </p>
+
+        <br/>
+        <p><strong>CLÁUSULA PRIMERA. Antecedentes:</strong></p>
+        <br/>
+
+        <p>
+            Mediante instrumento privado de fecha 17 de julio de 2019, las Partes celebraron un Contrato Marco (el
+            <strong>“Contrato Marco”</strong>), en virtud del cual se comprometieron a celebrar contratos de mandato para
+            facultar al Mandatario: <strong>(a)</strong> de manera irrevocable y mientras se encuentre vigente el Contrato
+            Marco, con relación a materias operacionales vinculadas a la formalización de la adquisición de títulos de crédito
+            o instrumentos de deuda emitidos por Deudores Seleccionados, según este concepto se define en el Contrato Marco
+            /los <strong>“Deudores Seleccionados”</strong>/, y <strong>(b)</strong> de manera revocable, para realizar
+            gestiones de cobranza respecto a los Deudores Seleccionados.
+        </p>
+
+        <br/>
+        <p><strong>CLÁUSULA SEGUNDA. Mandato Irrevocable:</strong></p>
+        <br/>
+
+        <p>
+            <strong>Primero:</strong> En este acto el Mandante viene en conferir poder especial al Mandatario, quien acepta
+            el encargo, para negociar, acordar, suscribir, perfeccionar y ejecutar por cuenta y representación del Mandante
+            todo acto, contrato y operación necesarios y conducentes para invertir en títulos de crédito o instrumentos de
+            deuda emitidos por la empresa que se señala a continuación, en adelante el <strong>“Deudor”</strong>, con las
+            facultades indicadas en el párrafo Segundo siguiente, la suma que se indica a continuación:
+        </p>
+
+        <table style="width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px;" border="1" cellpadding="6" cellspacing="0">
+            <thead style="background-color : #412859; text-align: center">
+            <tr>
+                <th style="width: 33%; word-wrap: break-word; color: white">Nombre Deudor</th>
+                <th style="width: 33%; word-wrap: break-word; color: white">RUT</th>
+                <th style="width: 33%; word-wrap: break-word; color: white">Monto Inversión</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="word-wrap: break-word; color: #412859">${inversionist}</td>
+                <td style="word-wrap: break-word; color: #412859">${documentNumber}</td>
+                <td style="word-wrap: break-word; color: #412859">${amount}</td>
+            </tr>
+            </tbody>
+        </table>
+
+
+        <p><strong>Segundo:</strong> El Mandatario tendrá las siguientes facultades para la ejecución del mandato a que se refiere la presente Cláusula Segunda:</p>
+
+        <ol type="a" style="list-style-type: lower-alpha;">
+            <li>
+                Recibir dineros como fondos por rendir y entregárselos por cuenta del Mandante al Deudor, en los montos
+                y términos indicados precedentemente, sea mediante depósito o transferencia electrónica, contra recepción de un
+                pagaré debidamente firmado por el Deudor, en los términos que razonablemente defina el Mandatario;
+            </li>
+            <li>
+                Recibir el o los pagarés firmados por el Deudor; y
+            </li>
+        </ol>
+    </div>
+
+    <div class="page-break"></div>
+
+    <header>
+        MANDATO Y DECLARACIÓN
+    </header>
+
+    <div class="content">
+
+        <ol type="a" start="3" style="list-style-type: lower-alpha;">
+            <li>
+                Celebrar, suscribir y ejecutar todo tipo de cauciones o garantías a favor del Mandante para asegurar el
+                cumplimiento de los montos dados al Deudor contra la adquisición de títulos de crédito o instrumentos de
+                deuda conforme al presente mandato  incluyendo sin limitación los actos, contratos o convenciones de hipotecas,
+                prendas, prendas sin desplazamiento, fianzas, avales, codeudas, fianzas y codeudas solidarias y cesiones condicionales,
+                pudiendo estipular toda clase de contraprestaciones,  precios,  intereses,  rentas,  honorarios,  remuneraciones,  reajustes,
+                indemnizaciones, condiciones, plazos y modalidades y convenir o modificar toda clase de pactos o
+                estipulaciones, sean de la esencia, de la naturaleza o meramente accidentales; además, podrá
+                recibir, percibir, entregar, exigir rendiciones de cuentas y ejecutar todos los derechos y acciones
+                que por cualesquiera de estas garantías competan al Mandante; firmar, suscribir y modificar todas
+                las escrituras o instrumentos públicos o privados que sean necesarios para la correcta constitución
+                de las garantías de los títulos de crédito o instrumentos de deuda adquiridos conforme al presente
+                mandato; practicar todo tipo de inscripciones en los Conservadores de Bienes Raíces y en el
+                Servicio de Registro Civil e Identificación; modificar, desahuciar, anular, rescindir, resciliar, resolver,
+                revocar y terminar los actos, contratos o convenciones antes señalados; pagar, novar, compensar,
+                remitir, modificar y extinguir de cualquier modo toda clase de obligaciones establecidas en dichas
+                cauciones y garantías.
+            </li>
+        </ol>
+
+        <p>
+            <strong>Tercero:</strong> Mientras se encuentre vigente el Contrato Marco, el mandato contenido en esta Cláusula Segunda será irrevocable en los términos del Art. 241 del Código de Comercio, por interesar su ejecución tanto al Mandante como al Mandatario.
+        </p>
+
+        <br/>
+        <p><strong>CLÁUSULA TERCERA. Mandato Revocable:</strong></p>
+        <br/>
+
+        <p>
+            <strong>Primero:</strong> En este acto el Mandante viene en conferir poder especial al Mandatario, quien acepta
+            el encargo, para que realice todas las gestiones de cobro y ejecución de los títulos de crédito e instrumentos
+            de deuda adquiridos conforme al presente mandato, con las facultades indicadas en el párrafo Segundo siguiente.
+        </p>
+
+        <p>
+            <strong>Segundo:</strong> Para la ejecución del mandato otorgado en la presente Cláusula Tercera, el Mandatario
+            tendrá las siguientes facultades:<br />
+        </p>
+
+        <ol type="a" style="list-style-type: lower-alpha;">
+            <li>
+                Cobrar y percibir todas y cada una de las cuotas del capital de los títulos de crédito o instrumentos de
+                deuda emitidos por el Deudor, sus intereses y demás pagos que se estipulen a favor del Mandante; aceptar daciones
+                en pago del Deudor y recibir facturas u otros instrumentos cedidos en dominio, cobranza y/o garantía;
+            </li>
+            <li>
+                Deducir de los cobros al Deudor, toda suma que hubieren acordado el Mandante y Mandatario en favor de
+                éste, sean estas comisiones, honorarios y/o cualquier tipo de compensación;
+            </li>
+            <li>
+                Efectuar la cobranza judicial y extrajudicial de todo título de crédito o instrumento de deuda
+                correspondiente al Deudor, adquirido conforme al presente instrumento, pudiendo especialmente
+                el Mandatario endosar en cobranza, en dominio o garantía, a sí mismo o a terceros, todos y cada
+                uno del o los pagarés y demás instrumentos que se hayan suscrito en cumplimiento del presente
+                mandato, en los términos del Art. 22 de la Ley 18.092 sobre Letra de Cambio y Pagaré, endoso que
+                conforme al art. 29 de la misma ley abarca todas las atribuciones propias del mandato judicial,
+                incluyendo todas las atribuciones contempladas en ambos incisos del artículo séptimo del Código
+                de Procedimiento Civil, y especialmente las de demandar, deducir querellas
+            </li>
+        </ol>
+
+    </div>
+    <header>
+        MANDATO Y DECLARACIÓN
+    </header>
+
+    <div class="content">
+        <br/>
+        <p>
+            criminales, iniciar cualquier otra gestión judicial, reconvenir, contestar reconvenciones, desistirse en primera instancia
+            de la acción deducida, renunciar a los recursos o términos legales, transigir, comprometer, otorgar a
+            los árbitros las facultades de arbitradores, aprobar convenios,
+            verificar créditos, impugnar verificaciones y percibir, afin de proseguir con todas las acciones de cobranza que
+            correspondan; a mayor abundamiento el Mandante confiere poder al Mandatario para cobrar facturas, letras de
+            cambio, pagarés y demás efectos de comercio, depositarlos en las cuentas corrientes bancarias
+            que estime convenientes, hacerlos protestar, endosarlos en cobranza, retirarlos y percibir su
+            importe, y ejercer y oponer todas las acciones y excepciones que en derecho correspondan al
+            Mandante para obtener el pago íntegro y oportuno de los montos adeudados al Mandante; este
+            mandato incluye también la ejecución de toda clase de garantías, pudiendo el Mandatario ceder a
+            terceros los derechos emanados de las garantías constituidas en favor del Mandante, otorgar cartas
+            de pago con subrogación en los términos del artículo 1611 de Código Civil, traspasando al nuevo
+            acreedor todos los derechos, acciones, privilegios y garantías que tenga contra el deudor, así como
+            contra los terceros obligados solidaria o subsidiariamente a la deuda;
+        </p>
+        <ol type="a" start="4" style="list-style-type: lower-alpha;">
+            <li>
+                Aceptar daciones en pago del Deudor y recibir facturas u otros instrumentos cedidos en dominio,
+                cobranza y/o garantía, aceptar novaciones, refinanciamientos, repactaciones, convenios de pago y
+                toda clase de convenciones con el Deudor distintas del pago; y
+            </li>
+            <li>
+                Suscribir cesiones de derechos, créditos y contratos, puras y simples o sujetas a una o más
+                condiciones, en favor del Mandante como cesionario.
+            </li>
+        </ol>
+
+        <p>
+            <br/>
+            Para el adecuado desempeño de su cometido, el Mandatario podrá designar abogados patrocinantes y
+            nombrar apoderados con todas o algunas de las facultades señaladas, quedando autorizados para
+            delegar este poder, total o parcialmente, u otorgar poderes especiales y reasumirlos cuantas veces lo
+            estimen necesario.
+        </p>
+
+        <p>
+            <strong>Tercero:</strong> El Mandante puede revocar el mandato otorgado en esta Cláusula Tercera en cualquier momento y reasumir una o más facultades contempladas en él cuantas veces lo estime necesario.
+        </p>
+
+        <br/>
+        <p><strong>CLÁUSULA CUARTA. Misceláneo.</strong></p>
+        <br/>
+
+        <p><strong>Primero:</strong> El Mandatario será responsable de culpa leve bajo el presente mandato.</p>
+        <p><strong>Segundo:</strong> El Mandatario podrá ejercer este mandato  obrando siempre conforme a los términos del
+            Contrato Marco, circunstancias que no será necesario acreditar a terceros, estableciéndose en el sólo
+            interés de las relaciones entre el Mandante y el Mandatario.</p>
+        <p><strong>Tercero:</strong> Una vez finalizado el encargo, el Mandatario deberá rendir cuenta de su gestión.</p>
+        <p><strong>Cuarto:</strong> El Mandante declara que los fondos a ser dados en préstamo bajo el presente mandato provienen de actividades lícitas.</p>
+
+        <p>
+            La personería de Gustavo Avaria Decombe y Gutenberg Martinez Alvear para actuar en representación de Fondo Quest Inversión De Impacto, consta en escritura pública otorgada en la Notaría de Santiago de don René Benavente Cash con fecha 4 de Junio de 2019, bajo el número de Repertorio 23.050-2019.
+        </p>
+
+    </div>
+    <header>
+        MANDATO Y DECLARACIÓN
+    </header>
+
+    <div class="content">
+        <p>
+            La personería de Jorge Muñoz Vivanco para actuar en representación de <strong>Doble Impacto SpA</strong>, consta en escritura pública otorgada en la Notaría de Santiago de doña M. Angélica Galán Bäuerle con fecha 21 de marzo del año 2018, bajo el número de Repertorio 773-2018.
+        </p>
+    </div>
+
+    <br/>
+
+    <div class="signatures">
+        <div class="signature-col">
+            <div class="signature-line"></div>
+            <strong>p.p. Fondo Quest Inversión De Impacto</strong><br />
+            RUT N° 77.054.124-7<br />
+            Gustavo Avaria Decombe<br />
+            RUT N° 10.390.153-7
+        </div>
+        <div class="signature-col">
+            <div class="signature-line"></div>
+            <strong>p.p. Fondo Quest Inversión De Impacto</strong><br />
+            RUT N° 77.054.124-7<br />
+            Gutenberg Martinez Alvear<br />
+            RUT N° 15.312.688-7
+        </div>
+    </div>
+
+    <br/>
+
+    <div style="margin-top: 60px; text-align: center;">
+        <div class="signature-line" style="margin: 0 auto; width: 250px;"></div>
+        <strong>p.p. Doble Impacto SpA.</strong><br />
+        RUT N° 76.792.913-7<br />
+        Jorge Muñoz Vivanco<br />
+        RUT N° 15.129.192-9
+    </div>
+</body>
+</html>
