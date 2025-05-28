@@ -24,6 +24,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientIdentifier;
 import org.apache.fineract.portfolio.client.domain.ClientIdentifierRepository;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
+import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -57,15 +58,15 @@ public class PdfGeneratorWritePlatformServiceImpl implements PdfGeneratorWritePl
         JsonElement jsonElement = fromApiJsonHelper.parse(json);
         Long clientId = fromApiJsonHelper.extractLongNamed(PdfGeneratorConstants.clientIdParamName, jsonElement);
         if (clientId == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.client.id.is.mandatory", "Client id is mandatory");
         }
 
         Client client = clientRepository.findById(clientId).stream().findFirst().orElseThrow(() ->
-                new GeneralPlatformDomainRuleException("", ""));
+                new ClientNotFoundException(clientId));
 
         BigDecimal amount = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(PdfGeneratorConstants.amountParamName, jsonElement);
         if (amount == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.amount.is.mandatory", "Amount is mandatory");
         }
         LocalDate date = DateUtils.getBusinessLocalDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
@@ -74,7 +75,7 @@ public class PdfGeneratorWritePlatformServiceImpl implements PdfGeneratorWritePl
         ClientIdentifier clientIdentifier = clientIdentifierRepository.retrieveByClientId(clientId);
 
         if (clientIdentifier == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.client.identifier.not.found", "Client identifier not found");
         }
 
         Map<String, Object> data = new HashMap<>();
@@ -97,24 +98,24 @@ public class PdfGeneratorWritePlatformServiceImpl implements PdfGeneratorWritePl
         JsonElement jsonElement = fromApiJsonHelper.parse(json);
         Long clientId = fromApiJsonHelper.extractLongNamed(PdfGeneratorConstants.clientIdParamName, jsonElement);
         if (clientId == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.client.id.is.mandatory", "Client id is mandatory");
         }
         Long projectId = fromApiJsonHelper.extractLongNamed(PdfGeneratorConstants.projectIdParamName, jsonElement);
         if (projectId == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.project.id.is.mandatory", "Project id is mandatory");
         }
 
         Client client = clientRepository.findById(projectId).stream().findFirst().orElseThrow(() ->
-                new GeneralPlatformDomainRuleException("", ""));
+                new ClientNotFoundException(clientId));
 
         InvestmentProject investmentProject = investmentProjectRepository.retrieveOneByProjectId(projectId);
         if (investmentProject == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.investment.project.not.found", "Investment project not found");
         }
 
         BigDecimal amount = fromApiJsonHelper.extractBigDecimalWithLocaleNamed(PdfGeneratorConstants.amountParamName, jsonElement);
         if (amount == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.amount.is.mandatory", "Amount is mandatory");
         }
         LocalDate date = DateUtils.getBusinessLocalDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
@@ -123,7 +124,7 @@ public class PdfGeneratorWritePlatformServiceImpl implements PdfGeneratorWritePl
         ClientIdentifier clientIdentifier = clientIdentifierRepository.retrieveByClientId(clientId);
 
         if (clientIdentifier == null) {
-            throw new GeneralPlatformDomainRuleException("", "");
+            throw new GeneralPlatformDomainRuleException("error.msg.client.identifier.not.found", "Client identifier not found");
         }
 
         Map<String, Object> data = new HashMap<>();
