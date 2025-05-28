@@ -114,4 +114,8 @@ dependencies {
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor'
 
     testImplementation 'com.github.tomakehurst:wiremock-standalone:3.0.1'
+
+    //PDF generator
+    implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+    implementation 'org.freemarker:freemarker:2.3.32'
 }
