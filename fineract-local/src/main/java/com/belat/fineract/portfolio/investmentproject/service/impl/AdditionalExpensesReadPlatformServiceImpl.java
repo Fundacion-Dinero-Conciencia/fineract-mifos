@@ -10,8 +10,13 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.fineract.infrastructure.core.service.MathUtil;
+import org.apache.fineract.portfolio.loanaccount.domain.Loan;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleInstallment;
+import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -22,6 +27,7 @@ public class AdditionalExpensesReadPlatformServiceImpl implements AdditionalExpe
 
     private final AdditionalExpensesRepository additionalExpensesRepository;
     private final AdditionalExpensesMapper additionalExpensesMapper;
+
 
     @Override
     public List<AdditionalExpensesData> getAdditionalExpenses(Long projectId) {
@@ -36,5 +42,12 @@ public class AdditionalExpensesReadPlatformServiceImpl implements AdditionalExpe
     @Override
     public AdditionalExpenses getAdditionalExpensesById(Long id) {
         return additionalExpensesRepository.findById(id).orElseThrow( () -> new AdditionalExpensesNotFoundException(id));
+    }
+
+    @Override
+    public BigDecimal getTir(List<BigDecimal> periods) {
+        return MathUtil.calculateAnnualIRR(periods.stream()
+                .mapToDouble(BigDecimal::doubleValue)
+                .toArray());
     }
 }

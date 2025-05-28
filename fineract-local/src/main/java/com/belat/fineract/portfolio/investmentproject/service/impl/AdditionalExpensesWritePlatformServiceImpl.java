@@ -70,6 +70,7 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
             String json = fromApiJsonHelper.toJson(additionalExpensesData);
             this.validateForCreate(json);
 
+            final Long expenseId = additionalExpensesData.getId();
             final String description = additionalExpensesData.getDescription();
             final BigDecimal vat = additionalExpensesData.getVat();
             final BigDecimal netAmount = additionalExpensesData.getNetAmount();
@@ -79,9 +80,13 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
 
             AdditionalExpenses additionalExpenses = null;
             if (investmentProject != null) {
-                additionalExpenses = AdditionalExpenses.createAdditionalExpenses(investmentProject, commissionType, description, netAmount, vat,  total);
+                if (expenseId != null) {
+                    additionalExpenses = additionalExpensesRepository.getReferenceById(expenseId);
+                    additionalExpenses.updateAdditionalExpenses(description, netAmount, vat, total);
+                } else {
+                    additionalExpenses = AdditionalExpenses.createAdditionalExpenses(investmentProject, commissionType, description, netAmount, vat,  total);
+                }
                 additionalExpensesRepository.save(additionalExpenses);
-
                 changes.put(commissionType.getLabel(), additionalExpenses.getId());
             } else {
                 throw new PlatformApiDataValidationException("err.msj.validation", "no project found with id", "id", projectId);
@@ -89,7 +94,8 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
 
         }
 
-        updateStatusInvestmentProject(investmentProject);
+        // FIXME -> it is not recommended, this subject to changes
+        //updateStatusInvestmentProject(investmentProject);
         return new CommandProcessingResultBuilder() //
                 .withCommandId(jsonCommand.commandId()) //
                 .with(changes) //

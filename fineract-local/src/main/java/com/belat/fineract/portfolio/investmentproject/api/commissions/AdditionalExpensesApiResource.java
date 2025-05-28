@@ -21,6 +21,7 @@ import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSer
 import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Path("/v1/additionalExpenses")
@@ -77,12 +78,13 @@ public class AdditionalExpensesApiResource {
     }
 
     @GET
+    @Path("/by-project/{projectId}")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = AdditionalExpensesApiResourceSwagger.GetAdditionalExpensesByProjectIdResponse.class))),
             @ApiResponse(responseCode = "400", description = "Missing projectId parameter")
     })
-    public String getAdditionalExpensesByProjectId(@QueryParam("projectId") Long projectId) {
+    public String getAdditionalExpensesByProjectId(@PathParam("projectId") @Parameter(description = "projectId") final Long projectId) {
         platformUserRightsContext.isAuthenticated();
         if (projectId == null) {
             throw new IllegalArgumentException("projectId query param is required");
@@ -103,6 +105,15 @@ public class AdditionalExpensesApiResource {
         final CommandWrapper commandRequest = new CommandWrapperBuilder().withJson(apiJsonSerializerService.serializeResult(data)).createAdditionalExpenses().build();
         CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return apiJsonSerializerService.serialize(result);
+    }
+
+    @POST
+    @Path("/getTir")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getTirByLoanId(@Parameter(hidden = true) final List<BigDecimal> periods) {
+        platformUserRightsContext.isAuthenticated();
+        BigDecimal value = this.additionalExpensesReadPlatformService.getTir(periods);
+        return apiJsonSerializerService.serialize(value);
     }
 
 }

@@ -524,4 +524,93 @@ public final class MathUtil {
         }
         return percentageValue.multiply(BigDecimal.valueOf(periodMonths).multiply(investmentAmount), mc);
     }
+
+//    /**
+//     * Calcula la TIR mensual de un flujo de caja usando el méthod de Newton-Raphson.
+//     * Similar al comportamiento de Excel.
+//     *
+//     * @param cashFlows Arreglo de flujos de caja (el primero usualmente negativo)
+//     * @return TIR mensual como decimal (por ejemplo, 0.02 para 2%)
+//     */
+//    private static double calculateIRR(double[] cashFlows) {
+//        double guess = 0.1;
+//        double precision = 1e-7;
+//        int maxIterations = 1000;
+//        double rate = guess;
+//
+//        for (int iter = 0; iter < maxIterations; iter++) {
+//            double npv = 0;
+//            double derivative = 0;
+//
+//            for (int t = 0; t < cashFlows.length; t++) {
+//                double cf = cashFlows[t];
+//                npv += cf / Math.pow(1 + rate, t);
+//                if (t != 0) {
+//                    derivative -= t * cf / Math.pow(1 + rate, t + 1);
+//                }
+//            }
+//
+//            double newRate = rate - npv / derivative;
+//            if (Math.abs(newRate - rate) < precision) {
+//                return newRate;
+//            }
+//
+//            rate = newRate;
+//        }
+//
+//        throw new RuntimeException("La TIR no converge después de 1000 iteraciones.");
+//    }
+//
+//    /**
+//     * Calcula la TIR anual compuesta (CAE) a partir de la TIR mensual.
+//     *
+//     * @param cashFlows Arreglo de flujos de caja
+//     * @return TIR anual compuesta como decimal
+//     */
+//    public static double calculateAnnualIRR(double[] cashFlows) {
+//        double irrMonthly = calculateIRR(cashFlows);
+//        return Math.pow(1 + irrMonthly, 12) - 1;
+//    }
+
+    /**
+     * Calcula la TIR mensual a partir de un arreglo de flujos de caja, usando búsqueda incremental (brute force).
+     * @param cashFlows Arreglo de flujos de caja (primer valor positivo, luego pagos negativos).
+     * @return TIR mensual como valor decimal (ej: 0.038 para 3.8%)
+     */
+    public static double calculateMonthlyIRR(double[] cashFlows) {
+        double minRate = -0.9999;
+        double maxRate = 1.0;
+        double step = 0.0001;
+        double bestRate = 0.0;
+        double closestNPV = Double.MAX_VALUE;
+
+        for (double rate = minRate; rate <= maxRate; rate += step) {
+            double npv = 0.0;
+            for (int i = 0; i < cashFlows.length; i++) {
+                npv += cashFlows[i] / Math.pow(1 + rate, i);
+            }
+
+            if (Math.abs(npv) < closestNPV) {
+                closestNPV = Math.abs(npv);
+                bestRate = rate;
+            }
+
+            if (Math.abs(npv) < 1e-6) {
+                return rate;
+            }
+        }
+
+        return bestRate; // valor más cercano si no se encontró NPV exacto cero
+    }
+
+    /**
+     * Calcula la TIR anual compuesta a partir de flujos de caja mensuales.
+     * @param cashFlows Arreglo de flujos de caja mensuales.
+     * @return TIR anual como BigDecimal con 6 decimales de precisión.
+     */
+    public static BigDecimal calculateAnnualIRR(double[] cashFlows) {
+        double monthlyIRR = calculateMonthlyIRR(cashFlows);
+        double annualIRR = Math.pow(1 + monthlyIRR, 12) - 1;
+        return BigDecimal.valueOf(annualIRR).setScale(6, RoundingMode.HALF_UP);
+    }
 }
