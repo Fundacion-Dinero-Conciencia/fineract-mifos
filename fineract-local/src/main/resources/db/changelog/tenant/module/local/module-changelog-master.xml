@@ -59,4 +59,5 @@
   <include relativeToChangelogFile="true" file="parts/9035_alter_table_additional_expenses_add_column.xml"/>
   <include relativeToChangelogFile="true" file="parts/9036_update_investment_project_objectives_description.xml"/>
   <include relativeToChangelogFile="true" file="parts/9037_add_permissions_edit_credit_project.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9038_add_permissions_edit_credit_project.xml"/>
 </databaseChangeLog>
