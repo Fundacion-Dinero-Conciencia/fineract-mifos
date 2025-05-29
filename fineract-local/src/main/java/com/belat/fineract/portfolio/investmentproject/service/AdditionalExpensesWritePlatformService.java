@@ -9,6 +9,6 @@ public interface AdditionalExpensesWritePlatformService {
 
     CommandProcessingResult updateAdditionalExpenses(JsonCommand jsonCommand);
 
-    CommandProcessingResult calculateAdditionalExpenses(JsonCommand jsonCommand);
+    CommandProcessingResult deleteAdditionalExpensesById(JsonCommand jsonCommand);
 
 }

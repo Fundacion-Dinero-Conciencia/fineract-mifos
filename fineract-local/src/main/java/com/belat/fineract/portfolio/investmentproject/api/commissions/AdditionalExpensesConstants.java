@@ -20,6 +20,11 @@ public class AdditionalExpensesConstants {
     public static final String commissionTypeParamName = "commissionTypeId";
     public static final String totalAmountParamName = "total";
 
+    public static final String AEF_COMMISSION = "AEF";
+    public static final String IVA_AEF_COMMISSION = "IVA-AEF";
+    public static final String CONFIG_COMMISSION_TAXES_CODE_NAME = "CONFIG_COMMISSION_TAXES";
+    public static final String UPDATE_ADDITIONAL_EXPENSES = "ADDITIONAL_EXPENSES";
+
     /**
      * These parameters will match the class level parameters of {@link AdditionalExpensesData}. Where possible, we try
      * to get response parameters to match those of request parameters.

@@ -107,6 +107,18 @@ public class AdditionalExpensesApiResource {
         return apiJsonSerializerService.serialize(result);
     }
 
+    @DELETE
+    @Path("/{id}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String deleteAdditionalExpensesById(@Parameter(hidden = true) @PathParam("id") final Long id) {
+        platformUserRightsContext.isAuthenticated();
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().withSubEntityId(id).deleteAdditionalExpenses(id).build();
+        CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
+        return apiJsonSerializerService.serialize(result);
+    }
+
+
     @POST
     @Path("/getTir")
     @Produces({ MediaType.APPLICATION_JSON })

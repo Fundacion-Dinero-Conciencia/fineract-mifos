@@ -3916,4 +3916,12 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder deleteAdditionalExpenses(final Long id) {
+        this.actionName = "DELETE";
+        this.entityName = "ADDITIONAL_EXPENSES";
+        this.entityId = null;
+        this.href = "/v1/additionalExpenses/" + id;
+        return this;
+    }
+
 }
