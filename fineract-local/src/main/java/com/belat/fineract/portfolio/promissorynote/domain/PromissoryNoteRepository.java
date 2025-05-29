@@ -29,6 +29,10 @@ public interface PromissoryNoteRepository extends JpaRepository<PromissoryNote, 
             + "ORDER BY promissory_note_number DESC " + "LIMIT 1", nativeQuery = true)
     PromissoryNote retrieveOneByPromissoryNoteNumber(String number);
 
+    @Query(value = "SELECT * FROM public.e_promissory_note " + "WHERE id = ?1 "
+            + "ORDER BY id DESC " + "LIMIT 1", nativeQuery = true)
+    PromissoryNote retrieveOneByPromissoryNoteId(Long id);
+
     @Query("SELECT p FROM PromissoryNote p WHERE p.fundSavingsAccount.id = :fundId")
     List<PromissoryNote> retrieveByFundAccountId(@Param("fundId") Long fundId);
 

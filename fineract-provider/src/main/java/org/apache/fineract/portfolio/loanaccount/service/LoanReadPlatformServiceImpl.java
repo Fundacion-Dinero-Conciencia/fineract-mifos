@@ -653,6 +653,12 @@ public class LoanReadPlatformServiceImpl implements LoanReadPlatformService, Loa
         return loanRepositoryWrapper.retrieveTotalOutstanding(loanId);
     }
 
+    @Override
+    public BigDecimal getLoanAnnualInterestRate(Long loanId) {
+        LoanAccountData loan = this.retrieveOne(loanId);
+        return loan.getAnnualInterestRate();
+    }
+
     private static final class LoanMapper implements RowMapper<LoanAccountData> {
 
         private final DatabaseSpecificSQLGenerator sqlGenerator;

@@ -11,12 +11,13 @@ public class PdfGeneratorConstants {
     public static final String projectIdParamName = "projectId";
     public static final String clientIdParamName = "clientId";
     public static final String amountParamName = "amount";
+    public static final String promissoryIdParamName = "promissoryId";
 
     /**
      * These parameters will match the class level parameters of {@link ProjectParticipationData}. Where possible, we
      * try to get response parameters to match those of request parameters.
      */
     public static final Set<String> PROJECT_PARTICIPATION_PARAMETERS = new HashSet<>(Arrays.asList(projectIdParamName,
-            clientIdParamName, amountParamName));
+            clientIdParamName, amountParamName, promissoryIdParamName));
 
 }

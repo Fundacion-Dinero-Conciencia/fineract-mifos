@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Pagaré</title>
+    <style>
+        @page {
+          size: A4;
+          margin: 100px 40px 80px 40px;
+
+          @top-center {
+            content: url('https://s3.us-east-2.amazonaws.com/fineract.dev.public/linea-documento.png');
+            vertical-align: top;
+            display: block;
+            margin-top: -60px; /* sube la imagen si hace falta */
+            margin-bottom: 10px;
+          }
+
+          @bottom-center {
+            content: "Página " counter(page) " - Continuación de Pagaré Nº ${promissoryId} - ${promissoyrCode}, suscrito por Fundación Niño y Patria con fecha ${formatDate}";
+            font-size: 10pt;
+            color: #555;
+          }
+        }
+
+        body {
+          font-family: "Times New Roman", Times, serif;
+          font-size: 11pt;
+          line-height: 1.5;
+          text-align: justify;
+        }
+
+        .content {
+          margin: 0 auto;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+          font-size: 10pt;
+        }
+
+        table, th, td {
+          border: 1px solid #000;
+        }
+
+        th {
+          background-color: #412859;
+          color: white;
+          text-align: center;
+        }
+
+        td {
+          padding: 8px;
+          color: #412859;
+        }
+
+        h2, h3 {
+          color: #412859;
+        }
+    </style>
+</head>
+<body>
+
+<div class="content">
+    <h2>PAGARÉ</h2>
+
+    <p><strong>Número:</strong> ${promissoryId}<br />
+        <strong>Código:</strong> ${promissoryCode}</p>
+
+    <p>
+        Debo y pagaré incondicionalmente a la orden de Fondo Quest Inversión De Impacto, cédula nacional de identidad 77.054.124-7,
+        la suma de <strong>$${amount}</strong> (${formattedAmount}),
+        moneda legal, cantidad que he recibido en préstamo de el(los) Acreedor(es) a entera satisfacción.
+    </p>
+
+    <p><strong>Interés:</strong> El capital adeudado devengará un interés del {interest} anual, vencido desde la fecha de suscripción
+        de este pagaré hasta su pago íntegro y efectivo.</p>
+
+    <h3>Deudor</h3>
+    <p>
+        <strong>Nombre:</strong> ${fundName}<br />
+        <strong>RUT:</strong> ${fundDocument}<br />
+        <strong>Fecha:</strong> ${formatDate}
+    </p>
+
+    <h3>Resumen</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Concepto</th>
+            <th>Detalle</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Monto</td>
+            <td>$270.978.468</td>
+        </tr>
+        <tr>
+            <td>Interés Anual</td>
+            <td>10,50%</td>
+        </tr>
+        <tr>
+            <td>Plazo</td>
+            <td>Hasta el pago completo</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>
+        Este pagaré se regirá por las leyes de la República de Chile. El deudor declara haber leído y comprendido las condiciones antes de firmar.
+    </p>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/><br/>
+<br/>
+<br/>
+<br/>
+<br/><br/><br/>
+<br/>
+<br/><br/>
+
+
+
+
+
+</body>
+</html>
