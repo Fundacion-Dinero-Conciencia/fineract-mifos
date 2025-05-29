@@ -9,6 +9,7 @@ import com.belat.fineract.portfolio.investmentproject.domain.commission.Addition
 import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProject;
 import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectEnum;
 import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectRepository;
+import com.belat.fineract.portfolio.investmentproject.exception.AdditionalExpensesNotFoundException;
 import com.belat.fineract.portfolio.investmentproject.service.AdditionalExpensesReadPlatformService;
 import com.belat.fineract.portfolio.investmentproject.service.AdditionalExpensesWritePlatformService;
 import com.google.gson.Gson;
@@ -31,6 +32,8 @@ import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
+import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
@@ -50,6 +53,7 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
     private final InvestmentProjectReadPlatformServiceImpl investmentProjectReadPlatformService;
     private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
     private final CodeRepository codeRepository;
+    private final PlatformSecurityContext securityContext;
 
     @Override
     @Transactional
@@ -82,6 +86,10 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
             if (investmentProject != null) {
                 if (expenseId != null) {
                     additionalExpenses = additionalExpensesRepository.getReferenceById(expenseId);
+                    boolean isAEF = AdditionalExpensesConstants.AEF_COMMISSION.equals(additionalExpenses.getCommissionType().getLabel());
+                    if (isAEF) {
+                        securityContext.authenticatedUser().validateHasUpdatePermission(AdditionalExpensesConstants.UPDATE_ADDITIONAL_EXPENSES);
+                    }
                     additionalExpenses.updateAdditionalExpenses(description, netAmount, vat, total);
                 } else {
                     additionalExpenses = AdditionalExpenses.createAdditionalExpenses(investmentProject, commissionType, description, netAmount, vat,  total);
@@ -132,12 +140,26 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
 
     @Override
     @Transactional
-    public CommandProcessingResult calculateAdditionalExpenses(JsonCommand jsonCommand) {
+    public CommandProcessingResult deleteAdditionalExpensesById(JsonCommand jsonCommand) {
 
+        AdditionalExpenses additionalExpenses = additionalExpensesRepository.findById(jsonCommand.getSubresourceId()).orElseThrow( () -> new AdditionalExpensesNotFoundException(jsonCommand.entityId()));
+        final Long projectId = additionalExpenses.getProject().getId();
+        validateStatusInvestmentProject(projectId);
+        CodeValue codeValue = codeValueRepositoryWrapper.findOneByCodeNameAndLabelWithNotFoundDetection(AdditionalExpensesConstants.CONFIG_COMMISSION_TAXES_CODE_NAME, AdditionalExpensesConstants.IVA_AEF_COMMISSION);
+        boolean isAEF = AdditionalExpensesConstants.AEF_COMMISSION.equals(additionalExpenses.getCommissionType().getLabel());
+
+        if (isAEF) {
+            securityContext.authenticatedUser().validateHasUpdatePermission(AdditionalExpensesConstants.UPDATE_ADDITIONAL_EXPENSES);
+        }
+        additionalExpensesRepository.delete(additionalExpenses);
+
+        if (isAEF) {
+            AdditionalExpenses additionalExpensesIvaAEF = additionalExpensesRepository.findByInvestmentProjectIdAndCommissionTypeId(projectId, codeValue.getId());
+            additionalExpensesRepository.delete(additionalExpensesIvaAEF);
+        }
 
         return new CommandProcessingResultBuilder() //
                 .withCommandId(jsonCommand.commandId()) //
-                .withEntityId(null) //
                 .build();
     }
 
