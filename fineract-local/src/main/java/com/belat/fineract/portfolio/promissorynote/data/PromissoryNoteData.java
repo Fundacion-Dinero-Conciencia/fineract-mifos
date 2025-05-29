@@ -27,6 +27,7 @@ import org.apache.fineract.portfolio.savings.data.SavingsAccountData;
 @AllArgsConstructor
 public class PromissoryNoteData {
 
+    private Long id;
     private SavingsAccountData fundSavingsAccount;
     private SavingsAccountData investorSavingsAccount;
     private BigDecimal investmentAmount;
