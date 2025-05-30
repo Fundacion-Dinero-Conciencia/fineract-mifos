@@ -12,6 +12,7 @@ public class PdfGeneratorConstants {
     public static final String clientIdParamName = "clientId";
     public static final String amountParamName = "amount";
     public static final String promissoryIdParamName = "promissoryId";
+    public static final String loanIdParamName = "loanId";
 
     /**
      * These parameters will match the class level parameters of {@link ProjectParticipationData}. Where possible, we

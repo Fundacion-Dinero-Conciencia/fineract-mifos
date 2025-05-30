@@ -2,6 +2,7 @@ package com.belat.fineract.portfolio.pdfgenerator.api;
 
 import com.belat.fineract.portfolio.pdfgenerator.service.PdfGeneratorWritePlatformService;
 import com.belat.fineract.portfolio.pdfgenerator.service.promissory.FundPromissoryPdfGeneratorService;
+import com.belat.fineract.portfolio.pdfgenerator.service.simulation.SimulationPdfGeneratorService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,7 @@ public class PdfGeneratorApiResource {
     private final PlatformUserRightsContext platformUserRightsContext;
     private final PdfGeneratorWritePlatformService pdfGeneratorWritePlatformService;
     private final FundPromissoryPdfGeneratorService fundPromissoryPdfGeneratorService;
+    private final SimulationPdfGeneratorService simulationPdfGeneratorService;
 
     @POST
     @Path("fundmandate")
@@ -64,6 +66,19 @@ public class PdfGeneratorApiResource {
     public String generateFundPromissoryNotePdf(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
         platformUserRightsContext.isAuthenticated();
         return fundPromissoryPdfGeneratorService.generateFundPromissoryNoteV1(apiRequestBodyAsJson);
+    }
+
+    @POST
+    @Path("simulation")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true, content = @Content(schema = @Schema(implementation = PdfGeneratorApiResourceSwagger.PostGeneratePdfRequest.class)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = PdfGeneratorApiResourceSwagger.PostGeneratePdfResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Pdf could not be created") })
+    public String generateSimulationPdf(@Parameter(hidden = true) final String apiRequestBodyAsJson) {
+        platformUserRightsContext.isAuthenticated();
+        return simulationPdfGeneratorService.generateSimulationV1(apiRequestBodyAsJson);
     }
 
 }
