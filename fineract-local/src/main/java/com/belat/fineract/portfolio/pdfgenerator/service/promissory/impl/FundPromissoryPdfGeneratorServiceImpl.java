@@ -61,7 +61,6 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
     private final LoanReadPlatformServiceCommon loanReadPlatformServiceCommon;
     private final LoanRepository loanRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
-    private String dateString;
 
     @Override
     public String generateFundPromissoryNoteV1(String json) {
@@ -156,7 +155,7 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
                     ("nacional de identidad ".concat(investorDocument.documentKey()).concat(" en adelante el(los) “Acreedor(es)”, la suma de " +
                             "$").concat(String.valueOf(promissoryNoteData.getInvestmentAmount())).concat(
                             ". - (".concat(NumberToWordEs.convert(promissoryNoteData.getInvestmentAmount().setScale(2, RoundingMode.HALF_EVEN).longValue())).concat(" pesos), " +
-                                    "moneda legal, cantidad que he recibido en préstamo de el(los) Acreedor(es) a entera satisfacción.\n"))))));
+                                    "moneda legal, cantidad que he recibido en préstamo de el(los) Acreedor(es) a entera satisfacción."))))));
 
             document.add(Chunk.NEWLINE);
 
@@ -448,4 +447,6 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             }
         }
     }
+
+
 }
