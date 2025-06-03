@@ -3151,6 +3151,10 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         Loan loan = this.loanAssembler.assembleFrom(loanId);
         CommandSource commandSource = commandSourceRepository.retrieveCommandPerCreateSubCredit(loan.getClientId(), loanId,
                 loan.getExternalId().getValue());
+        if (commandSource == null) {
+            log.error("Error base credit data not found");
+            throw new PlatformApiDataValidationException("error.msg.resource.extract", "Error in extraction of base credit data, not found.", null);
+        }
         final BigDecimal amount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.subCreditAMountParamName);
         String format = null;
         String locale = null;
