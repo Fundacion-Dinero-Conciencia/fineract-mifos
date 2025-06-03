@@ -753,7 +753,10 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         if (account.getTransactions() != null && !account.getTransactions().isEmpty()) {
             List<SavingsAccountTransaction> filteredList = account.getTransactions().stream().filter(item -> !item.isReversed())
                     .sorted(Comparator.comparing(SavingsAccountTransaction::getTransactionDate).reversed()).toList();
-            amountActual = filteredList.get(filteredList.size() - 1).getRunningBalance();
+            int place = filteredList.size() - 1;
+            if (place >= 0) {
+                amountActual = filteredList.get(place).getRunningBalance();
+            }
 
         }
         amountActual = amountActual.add(amount);
