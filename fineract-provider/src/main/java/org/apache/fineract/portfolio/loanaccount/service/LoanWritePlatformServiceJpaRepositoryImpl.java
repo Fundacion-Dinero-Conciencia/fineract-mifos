@@ -3177,8 +3177,8 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> jsonMap = mapper.readValue(commandSource.getCommandAsJson(), HashMap.class);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format, new Locale(locale));
-            String formattedDate = date.format(formatter);
-            jsonMap.put("submittedOnDate", formattedDate);
+            jsonMap.put("submittedOnDate", date.format(formatter));
+            jsonMap.put("expectedDisbursementDate", date.plusDays(1).format(formatter));
             jsonMap.put("principal", amount);
 
             newJson = new Gson().toJson(jsonMap);
