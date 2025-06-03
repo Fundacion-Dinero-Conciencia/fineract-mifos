@@ -18,14 +18,11 @@
  */
 package org.apache.fineract.portfolio.loanaccount.service;
 
+import com.belat.fineract.portfolio.loanrelations.service.LoanRelationshipsWritePlatformService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
@@ -58,34 +55,8 @@ import org.apache.fineract.infrastructure.core.service.MathUtil;
 import org.apache.fineract.infrastructure.dataqueries.data.EntityTables;
 import org.apache.fineract.infrastructure.dataqueries.data.StatusEnum;
 import org.apache.fineract.infrastructure.dataqueries.service.EntityDatatableChecksWritePlatformService;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanAcceptTransferBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanAdjustTransactionBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanBalanceChangedBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanChargebackTransactionBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanCloseAsRescheduleBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanCloseBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanDisbursalBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanInitiateTransferBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanInterestRecalculationBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanReassignOfficerBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanRejectTransferBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanRemoveOfficerBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanRescheduledDueCalendarChangeBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanUndoDisbursalBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanUndoLastDisbursalBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanUpdateDisbursementDataBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.LoanWithdrawTransferBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanChargeOffPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanChargeOffPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanDisbursalTransactionBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionInterestPaymentWaiverPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionInterestPaymentWaiverPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanUndoChargeOffBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanUndoWrittenOffBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanWaiveInterestBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanWrittenOffPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanWrittenOffPreBusinessEvent;
+import org.apache.fineract.infrastructure.event.business.domain.loan.*;
+import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.*;
 import org.apache.fineract.infrastructure.event.business.service.BusinessEventNotifierService;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
 import org.apache.fineract.organisation.holiday.domain.Holiday;
@@ -100,27 +71,13 @@ import org.apache.fineract.organisation.workingdays.domain.WorkingDaysRepository
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
-import org.apache.fineract.portfolio.account.domain.AccountAssociationType;
-import org.apache.fineract.portfolio.account.domain.AccountAssociations;
-import org.apache.fineract.portfolio.account.domain.AccountAssociationsRepository;
-import org.apache.fineract.portfolio.account.domain.AccountTransferDetailRepository;
-import org.apache.fineract.portfolio.account.domain.AccountTransferDetails;
-import org.apache.fineract.portfolio.account.domain.AccountTransferRecurrenceType;
-import org.apache.fineract.portfolio.account.domain.AccountTransferStandingInstruction;
-import org.apache.fineract.portfolio.account.domain.AccountTransferType;
-import org.apache.fineract.portfolio.account.domain.StandingInstructionPriority;
-import org.apache.fineract.portfolio.account.domain.StandingInstructionStatus;
-import org.apache.fineract.portfolio.account.domain.StandingInstructionType;
+import org.apache.fineract.portfolio.account.domain.*;
 import org.apache.fineract.portfolio.account.service.AccountAssociationsReadPlatformService;
 import org.apache.fineract.portfolio.account.service.AccountTransfersReadPlatformService;
 import org.apache.fineract.portfolio.account.service.AccountTransfersWritePlatformService;
 import org.apache.fineract.portfolio.accountdetails.domain.AccountType;
+import org.apache.fineract.portfolio.calendar.domain.*;
 import org.apache.fineract.portfolio.calendar.domain.Calendar;
-import org.apache.fineract.portfolio.calendar.domain.CalendarEntityType;
-import org.apache.fineract.portfolio.calendar.domain.CalendarInstance;
-import org.apache.fineract.portfolio.calendar.domain.CalendarInstanceRepository;
-import org.apache.fineract.portfolio.calendar.domain.CalendarRepository;
-import org.apache.fineract.portfolio.calendar.domain.CalendarType;
 import org.apache.fineract.portfolio.calendar.exception.CalendarParameterUpdateNotSupportedException;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
@@ -134,58 +91,17 @@ import org.apache.fineract.portfolio.loanaccount.api.LoanApiConstants;
 import org.apache.fineract.portfolio.loanaccount.command.LoanUpdateCommand;
 import org.apache.fineract.portfolio.loanaccount.data.HolidayDetailDTO;
 import org.apache.fineract.portfolio.loanaccount.data.ScheduleGeneratorDTO;
-import org.apache.fineract.portfolio.loanaccount.domain.GLIMAccountInfoRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.GroupLoanIndividualMonitoringAccount;
-import org.apache.fineract.portfolio.loanaccount.domain.Loan;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanAccountDomainService;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanAccountService;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanCharge;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanDisbursementDetails;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanEvent;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanLifecycleStateMachine;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleInstallment;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleInstallmentRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleProcessingWrapper;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepaymentScheduleTransactionProcessorFactory;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanStatus;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanSubStatus;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTermVariationType;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTermVariations;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTransaction;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionRelation;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionRelationRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionRelationTypeEnum;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionRepository;
-import org.apache.fineract.portfolio.loanaccount.domain.LoanTransactionType;
+import org.apache.fineract.portfolio.loanaccount.domain.*;
 import org.apache.fineract.portfolio.loanaccount.domain.transactionprocessor.LoanRepaymentScheduleTransactionProcessor;
 import org.apache.fineract.portfolio.loanaccount.domain.transactionprocessor.MoneyHolder;
 import org.apache.fineract.portfolio.loanaccount.domain.transactionprocessor.TransactionCtx;
-import org.apache.fineract.portfolio.loanaccount.exception.DateMismatchException;
-import org.apache.fineract.portfolio.loanaccount.exception.ExceedingTrancheCountException;
-import org.apache.fineract.portfolio.loanaccount.exception.InvalidLoanStateTransitionException;
-import org.apache.fineract.portfolio.loanaccount.exception.InvalidLoanTransactionTypeException;
-import org.apache.fineract.portfolio.loanaccount.exception.InvalidPaidInAdvanceAmountException;
-import org.apache.fineract.portfolio.loanaccount.exception.LoanForeclosureException;
-import org.apache.fineract.portfolio.loanaccount.exception.LoanMultiDisbursementException;
-import org.apache.fineract.portfolio.loanaccount.exception.LoanOfficerAssignmentException;
-import org.apache.fineract.portfolio.loanaccount.exception.LoanOfficerUnassignmentException;
-import org.apache.fineract.portfolio.loanaccount.exception.LoanTransactionNotFoundException;
-import org.apache.fineract.portfolio.loanaccount.exception.MultiDisbursementDataNotAllowedException;
-import org.apache.fineract.portfolio.loanaccount.exception.MultiDisbursementDataRequiredException;
-import org.apache.fineract.portfolio.loanaccount.exception.UndoLastTrancheDisbursementException;
+import org.apache.fineract.portfolio.loanaccount.exception.*;
 import org.apache.fineract.portfolio.loanaccount.guarantor.service.GuarantorDomainService;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleModel;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleModelPeriod;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleHistoryWritePlatformService;
 import org.apache.fineract.portfolio.loanaccount.rescheduleloan.domain.LoanRescheduleRequest;
-import org.apache.fineract.portfolio.loanaccount.serialization.LoanApplicationValidator;
-import org.apache.fineract.portfolio.loanaccount.serialization.LoanChargeValidator;
-import org.apache.fineract.portfolio.loanaccount.serialization.LoanDownPaymentTransactionValidator;
-import org.apache.fineract.portfolio.loanaccount.serialization.LoanOfficerValidator;
-import org.apache.fineract.portfolio.loanaccount.serialization.LoanTransactionValidator;
-import org.apache.fineract.portfolio.loanaccount.serialization.LoanUpdateCommandFromApiJsonDeserializer;
+import org.apache.fineract.portfolio.loanaccount.serialization.*;
 import org.apache.fineract.portfolio.loanaccount.service.adjustment.LoanAdjustmentParameter;
 import org.apache.fineract.portfolio.loanaccount.service.adjustment.LoanAdjustmentService;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
@@ -211,26 +127,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.ACTUAL_DISBURSEMENT_DATE;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.CLOSED_ON_DATE;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.EXTERNAL_ID;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.PARAM_STATUS;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.TRANSACTION_DATE;
-import static org.apache.fineract.portfolio.loanaccount.domain.Loan.WRITTEN_OFF_ON_DATE;
+import static org.apache.fineract.portfolio.loanaccount.domain.Loan.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -296,6 +195,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     private final ApplicationContext applicationContext;
     private final CommandSourceRepository commandSourceRepository;
     private final LoanApplicationWritePlatformService writePlatformService;
+    private final LoanRelationshipsWritePlatformService relationshipsWritePlatformService;
 
     @Transactional
     @Override
@@ -3189,18 +3089,21 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         }
 
         if (loan.getLoanStatus().isSubmittedAndPendingApproval()) {
-            return cloneLoan(newJson);
+            return cloneLoan(newJson, loanId);
         } else {
             throw new PlatformApiDataValidationException("error.msg.resource.status",
                     "A copy can only be created from a credit in pending approval status.", null);
         }
     }
 
-    public CommandProcessingResult cloneLoan(String json) {
+    public CommandProcessingResult cloneLoan(String json, Long loanSimulationId) {
         JsonElement element = this.fromApiJsonHelper.parse(json);
         JsonCommand command = JsonCommand.from(json, element, this.fromApiJsonHelper);
+        CommandProcessingResult result = writePlatformService.submitApplication(command);
 
-        return writePlatformService.submitApplication(command);
+        relationshipsWritePlatformService.createLoanRelationships(loanSimulationId, result.getLoanId());
+
+        return result;
     }
 
     public void handleChargebackTransaction(final Loan loan, LoanTransaction chargebackTransaction,

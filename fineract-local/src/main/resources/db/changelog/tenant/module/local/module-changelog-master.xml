@@ -60,4 +60,5 @@
   <include relativeToChangelogFile="true" file="parts/9036_update_investment_project_objectives_description.xml"/>
   <include relativeToChangelogFile="true" file="parts/9037_add_permissions_edit_credit_project.xml"/>
   <include relativeToChangelogFile="true" file="parts/9038_add_permissions_edit_credit_project.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9039_add_table_loan_relationships.xml"/>
 </databaseChangeLog>
