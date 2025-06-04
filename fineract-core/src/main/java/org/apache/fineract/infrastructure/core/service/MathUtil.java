@@ -522,11 +522,10 @@ public final class MathUtil {
      * @return value to CUP percentage
      */
     public static BigDecimal calculateCUPValue(Integer periodMonths, BigDecimal investmentAmount, BigDecimal percentageValue) {
-        MathContext mc = new MathContext(2, RoundingMode.HALF_EVEN);
         if (periodMonths > 10) {
             periodMonths = 10;
         }
-        return percentageValue.multiply(BigDecimal.valueOf(periodMonths).multiply(investmentAmount), mc);
+        return percentageValue.multiply(BigDecimal.valueOf(periodMonths).multiply(investmentAmount), MoneyHelper.getMathContext());
     }
 
 
