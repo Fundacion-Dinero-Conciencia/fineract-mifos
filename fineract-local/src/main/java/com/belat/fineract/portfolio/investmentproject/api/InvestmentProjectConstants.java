@@ -29,6 +29,8 @@ public class InvestmentProjectConstants {
     public static final String mnemonicParamName = "mnemonic";
     public static final String positionParamName = "position";
     public static final String basedInLoanProductIdParamName = "basedInLoanProductId";
+    public static final String amountToBeDeliveredParamName = "amountToBeDelivered";
+    public static final String amountToBeFinancedParamName = "amountToBeFinanced";
 
     // Descriptions
     public static final String impactDescriptionParamName = "impactDescription";
@@ -47,7 +49,7 @@ public class InvestmentProjectConstants {
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
             isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
             minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName,
-            positionParamName, basedInLoanProductIdParamName));
+            positionParamName, basedInLoanProductIdParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -57,6 +59,6 @@ public class InvestmentProjectConstants {
             subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
             financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName,
             maxAmountParamName, minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName,
-            detailedSocioEnvironmentalDescriptionParamName, positionParamName));
+            detailedSocioEnvironmentalDescriptionParamName, positionParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName));
 
 }
