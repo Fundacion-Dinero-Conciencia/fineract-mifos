@@ -181,6 +181,16 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         investmentProject.setPosition(position);
 
+        BigDecimal amountToBeDelivered = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountToBeDeliveredParamName);
+        if (amountToBeDelivered != null) {
+            investmentProject.setAmountToBeDelivered(amountToBeDelivered);
+        }
+
+        BigDecimal amountToBeFinanced = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountToBeFinancedParamName);
+        if (amountToBeFinanced != null) {
+            investmentProject.setAmountToBeFinanced(amountToBeFinanced);
+        }
+
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
 
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);

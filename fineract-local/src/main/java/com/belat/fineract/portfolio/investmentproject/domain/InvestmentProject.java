@@ -132,6 +132,12 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     @Column(name = "position", nullable = false)
     private Integer position;
 
+    @Column(name = "amount_to_be_financed", nullable = false)
+    private BigDecimal amountToBeFinanced;
+
+    @Column(name = "amount_to_be_delivered", nullable = false)
+    private BigDecimal amountToBeDelivered;
+
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.projectNameParamName, getName())) {
             final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.projectNameParamName);
@@ -177,6 +183,26 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
             actualChanges.put(InvestmentProjectConstants.positionParamName, newValue);
             this.position = newValue;
         }
+        if (command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountToBeFinancedParamName) != null ||
+                command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountToBeDeliveredParamName) != null) {
+            if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.amountToBeFinancedParamName, amountToBeFinanced)) {
+                final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountToBeFinancedParamName);
+                if (newValue.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new GeneralPlatformDomainRuleException("err.msg.amount.to.be.financed.should.be.higher.than.zero", "Min amount should be higher than zero");
+                }
+                actualChanges.put(InvestmentProjectConstants.amountToBeFinancedParamName, newValue);
+                this.amountToBeFinanced = newValue;
+            }
+            if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.amountToBeDeliveredParamName, amountToBeDelivered)) {
+                final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountToBeDeliveredParamName);
+                if (newValue.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new GeneralPlatformDomainRuleException("err.msg.min.amount.should.be.higher.than.zero", "Min amount should be higher than zero");
+                }
+                actualChanges.put(InvestmentProjectConstants.amountToBeDeliveredParamName, newValue);
+                this.amountToBeDelivered = newValue;
+            }
+        }
+
     }
 
 }
