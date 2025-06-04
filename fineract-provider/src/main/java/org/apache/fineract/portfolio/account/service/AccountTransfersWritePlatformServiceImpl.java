@@ -760,7 +760,10 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
         }
         amountActual = amountActual.add(amount);
-        if (amountActual.compareTo(maxLimitedAmountAvailable) > 0 || account.isActive()) {
+        BigDecimal difference = amountActual.subtract(maxLimitedAmountAvailable);
+        boolean isNotAllowed = difference.doubleValue() > 0.1;
+
+        if ((amountActual.compareTo(maxLimitedAmountAvailable) > 0 && isNotAllowed) || account.isActive()) {
             final String defaultUserMessage = "Transaction is not allowed, the accumulated value exceeds the maximum amount allowed in the account.";
             final ApiParameterError error = ApiParameterError.parameterError("error.msg.transaction.amount", defaultUserMessage,
                     "maxAllowedDepositLimit", maxLimitedAmountAvailable);
