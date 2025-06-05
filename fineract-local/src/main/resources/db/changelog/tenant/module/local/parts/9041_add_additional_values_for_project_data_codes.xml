@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+
+    <changeSet id="1" author="fineract">
+        <delete tableName="m_code_value">
+            <where>code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_AREA')</where>
+        </delete>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_AREA')" />
+            <column name="code_value" value="Educación y cultura" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_AREA')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_AREA')" />
+            <column name="code_value" value="Desarrollo social" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_AREA')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_AREA')" />
+            <column name="code_value" value="Medio ambiente" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_AREA')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+    </changeSet>
+
+
+    <changeSet id="2" author="fineract">
+        <delete tableName="m_code_value">
+            <where>code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')</where>
+        </delete>
+
+        <!--For 'educación y cultura' area-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Educación de calidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación y cultura')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Industrias creativas" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación y cultura')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Turismo sostenible" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación y cultura')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Desarrollo social' area-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Hábitat inclusivos y sostenibles" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Desarrollo social')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Salud y calidad de vida" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Desarrollo social')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Inclusión" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Desarrollo social')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Medio ambiente' area-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Sistemas alimentarios" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Medio ambiente')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Energía renovable" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Medio ambiente')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')" />
+            <column name="code_value" value="Consumo y producción sustentable" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;area&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Medio ambiente')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
