@@ -37,6 +37,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanRepository;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformServiceCommon;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +58,7 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
     private final PromissoryNoteRepository promissoryNoteRepository;
     private final FromJsonHelper fromApiJsonHelper;
     private final ClientIdentifierRepository clientIdentifierRepository;
+    private final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper;
     private final SavingsAccountReadPlatformService savingsAccountReadPlatformService;
     private final LoanReadPlatformServiceCommon loanReadPlatformServiceCommon;
     private final LoanRepository loanRepository;
@@ -68,19 +70,19 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             throw new InvalidJsonException();
         }
         JsonElement jsonElement = fromApiJsonHelper.parse(json);
-        Long promissoryId = fromApiJsonHelper.extractLongNamed(PdfGeneratorConstants.promissoryIdParamName, jsonElement);
+        Long fundId = fromApiJsonHelper.extractLongNamed(PdfGeneratorConstants.fundIdParamName, jsonElement);
 
-        if (promissoryId == null) {
-            throw new GeneralPlatformDomainRuleException("error.msg.promissory.id.is.null", "Promissory id is null");
+        if (fundId == null) {
+            throw new GeneralPlatformDomainRuleException("error.msg.fund.id.is.null", "Fund id is null");
         }
 
-        PromissoryNote promissoryNoteData = promissoryNoteRepository.retrieveOneByPromissoryNoteId(promissoryId);
+        java.util.List<PromissoryNote> promissoryNotesData = promissoryNoteRepository.retrieveByFundAccountId(fundId);
 
-        if (promissoryNoteData == null) {
-            throw new GeneralPlatformDomainRuleException("error.msg.promissory.note.is.null", "Promissory note is null");
+        if (promissoryNotesData.isEmpty()) {
+            throw new GeneralPlatformDomainRuleException("error.msg.there.are.not.promissory.note.is.null", "Promissory note is null");
         }
 
-        SavingsAccount fundSavingsAccountData = promissoryNoteData.getFundSavingsAccount();
+        SavingsAccount fundSavingsAccountData = savingsAccountRepositoryWrapper.findOneWithNotFoundDetection(fundId);
 
         PortfolioAccountData portfolioAccountData = savingsAccountReadPlatformService.retriveSavingsLinkedAssociation(fundSavingsAccountData.getId());
 
@@ -94,23 +96,26 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             throw new GeneralPlatformDomainRuleException("error.msg.fund.association.not.found", "Fund association not found");
         }
 
-        SavingsAccount investorSavingAccount = promissoryNoteData.getInvestorSavingsAccount();
-
-        Client investor = investorSavingAccount.getClient();
-
         Client projectOwner = fundSavingsAccountData.getClient();
-
-        ClientIdentifier investorDocument = clientIdentifierRepository.retrieveByClientId(investor.getId());
-
-        if (investorDocument == null) {
-            throw new GeneralPlatformDomainRuleException("error.msg.client.does.not.have.client.identifier", "El cliente no tiene documento de identidad registrado");
-        }
 
         ClientIdentifier projectOwnerDocument = clientIdentifierRepository.retrieveByClientId(projectOwner.getId());
 
         if (projectOwnerDocument == null) {
             throw new GeneralPlatformDomainRuleException("error.msg.client.does.not.have.client.identifier", "El cliente no tiene documento de identidad registrado");
         }
+
+        //SavingsAccount investorSavingAccount = promissoryNoteData.getInvestorSavingsAccount();
+
+        //Client investor = investorSavingAccount.getClient();
+
+
+        //ClientIdentifier investorDocument = clientIdentifierRepository.retrieveByClientId(investor.getId());
+
+//        if (investorDocument == null) {
+//            throw new GeneralPlatformDomainRuleException("error.msg.client.does.not.have.client.identifier", "El cliente no tiene documento de identidad registrado");
+//        }
+
+
 
         LocalDate date = DateUtils.getBusinessLocalDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
@@ -125,7 +130,7 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
 
             Image logo = Image.getInstance(new URL("https://s3.us-east-2.amazonaws.com/fineract.dev.public/logo-doble-impacto-con-bajada.png"));
 
-            writer.setPageEvent(new HeaderFooterEvent(logo, projectOwner.getDisplayName(), promissoryNoteData.getId(), promissoryNoteData.getPromissoryNoteNumber(), date.format(formatterEndPage)));
+            writer.setPageEvent(new HeaderFooterEvent(logo, projectOwner.getDisplayName(), fundSavingsAccountData.getId(), fundSavingsAccountData.getAccountNumber(), date.format(formatterEndPage)));
 
             document.open();
 
@@ -141,21 +146,42 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
 
-            Paragraph num = new Paragraph("Número: ".concat(String.valueOf(promissoryNoteData.getId())));
+            Paragraph num = new Paragraph("Número: ".concat(String.valueOf(fundSavingsAccountData.getId())));
             num.setAlignment(Element.ALIGN_RIGHT);
             document.add(num);
 
-            Paragraph cod = new Paragraph("Código: ".concat(promissoryNoteData.getPromissoryNoteNumber()));
+            Paragraph cod = new Paragraph("Código: ".concat(fundSavingsAccountData.getAccountNumber()));
             cod.setAlignment(Element.ALIGN_RIGHT);
             document.add(cod);
 
             document.add(Chunk.NEWLINE);
 
-            document.add(createSingleParagraph("Debo y pagaré incondicionalmente a la orden de ".concat(investor.getDisplayName()).concat(" cédula " +
-                    ("nacional de identidad ".concat(investorDocument.documentKey()).concat(" en adelante el(los) “Acreedor(es)”, la suma de " +
-                            "$").concat(String.valueOf(promissoryNoteData.getInvestmentAmount())).concat(
-                            ". - (".concat(NumberToWordEs.convert(promissoryNoteData.getInvestmentAmount().setScale(2, RoundingMode.HALF_EVEN).longValue())).concat(" pesos), " +
-                                    "moneda legal, cantidad que he recibido en préstamo de el(los) Acreedor(es) a entera satisfacción."))))));
+            String investorsParagraph = "Debo y pagaré incondicionalmente a la orden de ";
+
+            for (PromissoryNote promissoryNote : promissoryNotesData) {
+
+                SavingsAccount investorSavingAccount = promissoryNote.getInvestorSavingsAccount();
+
+                Client investor = investorSavingAccount.getClient();
+
+                if (investor != null) {
+
+                    investorsParagraph = investorsParagraph.concat(promissoryNote.getInvestorSavingsAccount().getClient().getDisplayName()).concat(" cédula nacional de identidad ");
+
+                    ClientIdentifier investorDocument = clientIdentifierRepository.retrieveByClientId(investor.getId());
+
+                    if (investorDocument != null) {
+                        investorsParagraph = investorsParagraph.concat(investorDocument.documentKey() + ", ");
+                    } else {
+                        investorsParagraph = investorsParagraph.concat("(No registra), ");
+                    }
+                }
+            }
+
+            document.add(createSingleParagraph(investorsParagraph.concat("en adelante el(los) “Acreedor(es)”, la suma de " +
+                            "$").concat(String.valueOf(fundSavingsAccountData.getMaxAllowedDepositLimit())).concat(
+                            ". - (".concat(NumberToWordEs.convert(fundSavingsAccountData.getMaxAllowedDepositLimit().setScale(2, RoundingMode.HALF_EVEN).longValue())).concat(" pesos), " +
+                                    "moneda legal, cantidad que he recibido en préstamo de el(los) Acreedor(es) a entera satisfacción."))));
 
             document.add(Chunk.NEWLINE);
 
@@ -174,8 +200,8 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             document.add(Chunk.NEWLINE);
 
             //bodyText2
-            document.add(createSingleParagraph("El capital total adeudado de $".concat(String.valueOf(promissoryNoteData.getInvestmentAmount())).concat(".- ("
-                    .concat(NumberToWordEs.convert(promissoryNoteData.getInvestmentAmount()
+            document.add(createSingleParagraph("El capital total adeudado de $".concat(String.valueOf(fundSavingsAccountData.getMaxAllowedDepositLimit())).concat(".- ("
+                    .concat(NumberToWordEs.convert(fundSavingsAccountData.getMaxAllowedDepositLimit()
                             .setScale(2, RoundingMode.HALF_EVEN).longValue())).concat(" se pagará en las " +
                             "siguientes cuotas, que se devengarán en las siguientes fechas de vencimiento:"))));
 
@@ -188,7 +214,6 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             for (int i = 1; i < list.size(); i++) {
                 LoanRepaymentScheduleInstallment installment = list.get(i);
                 LocalDate dueDate = installment.getDueDate();
-                formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
                 formattedDate = dueDate.format(formatter);
                 BigDecimal totalOutstanding = installment.getTotalOutstanding(MonetaryCurrency.fromCurrencyData(loan.getCurrency().toData())).getAmount();
 
@@ -312,7 +337,7 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
 
             document.add(createSingleParagraph("Razón social del suscriptor  :  ".concat(projectOwner.getDisplayName())));
             document.add(createSingleParagraph("Rut : ".concat(projectOwnerDocument.documentKey())));
-            document.add(createSingleParagraph("Domicilio  :  Valenzuela Castillo 1520, 7500700 Providencia, Región Metropolitana, Chile"));
+            document.add(createSingleParagraph("Domicilio  :  "));
 
             document.add(createSignatureParagraph());
 
@@ -333,23 +358,57 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             document.add(Chunk.NEWLINE);
 
             document.add(createSingleParagraph("Relacionado con el pagaré suscrito el " + formattedDate + " por " +
-                            investor.getDisplayName() + ", el monto de " +
-                    "capital $" + promissoryNoteData.getInvestmentAmount() + ".- (" +
-                    NumberToWordEs.convert(promissoryNoteData.getInvestmentAmount().longValue()) + " pesos), se desglosa de la siguiente manera:"));
+                            projectOwner.getDisplayName() + ", el monto de " +
+                    "capital $" + fundSavingsAccountData.getMaxAllowedDepositLimit() + ".- (" +
+                    NumberToWordEs.convert(fundSavingsAccountData.getMaxAllowedDepositLimit().longValue()) + " pesos), se desglosa de la siguiente manera:"));
 
             document.add(Chunk.NEWLINE);
 
-            document.add(createSingleParagraph("A la orden de " + investor.getDisplayName() + ", cedula nacional de identidad "
-                    + investorDocument.documentKey() + ", o a quién " +
-                    "sus derechos represente la suma de $" + promissoryNoteData.getInvestmentAmount() + ".- (" +
-                    NumberToWordEs.convert(promissoryNoteData.getInvestmentAmount().longValue()) + " pesos) moneda de curso legal, por concepto de " +
-                    "capital, que de dicha persona recibí a mi entera satisfacción;"));
+            List investorsList = new List(List.UNORDERED);
+
+            for (PromissoryNote promissoryNote : promissoryNotesData) {
+
+                String text = "A la orden de ";
+
+                SavingsAccount investorSavingAccount = promissoryNote.getInvestorSavingsAccount();
+
+                Client investor = investorSavingAccount.getClient();
+
+                if (investor != null) {
+
+                    text = text.concat(promissoryNote.getInvestorSavingsAccount().getClient().getDisplayName()).concat(
+                            " cedula nacional de identidad ");
+
+                    ClientIdentifier investorDocument = clientIdentifierRepository.retrieveByClientId(investor.getId());
+
+                    if (investorDocument != null) {
+                        text = text.concat(investorDocument.documentKey() + ", ");
+                    } else {
+                        text = text.concat("(No registra), ");
+                    }
+                } else {
+                    text = text.concat( "(no registra), ");
+                }
+                text = text.concat("o a quien sus derechos represente la suma de $" + promissoryNote.getInvestmentAmount() + ".- (" +
+                    NumberToWordEs.convert(promissoryNote.getInvestmentAmount().longValue()) + " pesos) moneda de curso legal, por concepto de " +
+                    "capital, que de dicha persona recibí a mi entera satisfacción;");
+
+                investorsList.add(text);
+            }
+
+            document.add(investorsList);
+
+//            document.add(createSingleParagraph("A la orden de " + investor.getDisplayName() + ", cedula nacional de identidad "
+//                    + investorDocument.documentKey() + ", o a quién " +
+//                    "sus derechos represente la suma de $" + promissoryNoteData.getInvestmentAmount() + ".- (" +
+//                    NumberToWordEs.convert(promissoryNoteData.getInvestmentAmount().longValue()) + " pesos) moneda de curso legal, por concepto de " +
+//                    "capital, que de dicha persona recibí a mi entera satisfacción;"));
 
             document.add(Chunk.NEWLINE);
 
             document.add(createSingleParagraph("Razón social del suscriptor  :  ".concat(projectOwner.getDisplayName())));
             document.add(createSingleParagraph("Rut : ".concat(projectOwnerDocument.documentKey())));
-            document.add(createSingleParagraph("Domicilio  :  Valenzuela Castillo 1520, 7500700 Providencia, Región Metropolitana, Chile"));
+            document.add(createSingleParagraph("Domicilio  :  "));
 
             document.add(createSignatureParagraph());
 
