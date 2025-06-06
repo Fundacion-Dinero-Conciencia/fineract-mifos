@@ -214,10 +214,10 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             for (int i = 1; i < list.size(); i++) {
                 LoanRepaymentScheduleInstallment installment = list.get(i);
                 LocalDate dueDate = installment.getDueDate();
-                formattedDate = dueDate.format(formatter);
+                String formattedScheduleDate = dueDate.format(formatter);
                 BigDecimal totalOutstanding = installment.getTotalOutstanding(MonetaryCurrency.fromCurrencyData(loan.getCurrency().toData())).getAmount();
 
-                bulletList.add(new ListItem(formattedDate
+                bulletList.add(new ListItem(formattedScheduleDate
                         .concat(", $" + totalOutstanding.setScale(2, RoundingMode.HALF_EVEN)).concat(
                                 ".- (" + NumberToWordEs.convert(totalOutstanding.longValue()) + ")")));
             }
@@ -415,7 +415,7 @@ public class FundPromissoryPdfGeneratorServiceImpl implements FundPromissoryPdfG
             document.close();
 
             byte[] pdfBytes = baos.toByteArray();
-            return Base64.getEncoder().encodeToString(pdfBytes);
+            return "{\"pdfBase64\":\"" + Base64.getEncoder().encodeToString(pdfBytes) + "\"}";
 
         } catch (Exception e) {
             e.printStackTrace();
