@@ -11,7 +11,7 @@ public class PdfGeneratorConstants {
     public static final String projectIdParamName = "projectId";
     public static final String clientIdParamName = "clientId";
     public static final String amountParamName = "amount";
-    public static final String promissoryIdParamName = "promissoryId";
+    public static final String fundIdParamName = "fundId";
     public static final String loanIdParamName = "loanId";
 
     /**
@@ -19,6 +19,6 @@ public class PdfGeneratorConstants {
      * try to get response parameters to match those of request parameters.
      */
     public static final Set<String> PROJECT_PARTICIPATION_PARAMETERS = new HashSet<>(Arrays.asList(projectIdParamName,
-            clientIdParamName, amountParamName, promissoryIdParamName));
+            clientIdParamName, amountParamName, fundIdParamName));
 
 }
