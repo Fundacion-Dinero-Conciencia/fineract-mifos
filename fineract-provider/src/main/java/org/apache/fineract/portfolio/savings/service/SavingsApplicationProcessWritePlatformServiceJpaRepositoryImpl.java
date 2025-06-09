@@ -18,18 +18,9 @@
  */
 package org.apache.fineract.portfolio.savings.service;
 
-import static org.apache.fineract.portfolio.savings.SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import jakarta.persistence.PersistenceException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +37,7 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
 import org.apache.fineract.infrastructure.core.exception.ErrorHandler;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.dataqueries.data.EntityTables;
 import org.apache.fineract.infrastructure.dataqueries.data.StatusEnum;
@@ -89,6 +81,16 @@ import org.apache.fineract.portfolio.savings.exception.SavingsProductNotFoundExc
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.fineract.portfolio.savings.SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -458,6 +460,10 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
 
         entityDatatableChecksWritePlatformService.runTheCheckForProduct(savingsId, EntityTables.SAVINGS.getName(),
                 StatusEnum.APPROVE.getValue(), EntityTables.SAVINGS.getForeignKeyColumnNameOnDatatable(), savingsAccount.productId());
+
+        if (savingsAccount.getMaxAllowedDepositLimit() != null && savingsAccount.getMaxAllowedDepositLimit().compareTo(savingsAccount.getAccountBalance()) != 0) {
+            throw new GeneralPlatformDomainRuleException("error.msg.fund.is.not.complete", "Fund is not completed");
+        }
 
         final Map<String, Object> changes = savingsAccount.approveApplication(currentUser, command);
         if (!changes.isEmpty()) {
