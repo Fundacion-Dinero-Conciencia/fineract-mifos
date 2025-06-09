@@ -219,11 +219,6 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
             // Update transactions separately
             saveUpdatedTransactionsOfSavingsAccount(account.getSavingsAccountTransactionsWithPivotConfig());
         }
-        if (savingsAccountTransactionType.isInvestment()) {
-            if (account.getMaxAllowedDepositLimit().compareTo(deposit.getRunningBalance()) == 0) {
-                account.approveAndActivateApplication(DateUtils.getBusinessLocalDate(), context.authenticatedUser());
-            }
-        }
         this.savingsAccountRepository.save(account);
 
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer, backdatedTxnsAllowedTill);
