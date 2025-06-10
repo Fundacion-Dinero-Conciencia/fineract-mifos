@@ -1,0 +1,973 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    
+
+    <changeSet id="1" author="fineract">
+        <delete tableName="m_code_value">
+            <where>code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')</where>
+        </delete>
+
+        <!--For 'Educación de calidad' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Establecimientos de educación con métodos integrales" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="After Schools y guarderías con buenos estándares" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Fundaciones u ONGs que apoyen o desarrollen la educación" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Constructoras, Inmobiliarias o proveedores de proyectos de infraestructura y entorno educativo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Escuelas, colegios y liceos que imparten educación parvularia, básica o media de calidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Fundaciones, ONGs, Consultoras de Asistencia Técnica Educativa" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Universidades, Institutos profesionales y Centros de Formación Técnica" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Propedéuticos y preuniversitarios que promuevan el acceso a la educación superior" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Organismos técnicos de capacitación o intermediarios de capacitación autorizados por SENCE" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Entidades que brindan alternativas para la nivelación de estudios básicos y medios" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Proveedores de materiales e insumos para realización de la labor educativa" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Academias e instituciones de educación no formal como oficios, lenguajes artísticos, entre otros" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Educación de calidad' AND code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_CATEGORY'))" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Industrias creativas' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Artistas y creativos independientes vinculados a las artes y la cultura" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Organizaciones que favorezcan la administración de derechos autorales e intelectuales" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Editoriales, librerías, imprentas e intermediarios que aporten a la literatura y lectura" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Empresas de diseño e ilustración que aporten a la promoción de la cultura" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Diseñadores o empresas de diseño de moda con propuestas diferenciales" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Organizaciones de la Industrias Audiovisual y animación que promueve la cultura" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Empresas que desarrollen I+D+i que promueve la cultura, educación o entretención" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Organizaciones de la industria musical: estudios de grabación, sellos, agrupaciones, productoras" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Agrupaciones de artes escénicas: danza, teatro, circo, productora y empresas relacionadas" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Espacios Culturales para la difusión artística, cultural, patrimonial y del conocimiento" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Productoras de festivales, ferias, eventos masivos y de entretención" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Medios de comunicación: televisión, radio, revista, prensa y nuevas plataformas de medios sociales" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Oficinas de arquitectura, Constructoras, Fundaciones, Consultoras que trabajan por el patrimonio" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Fundaciones, Corporaciones, Consultoras de gestión cultural" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Oficinas de arquitectura, Constructoras, Fundaciones de desarrollo de infraestructura cultural" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Empresas de publicidad que trabajen con clientes o contenido de impacto positivo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Industrias creativas')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Turismo sostenible' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Agencias de viaje mediante opciones de turismo responsable, inclusivo o de tercera edad, etc" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Turismo sostenible')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Transporte turístico que transite a eficiencia energética, descarbonización o electromovilidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Turismo sostenible')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Hoteles, Hospedajes, Apart Hotel, Cabañas, Hostels, Lodge y Campings con valor agregado" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Turismo sostenible')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Operadores turísticos, restaurantes de gastronomía cultural, centros de entretenimiento y ocio" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Turismo sostenible')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Servicios turísticos de: natural, cultural, gastronómico, enoturismo, indígena, creativo, otros" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Turismo sostenible')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Agregar proyectos de constructoras de infraestructura de turismo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Turismo sostenible')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Hábitat inclusivos y sostenibles' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Diseño y consultorías técnica de vivienda social e infraestructura de hábitat sostenible" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Asesorías, cooperativas de coordinación de comunidad para planificación territorial (EGIS/EP/PSAT)" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Proveedores de la construcción que ofrezcan o desarrollen materiales de escaso impacto ambiental" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Proveedores de materiales para construción y reparación en zonas aisladas" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Construcción de proyectos habitacionales social para dar acceso a vivienda a distintos grupos" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Mejoramiento o remodelación proyectos habitacionales para dar acceso a vivienda a distintos grupos" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Construcción, reconstrucción y rescate de espacios públicos y de áreas verdes" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Constructoras que disminuyan el impacto ambiental propio del rubro" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Construcción de vialidad, mejora de conectividad, vía pública" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Proveedoras de materiales y equipamientos para espacios públicos" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Sistemas de transporte integrados, inteligentes y ecológicos" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Tecnología que permita mejorar planificación y reacción a desastres" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Tecnología que habilite y desarrolle el funcionamiento de territorios y sus servicios esenciales" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Conectividad a tecnología de territorios con acceso a servicios" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Aceleradoras o incubadoras de emprendimientos sociales" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Entidades que otorguen microcréditos o herramientas financieras de acceso a financiamiento" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Market Place de canales de comercialización a emprendimientos y Co-work de espacios de trabajo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Certificadoras de calidad, procesos y estándares de la nueva economía" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Hábitat inclusivos y sostenibles')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Salud y calidad de vida' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Promoción y/o fomento de la actividad física en todas sus formas" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Centros de medicina, diagnóstico u organizaciones que aborden el bienestar de las personas" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Centros de medicina y servicios médicos a domicilio de atención integral y de calidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Fabricación, importación o comercialización de equipos, insumos médicos y dispositivos técnicos" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención especiailzada de enfermedades de mayor prevalencia o alta complejidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Farmacias independiente, productos saludables o especialidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Centros de Salud Mental que aborden las enfermedades integralmente" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Centros de Rehabilitación" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Diseño, construcción, mejora y equpamiento de infraestructura para la salud" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Salud y calidad de vida')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Inclusión' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de mujeres" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de niños, niñas y adolescentes" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de personas migrantes y refugiados" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de los pueblos originarios" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de personas en situación de discapacidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de personas LGBTI" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de personas privadas de libertad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de personas en situación de calle" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de personas mayores" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Atención de comunidades y personas" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Inclusión')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Sistemas alimentarios' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Bancos de semillas patrimoniales" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Agricultura orgánica certificada, biodinámica o agroecológica" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Agricultura y ganadería regenerativa" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Agricultura en transición a prácticas sostenibles" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Silvicultura sostenible (maderera nativa y no maderera)" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Agricultura Familiar Campesina y Cooperativas agrícolas con buenas prácticas" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Organizaciones que trabaja en Comercio justo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Producción de lácteos y trabajo con animales libres" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Pesca artesanal" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Alimentos sin procesar o mínimamente procesados (NOVA)" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Ingredientes o alimentos procesados de procesos sustentables o comercio justo (NOVA)" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Alimentos ultra-procesados más saludable o alternativos como veganos, sin gluten, sin lácteos (NOVA)" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Circuitos cortos de comercialización de productos frescos y saludables" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Supermercados a granel" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Proveedores de alimentación del Estado que promuevan una alimentación más saludable" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Catering y restaurantes que ofrecen menús saludables" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Restoranes con una activa gestión ambiental y social en su proceso productivo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Empresas de gestión de residuos o atienden el desafío del desperdicio alimentario" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Sistemas alimentarios')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Energía renovable' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Generación, almacenamiento y distribución de energías renovables" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Proyectos Ley Net Billing, por ejemplo modelo ESCO o en un modelo de instalación propia" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Cambio de fuentes de generación energética a través de kits solares" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Instalación de bombas solares para riego" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Innovación, fabricación y comercialización de productos sobre consumo y eficiencia energética" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Instalación o recambio hacia Luminaria LED" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo o importación de maquinaria con certificaciones de eficiencia energética" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo o importación de Climatización eficiente" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Mejoramiento de edificios y espacios públicos y hogares para la eficiencia energética" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Energía renovable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+        <!--For 'Consumo y producción sustentable' sector-category-->
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Producción con materias primas renovables en un modelo regenerativo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo de tecnologías de gestión sostenible de agua, aire y tierra" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Protección, conservación y regeneración ambiental de la biodiversidad" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Ecodiseño" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Organizaciones que trabajen en producción local con valor agregado" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Procesos de transformación hacia la sostenibilidad o modelos regenerativos de producción" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo o importación de productos para la Electromovilidad y/o Vehículos híbridos y eficientes" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Ciclismo y movilidad cero emisiones" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo de nuevos modelos de consumo sustentable" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo de soluciones tecnológicas para la producción y consumo sostenibles" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Proyectos de consumo colaborativo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo de circuitos de reutilización y/o revalorización" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Reparación de bienes de consumo" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Desarrollo de sistemas de recolección y acopio para reciclaje y compostaje" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Plantas de reciclaje y compostaje" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')" />
+            <column name="code_value" value="Producción de envases y embalajes de bajo impacto ambiental" />
+            <column name="code_description" valueComputed="(SELECT '{&quot;category&quot; : ' || id || '}' FROM m_code_value WHERE code_value = 'Consumo y producción sustentable')" />
+            <column name="order_position"
+                    valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'INVESTMENT_PROJECT_SUBCATEGORY')), 1)" />
+            <column name="is_active" valueBoolean="true" />
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
