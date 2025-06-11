@@ -62,7 +62,12 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
         projectParticipations.forEach(projectParticipation -> {
             if (projectParticipation != null) {
                 ProjectParticipationData projectData = projectParticipationMapper.map(projectParticipation);
-                factoryData(projectData, projectParticipation, projectParticipationData);
+                projectParticipationData.add(projectData);
+                projectData.setStatus(new ProjectParticipationData.StatusEnum(
+                        ProjectParticipationStatusEnum.fromInt(projectParticipation.getStatusEnum()).toEnumOptionData().getCode(),
+                        ProjectParticipationStatusEnum.fromInt(projectParticipation.getStatusEnum()).getValue()));
+                projectData.setParticipantId(projectParticipation.getClient().getId());
+                projectData.setProject(investmentProjectReadPlatformService.retrieveById(projectParticipation.getInvestmentProject().getId()));
             }
         });
         return projectParticipationData;
