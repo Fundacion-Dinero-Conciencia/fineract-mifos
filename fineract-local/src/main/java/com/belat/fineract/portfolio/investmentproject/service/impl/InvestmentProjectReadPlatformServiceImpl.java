@@ -205,7 +205,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
 
         List<DataCode> categories = new ArrayList<>();
         project.getSubCategories().forEach(item -> {
-            if (item != null) {
+            if (item != null && item.getCategory() != null) {
                 categories
                         .add(new DataCode(item.getCategory().getId(), item.getCategory().getLabel(), item.getCategory().getDescription()));
             }
