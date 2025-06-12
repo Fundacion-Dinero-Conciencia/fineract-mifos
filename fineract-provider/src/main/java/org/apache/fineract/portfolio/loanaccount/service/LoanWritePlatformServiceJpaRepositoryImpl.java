@@ -104,6 +104,7 @@ import org.apache.fineract.portfolio.loanaccount.rescheduleloan.domain.LoanResch
 import org.apache.fineract.portfolio.loanaccount.serialization.*;
 import org.apache.fineract.portfolio.loanaccount.service.adjustment.LoanAdjustmentParameter;
 import org.apache.fineract.portfolio.loanaccount.service.adjustment.LoanAdjustmentService;
+import org.apache.fineract.portfolio.loanaccount.service.fund.LoanFundServiceImpl;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.exception.LinkedAccountRequiredException;
 import org.apache.fineract.portfolio.loanproduct.service.LoanEnumerations;
@@ -115,7 +116,9 @@ import org.apache.fineract.portfolio.repaymentwithpostdatedchecks.domain.PostDat
 import org.apache.fineract.portfolio.repaymentwithpostdatedchecks.domain.PostDatedChecksRepository;
 import org.apache.fineract.portfolio.repaymentwithpostdatedchecks.service.RepaymentWithPostDatedChecksAssembler;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
+import org.apache.fineract.portfolio.savings.service.SavingsApplicationProcessWritePlatformService;
 import org.apache.fineract.portfolio.transfer.api.TransferApiConstants;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
@@ -196,6 +199,9 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     private final CommandSourceRepository commandSourceRepository;
     private final LoanApplicationWritePlatformService writePlatformService;
     private final LoanRelationshipsWritePlatformService relationshipsWritePlatformService;
+    private final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper;
+    private final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService;
+    private final LoanFundServiceImpl loanFundService;
 
     @Transactional
     @Override
@@ -475,7 +481,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
     private void createSavingWithdrawTransaction(final Loan loan, final FromJsonHelper jsonHelper) {
         AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loan.getId(),
-                AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue());
+                AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue());
 
         // Build saving withdraw data
         JsonObject savingJson = createSavingWithdrawData(loan.getDisbursedAmount());
@@ -3073,20 +3079,66 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             date = DateUtils.getBusinessLocalDate();
         }
 
+        Map<String, Object> jsonMap;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format, new Locale(locale));
+
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> jsonMap = mapper.readValue(commandSource.getCommandAsJson(), HashMap.class);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format, new Locale(locale));
+            jsonMap = mapper.readValue(commandSource.getCommandAsJson(), HashMap.class);
             jsonMap.put("submittedOnDate", date.format(formatter));
             jsonMap.put("expectedDisbursementDate", date.plusDays(1).format(formatter));
             jsonMap.put("principal", amount);
-
-            newJson = new Gson().toJson(jsonMap);
 
         } catch (Exception e) {
             log.error("Error in extraction of base credit data");
             throw new PlatformApiDataValidationException("error.msg.resource.extract", "Error in extraction of base credit data", null);
         }
+
+        //Get client saving accounts
+        List<SavingsAccount> savingsAccount = savingsAccountRepositoryWrapper.findSavingAccountByClientId(loan.getClientId());
+
+        //Not fund client saving account
+        Optional<SavingsAccount> savingAccount = savingsAccount.stream().filter(item ->
+                !item.getAccountNumber().contains(applicationContext.getEnvironment().getProperty("fineract.fund.client.name")))
+                .findFirst();
+
+        if (savingAccount.isPresent()) {
+            jsonMap.put("linkAccountId", savingAccount.get().getId());
+        } else {
+            //Crate and assign saving account
+
+            // Build saving data
+            JsonObject savingJson = loanFundService.createSavingAccountData(null, loan.getClientId(),
+                    null, loan.getCurrencyCode(), formatter);
+
+            JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()),
+                    command.getFromApiJsonHelper());
+
+            // Create saving account
+            CommandProcessingResult savingResult = savingsApplicationProcessWritePlatformService.submitApplication(savingCommand);
+
+            //Approve saving account
+            JsonObject approveJson = new JsonObject();
+            approveJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
+            approveJson.addProperty("locale", locale);
+            approveJson.addProperty("approvedOnDate", savingJson.get("submittedOnDate").getAsString());
+
+            savingsApplicationProcessWritePlatformService.approveApplication(savingResult.getSavingsId(), JsonCommand.from(String.valueOf(approveJson), JsonParser.parseString(approveJson.toString()),
+                    command.getFromApiJsonHelper()));
+
+            //Activate saving account
+            JsonObject activateJson = new JsonObject();
+            activateJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
+            activateJson.addProperty("locale", locale);
+            activateJson.addProperty("activatedOnDate", savingJson.get("submittedOnDate").getAsString());
+
+            savingsAccountWritePlatformService.activate(savingResult.getSavingsId(), JsonCommand.from(String.valueOf(activateJson), JsonParser.parseString(activateJson.toString()),
+                    command.getFromApiJsonHelper()));
+
+            jsonMap.put("linkAccountId", savingResult.getSavingsId());
+        }
+
+        newJson = new Gson().toJson(jsonMap);
 
         if (loan.getLoanStatus().isSubmittedAndPendingApproval()) {
             return cloneLoan(newJson, loanId);

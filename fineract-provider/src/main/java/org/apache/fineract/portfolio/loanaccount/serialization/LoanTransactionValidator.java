@@ -242,7 +242,7 @@ public final class LoanTransactionValidator {
 
             // Validate savings fund status
             AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loanId,
-                    AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue());
+                    AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue());
             if (accountAssociations != null) {
                 SavingsAccount linkedSavingAccount = accountAssociations.linkedSavingsAccount();
                 if (linkedSavingAccount != null && !linkedSavingAccount.isActive()) {

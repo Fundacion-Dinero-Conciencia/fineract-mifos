@@ -75,7 +75,7 @@ public class LoanFundServiceImpl {
 
         // Link fund saving account
         AccountAssociations accountAssociations = AccountAssociations.associateSavingsAccount(loan, account,
-                AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue(), true);
+                AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue(), true);
         this.accountAssociationsRepository.save(accountAssociations);
     }
 
@@ -94,17 +94,21 @@ public class LoanFundServiceImpl {
         return clientJson;
     }
 
-    private JsonObject createSavingAccountData(final BigDecimal amount, final Long clientId, final String accountNo,
+    public JsonObject createSavingAccountData(final BigDecimal amount, final Long clientId, final String accountNo,
             final String currencyCode, final DateTimeFormatter formatter) {
         JsonObject accountJson = new JsonObject();
-        accountJson.addProperty("maxAllowedDepositLimit", amount);
+        if (amount != null) {
+            accountJson.addProperty("maxAllowedDepositLimit", amount);
+        }
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
         accountJson.addProperty("locale", Locale.ENGLISH.toString());
         accountJson.addProperty("submittedOnDate", DateUtils.getBusinessLocalDate().format(formatter));
         accountJson.addProperty("productId", applicationContext.getEnvironment().getProperty("fineract.saving.product.id"));
         accountJson.addProperty("clientId", clientId);
         accountJson.addProperty("allowOverdraft", false);
-        accountJson.addProperty("accountNo", accountNo);
+        if (accountNo != null) {
+            accountJson.addProperty("accountNo", accountNo);
+        }
         accountJson.addProperty("currencyCode", currencyCode);
         return accountJson;
     }

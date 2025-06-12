@@ -64,4 +64,5 @@
   <include relativeToChangelogFile="true" file="parts/9040_amount_to_be_delivered_and_to_be_financed_in_investment_projects.xml"/>
   <include relativeToChangelogFile="true" file="parts/9041_add_additional_values_for_project_data_codes.xml"/>
   <include relativeToChangelogFile="true" file="parts/9042_add_sub_categories_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9043_modify_account_associations_type.xml"/>
 </databaseChangeLog>
