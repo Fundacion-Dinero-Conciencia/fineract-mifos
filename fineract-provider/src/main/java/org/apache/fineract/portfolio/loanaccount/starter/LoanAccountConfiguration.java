@@ -160,6 +160,7 @@ import org.apache.fineract.portfolio.repaymentwithpostdatedchecks.service.Repaym
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.service.GSIMReadPlatformService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
+import org.apache.fineract.portfolio.savings.service.SavingsApplicationProcessWritePlatformService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -406,7 +407,9 @@ public class LoanAccountConfiguration {
                                                              LoanJournalEntryPoster journalEntryPoster, LoanAdjustmentService loanAdjustmentService,
                                                              AccountAssociationsRepository accountAssociationsRepository,
                                                              SavingsAccountWritePlatformService savingsAccountWritePlatformService, ApplicationContext applicationContext,
-                                                             CommandSourceRepository sourceRepository, LoanApplicationWritePlatformService loanApplicationWritePlatformService, LoanRelationshipsWritePlatformService loanRelationshipsWritePlatformService) {
+                                                             CommandSourceRepository sourceRepository, LoanApplicationWritePlatformService loanApplicationWritePlatformService, LoanRelationshipsWritePlatformService loanRelationshipsWritePlatformService,
+                                                             SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper, SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService,
+                                                             LoanFundServiceImpl loanFundService) {
         return new LoanWritePlatformServiceJpaRepositoryImpl(context, loanTransactionValidator, loanUpdateCommandFromApiJsonDeserializer,
                 loanRepositoryWrapper, loanAccountDomainService, noteRepository, loanTransactionRepository,
                 loanTransactionRelationRepository, loanAssembler, journalEntryWritePlatformService, calendarInstanceRepository,
@@ -422,7 +425,8 @@ public class LoanAccountConfiguration {
                 loanDownPaymentTransactionValidator, loanDisbursementService, loanScheduleService, loanChargeValidator, loanOfficerService,
                 reprocessLoanTransactionsService, loanAccountService, journalEntryPoster, loanAdjustmentService,
                 accountAssociationsRepository, savingsAccountWritePlatformService, applicationContext, sourceRepository,
-                loanApplicationWritePlatformService, loanRelationshipsWritePlatformService);
+                loanApplicationWritePlatformService, loanRelationshipsWritePlatformService, savingsAccountRepositoryWrapper,
+                savingsApplicationProcessWritePlatformService, loanFundService);
     }
 
     @Bean

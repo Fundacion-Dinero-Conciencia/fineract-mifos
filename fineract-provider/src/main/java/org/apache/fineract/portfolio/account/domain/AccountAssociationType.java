@@ -25,7 +25,8 @@ public enum AccountAssociationType {
 
     INVALID(0, "accountAssociationType.invalid"), //
     LINKED_ACCOUNT_ASSOCIATION(1, "accountAssociationType.loan.account.association"), //
-    GUARANTOR_ACCOUNT_ASSOCIATION(2, "accountAssociationType.guarantor.account.association"); //
+    GUARANTOR_ACCOUNT_ASSOCIATION(2, "accountAssociationType.guarantor.account.association"), //
+    LINKED_ACCOUNT_ASSOCIATION_FOR_FUND(3, "accountAssociationType.loan.account.association.for.fund"); //
 
     private final Integer value;
     private final String code;
