@@ -18,18 +18,10 @@
  */
 package org.apache.fineract.portfolio.loanaccount.domain;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.annotation.Nullable;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -48,31 +40,7 @@ import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
 import org.apache.fineract.infrastructure.core.service.MathUtil;
 import org.apache.fineract.infrastructure.event.business.domain.loan.LoanBalanceChangedBusinessEvent;
 import org.apache.fineract.infrastructure.event.business.domain.loan.LoanBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanChargePaymentPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanChargePaymentPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanCreditBalanceRefundPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanCreditBalanceRefundPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanForeClosurePostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanForeClosurePreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanRefundPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanRefundPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionDownPaymentPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionDownPaymentPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionGoodwillCreditPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionGoodwillCreditPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionInterestPaymentWaiverPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionInterestPaymentWaiverPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionInterestRefundPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionInterestRefundPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionMakeRepaymentPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionMakeRepaymentPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionMerchantIssuedRefundPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionMerchantIssuedRefundPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionPayoutRefundPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionPayoutRefundPreBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionRecoveryPaymentPostBusinessEvent;
-import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.LoanTransactionRecoveryPaymentPreBusinessEvent;
+import org.apache.fineract.infrastructure.event.business.domain.loan.transaction.*;
 import org.apache.fineract.infrastructure.event.business.service.BusinessEventNotifierService;
 import org.apache.fineract.organisation.holiday.domain.Holiday;
 import org.apache.fineract.organisation.holiday.domain.HolidayRepository;
@@ -108,17 +76,7 @@ import org.apache.fineract.portfolio.loanaccount.serialization.LoanChargeValidat
 import org.apache.fineract.portfolio.loanaccount.serialization.LoanDownPaymentTransactionValidator;
 import org.apache.fineract.portfolio.loanaccount.serialization.LoanForeclosureValidator;
 import org.apache.fineract.portfolio.loanaccount.serialization.LoanTransactionValidator;
-import org.apache.fineract.portfolio.loanaccount.service.InterestRefundService;
-import org.apache.fineract.portfolio.loanaccount.service.InterestRefundServiceDelegate;
-import org.apache.fineract.portfolio.loanaccount.service.LoanAccrualTransactionBusinessEventService;
-import org.apache.fineract.portfolio.loanaccount.service.LoanAccrualsProcessingService;
-import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
-import org.apache.fineract.portfolio.loanaccount.service.LoanChargeService;
-import org.apache.fineract.portfolio.loanaccount.service.LoanDownPaymentHandlerService;
-import org.apache.fineract.portfolio.loanaccount.service.LoanRefundService;
-import org.apache.fineract.portfolio.loanaccount.service.LoanScheduleService;
-import org.apache.fineract.portfolio.loanaccount.service.LoanUtilService;
-import org.apache.fineract.portfolio.loanaccount.service.ReprocessLoanTransactionsService;
+import org.apache.fineract.portfolio.loanaccount.service.*;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanSupportedInterestRefundTypes;
 import org.apache.fineract.portfolio.note.domain.Note;
 import org.apache.fineract.portfolio.note.domain.NoteRepository;
@@ -130,6 +88,11 @@ import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatform
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -336,12 +299,37 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         }
 
         // Make deposits
-        createSavingFundDeposit(loan.getId(), newRepaymentTransaction);
+        List<LoanRepaymentScheduleInstallment> listPayments =
+        loan.getRepaymentScheduleInstallments()
+                .stream()
+                .filter(x -> Objects.equals(newRepaymentTransaction.getTransactionDate(), x.getObligationsMetOnDate()))
+                .sorted(Comparator.comparing(LoanRepaymentScheduleInstallment::getInstallmentNumber).reversed())
+                .collect(Collectors.toList());
+
+        Integer[] installments = null;
+        if (!listPayments.isEmpty()) {
+            int installmentNumber = listPayments.get(0).getInstallmentNumber();
+            if (loan.getRepaymentScheduleInstallments().size() -1 != installmentNumber) {
+                final int installmentAdditional = installmentNumber + 1;
+                loan.getRepaymentScheduleInstallments()
+                        .stream()
+                        .filter(item -> item.getInstallmentNumber().equals(installmentAdditional) && item.getTotalPaidInAdvance() != null)
+                        .findFirst()
+                        .ifPresent(listPayments::add);
+            }
+            installments = new Integer[listPayments.size()];
+            for (int i = 0; i < listPayments.size(); i++) {
+                installments[i] = listPayments.get(i).getInstallmentNumber();
+            }
+        }
+
+
+        createSavingFundDeposit(loan.getId(), newRepaymentTransaction, new Gson().toJson(installments));
 
         return newRepaymentTransaction;
     }
 
-    private void createSavingFundDeposit(final Long loanId, final LoanTransaction newRepaymentTransaction) {
+    private void createSavingFundDeposit(final Long loanId, final LoanTransaction newRepaymentTransaction, String installments) {
         Map<String, BigDecimal> portionsMap = new LinkedHashMap<>();
         portionsMap.put("I", newRepaymentTransaction.getInterestPortion());
         portionsMap.put("A", newRepaymentTransaction.getPenaltyChargesPortion());
@@ -349,7 +337,7 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         portionsMap.put("C", newRepaymentTransaction.getFeeChargesPortion());
 
         AccountAssociationsData accountAssociations = accountAssociationsReadPlatformService
-                .retriveLoanAssociations(loanId, AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue()).stream().findFirst()
+                .retriveLoanAssociations(loanId, AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue()).stream().findFirst()
                 .orElseThrow(() -> new PlatformDataIntegrityException("err.msg.not.found.saving.fund.relation",
                         "Not found saving fund relation to deposit"));
 
@@ -358,7 +346,7 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
             if (value != null) {
                 // Create deposit data
                 JsonObject depositJson = createSavingFundDepositData(value,
-                        entry.getKey().concat(" - ").concat(String.valueOf(newRepaymentTransaction.getId())));
+                        entry.getKey().concat(" - ").concat(String.valueOf(newRepaymentTransaction.getId())), installments );
 
                 JsonCommand depositCommand = JsonCommand.from(String.valueOf(depositJson), JsonParser.parseString(depositJson.toString()),
                         new FromJsonHelper());
@@ -369,7 +357,7 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         }
     }
 
-    private JsonObject createSavingFundDepositData(final BigDecimal amount, final String note) {
+    private JsonObject createSavingFundDepositData(final BigDecimal amount, final String note, String installments) {
         JsonObject accountJson = new JsonObject();
         accountJson.addProperty("transactionAmount", amount);
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
@@ -378,6 +366,7 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         accountJson.addProperty("note", note);
         accountJson.addProperty("paymentTypeId",
                 applicationContext.getEnvironment().getProperty("fineract.loan.to.saving.fund.transaction.payment.type.id"));
+        accountJson.addProperty("installments", installments);
         return accountJson;
     }
 

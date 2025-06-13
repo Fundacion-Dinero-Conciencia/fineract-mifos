@@ -150,6 +150,11 @@ public final class SavingsAccountTransaction extends AbstractAuditableWithUTCDat
     @Column(name = "distribute_date")
     private LocalDate distributeDate;
 
+    @Getter
+    @Setter
+    @Column(name = "installments")
+    private String installments;
+
     SavingsAccountTransaction() {}
 
     private SavingsAccountTransaction(final SavingsAccount savingsAccount, final Office office, final PaymentDetail paymentDetail,

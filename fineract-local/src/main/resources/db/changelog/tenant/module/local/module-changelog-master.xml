@@ -65,4 +65,5 @@
   <include relativeToChangelogFile="true" file="parts/9041_add_additional_values_for_project_data_codes.xml"/>
   <include relativeToChangelogFile="true" file="parts/9042_add_sub_categories_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9043_modify_account_associations_type.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9044_add_columns_to_saving_account_transaction.xml"/>
 </databaseChangeLog>
