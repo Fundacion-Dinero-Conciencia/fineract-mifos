@@ -154,6 +154,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
             Object... isInvestment) {
 
         SavingsAccountTransactionType savingsAccountTransactionType = SavingsAccountTransactionType.DEPOSIT;
+        String installments = null;
 
         if (isInvestment != null && isInvestment.length > 0) {
             if (isInvestment[0] instanceof Boolean && (Boolean) isInvestment[0]) {
@@ -162,16 +163,21 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
             } else if (isInvestment[0] instanceof SavingsAccountTransactionType) {
                 savingsAccountTransactionType = (SavingsAccountTransactionType) isInvestment[0];
             }
+            if (isInvestment.length > 1 && isInvestment[1] instanceof String) {
+                installments = (String) isInvestment[1];
+            }
         }
-
-        return handleDeposit(account, fmt, transactionDate, transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction,
+        SavingsAccountTransaction transaction = handleDeposit(account, fmt, transactionDate, transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction,
                 savingsAccountTransactionType, backdatedTxnsAllowedTill);
+        transaction.setInstallments(installments);
+        saveTransactionToGenerateTransactionId(transaction);
+        return transaction;
     }
 
     private SavingsAccountTransaction handleDeposit(final SavingsAccount account, final DateTimeFormatter fmt,
-            final LocalDate transactionDate, final BigDecimal transactionAmount, final PaymentDetail paymentDetail,
-            final boolean isAccountTransfer, final boolean isRegularTransaction,
-            final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill) {
+                                                    final LocalDate transactionDate, final BigDecimal transactionAmount, final PaymentDetail paymentDetail,
+                                                    final boolean isAccountTransfer, final boolean isRegularTransaction,
+                                                    final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill) {
         context.authenticatedUser();
         account.validateForAccountBlock();
         account.validateForCreditBlock();

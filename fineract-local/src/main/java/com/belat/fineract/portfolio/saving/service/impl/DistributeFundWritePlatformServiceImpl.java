@@ -8,6 +8,7 @@ import com.belat.fineract.portfolio.saving.service.DistributeFundWritePlatformSe
 import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.MessageFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,6 +85,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
         List<Long> transactionsList = new ArrayList<>(100);
         for (SavingsAccountTransaction tr : transactions) {
+            String paymentPeriods = MessageFormat.format(", Cuotas: {0}", tr.getInstallments().replace("[\\[\\]]", ""));
 
             BigDecimal transactionAmount = Money.of(savingBelat.getCurrency(), tr.getAmount()).getAmount();
 
@@ -95,7 +97,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                 if (amountEarned.doubleValue() > 0) {
                     amountEarned = Money.of(savingBelat.getCurrency(), amountEarned).getAmount();
                     Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned,
-                            DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()), null);
+                            DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods), null);
                     transactionsList.add(transactionPercentage);
                 }
 
@@ -112,7 +114,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                     SavingsAccount savingInvestmentAgent = savingsAccountRepository.findByStaffId(item.getInvestmentAgent().getId());
                     Long transactionId = sendTransaction(savingsAccountFund, savingInvestmentAgent, amountCAI,
                             DistributeFundConstants.COMMISSION_CAI
-                                    .concat("-" + item.getInvestorSavingsAccount().getClient().getDisplayName()), null);
+                                    .concat("-" + item.getInvestorSavingsAccount().getClient().getDisplayName()).concat(paymentPeriods), null);
                     transactionsList.add(transactionId);
 
                 }
@@ -125,9 +127,8 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                         amountToSend = amountToCompare;
                     }
                 }
-
-                Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend,
-                        DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()), tr.getTransactionType().getValue());
+                String description = DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods);
+                Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend, description, tr.getTransactionType().getValue());
                 transactionsList.add(transactionId);
             }
             tr.setWasDistribute(true);
