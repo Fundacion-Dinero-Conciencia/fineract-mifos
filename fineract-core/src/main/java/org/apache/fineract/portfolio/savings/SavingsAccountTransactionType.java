@@ -51,8 +51,8 @@ public enum SavingsAccountTransactionType {
     ESCHEAT(19, "savingsAccountTransactionType.escheat", TransactionEntryType.DEBIT), //
     AMOUNT_HOLD(20, "savingsAccountTransactionType.onHold", TransactionEntryType.DEBIT), //
     AMOUNT_RELEASE(21, "savingsAccountTransactionType.release", TransactionEntryType.CREDIT), //
-    INVESTMENT(22, "savingsAccountTransactionType.investment", TransactionEntryType.CREDIT), CURRENT_INTEREST(23,
-            "savingsAccountTransactionType.currentInterest", TransactionEntryType.CREDIT), //
+    INVESTMENT(22, "savingsAccountTransactionType.investment", TransactionEntryType.CREDIT),
+    CURRENT_INTEREST(23, "savingsAccountTransactionType.currentInterest", TransactionEntryType.CREDIT), //
     ARREARS_INTEREST(24, "savingsAccountTransactionType.arrearsInterest", TransactionEntryType.CREDIT), //
     CAPITAL_PAYMENT(25, "savingsAccountTransactionType.capitalPayment", TransactionEntryType.CREDIT), //
     INVESTMENT_FEE(26, "savingsAccountTransactionType.investmentFee", TransactionEntryType.CREDIT); //
