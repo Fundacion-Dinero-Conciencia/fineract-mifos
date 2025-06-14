@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -155,6 +156,9 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
             if (project.getDescription().getSocioEnvironmentalDescription() != null) {
                 projectData.setLittleSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getLittleDescription());
                 projectData.setDetailedSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getDetailedDescription());
+            }
+            if (project.getAmountToBeFinanced() != null && project.getAmountToBeDelivered() != null) {
+                projectData.setAvailableTotalAmount(project.getAmountToBeFinanced().subtract(project.getAmountToBeDelivered(), MoneyHelper.getMathContext()));
             }
         }
         return projectData;

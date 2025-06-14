@@ -18,8 +18,11 @@
  */
 package org.apache.fineract.portfolio.account.starter;
 
+import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
+import com.belat.fineract.portfolio.loanrelations.service.LoanRelationshipsReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.service.impl.ProjectParticipationWritePlatformServiceImpl;
 import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
+import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.config.FineractProperties;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
@@ -96,12 +99,14 @@ public class AccountConfiguration {
             AccountTransferDetailRepository accountTransferDetailRepository, LoanReadPlatformService loanReadPlatformService,
             GSIMRepositoy gsimRepository, ConfigurationDomainService configurationDomainService, ExternalIdFactory externalIdFactory,
             FineractProperties fineractProperties, AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService,
-            PromissoryNoteWritePlatformService promissoryNoteWritePlatformService, ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService, PaymentDetailWritePlatformService paymentDetailWritePlatformService) {
+            PromissoryNoteWritePlatformService promissoryNoteWritePlatformService, ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService,
+            InvestmentProjectReadPlatformService investmentProjectReadPlatformService,
+            CodeValueRepositoryWrapper codeValueRepositoryWrapper, LoanRelationshipsReadPlatformService loanRelationshipsReadPlatformService) {
         return new AccountTransfersWritePlatformServiceImpl(accountTransfersDataValidator, accountTransferAssembler,
                 accountTransferRepository, savingsAccountAssembler, savingsAccountDomainService, loanAccountAssembler,
                 loanAccountDomainService, savingsAccountWritePlatformService, accountTransferDetailRepository, loanReadPlatformService,
                 gsimRepository, configurationDomainService, externalIdFactory, fineractProperties, accountAssociationsReadPlatformService,
-                promissoryNoteWritePlatformService, projectParticipationWritePlatformService, paymentDetailWritePlatformService);
+                promissoryNoteWritePlatformService, projectParticipationWritePlatformService, investmentProjectReadPlatformService, codeValueRepositoryWrapper, loanRelationshipsReadPlatformService);
     }
 
     @Bean
