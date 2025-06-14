@@ -21,6 +21,8 @@ package org.apache.fineract.portfolio.account.api;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.portfolio.account.AccountDetailConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
 
@@ -31,6 +33,8 @@ public final class AccountTransfersApiConstants {
     }
 
     public static final String ACCOUNT_TRANSFER_RESOURCE_NAME = "accounttransfer";
+    public static final String SAVINGS_TRANSACTION_FREEZE_REASON_CODE_NAME = "SavingsTransactionFreezeReasons" ;
+    public static final String DISBURSEMENT_COMMISSION = "DISBURSEMENT_COMMISSION";
 
     // transaction parameters
     public static final String transferDateParamName = "transferDate";

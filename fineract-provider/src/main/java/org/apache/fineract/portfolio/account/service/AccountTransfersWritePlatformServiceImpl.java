@@ -18,6 +18,9 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
+import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
+import com.belat.fineract.portfolio.loanrelations.data.LoanRelationshipsData;
+import com.belat.fineract.portfolio.loanrelations.service.LoanRelationshipsReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
 import com.belat.fineract.portfolio.projectparticipation.service.impl.ProjectParticipationWritePlatformServiceImpl;
 import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteWritePlatformService;
@@ -30,6 +33,8 @@ import com.google.gson.reflect.TypeToken;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
+import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.config.FineractProperties;
@@ -50,12 +55,7 @@ import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
 import org.apache.fineract.portfolio.account.data.AccountTransfersDataValidator;
 import org.apache.fineract.portfolio.account.data.request.AccountTransferRequest;
-import org.apache.fineract.portfolio.account.domain.AccountTransferAssembler;
-import org.apache.fineract.portfolio.account.domain.AccountTransferDetailRepository;
-import org.apache.fineract.portfolio.account.domain.AccountTransferDetails;
-import org.apache.fineract.portfolio.account.domain.AccountTransferRepository;
-import org.apache.fineract.portfolio.account.domain.AccountTransferTransaction;
-import org.apache.fineract.portfolio.account.domain.AccountTransferType;
+import org.apache.fineract.portfolio.account.domain.*;
 import org.apache.fineract.portfolio.account.exception.DifferentCurrenciesException;
 import org.apache.fineract.portfolio.loanaccount.data.HolidayDetailDTO;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
@@ -69,11 +69,7 @@ import org.apache.fineract.portfolio.paymentdetail.PaymentDetailConstants;
 import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
 import org.apache.fineract.portfolio.paymentdetail.service.PaymentDetailWritePlatformService;
 import org.apache.fineract.portfolio.savings.SavingsTransactionBooleanValues;
-import org.apache.fineract.portfolio.savings.domain.GSIMRepositoy;
-import org.apache.fineract.portfolio.savings.domain.GroupSavingsIndividualMonitoring;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
+import org.apache.fineract.portfolio.savings.domain.*;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,18 +78,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.*;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 
@@ -119,7 +106,9 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private final AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService;
     private final PromissoryNoteWritePlatformService promissoryNoteWritePlatformService;
     private final ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService;
-    private final PaymentDetailWritePlatformService paymentDetailWritePlatformService;
+    private final InvestmentProjectReadPlatformService investmentProjectReadPlatformService;
+    private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
+    private final LoanRelationshipsReadPlatformService loanRelationshipsReadPlatformService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -200,7 +189,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     SavingsAccount belatAccount = this.savingsAccountAssembler
                             .assembleFrom(configurationDomainService.getDefaultAccountId(), false);
                     sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount,
-                            Money.of(belatAccount.getCurrency(), feeAmount).getAmount(), transactionDate);
+                            Money.of(belatAccount.getCurrency(), feeAmount).getAmount(), transactionDate, false);
                     transactionAmount = Money.of(belatAccount.getCurrency(), baseAmount).getAmount();
                 } else {
                     validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
@@ -212,15 +201,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             final SavingsAccountTransaction withdrawal = this.savingsAccountDomainService.handleWithdrawal(fromSavingsAccount, fmt,
                     transactionDate, transactionAmount, paymentDetail, transactionBooleanValues, backdatedTxnsAllowedTill);
 
-            validateCurrencyAccounts(fromSavingsAccount.getCurrency(), toSavingsAccount.getCurrency());
-
-            final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(toSavingsAccount, fmt, transactionDate,
-                    transactionAmount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, isInvestment);
-
-            if (!fromSavingsAccount.getCurrency().getCode().equals(toSavingsAccount.getCurrency().getCode())) {
-                throw new DifferentCurrenciesException(fromSavingsAccount.getCurrency().getCode(),
-                        toSavingsAccount.getCurrency().getCode());
-            }
+            SavingsAccountTransaction deposit = validateCurrenciesAndMakeDeposit(fromSavingsAccount, transactionAmount, transactionDate, isRegularTransaction, fmt, isInvestment, paymentDetail, isAccountTransfer, backdatedTxnsAllowedTill, toSavingsAccount);
             final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(command,
                     fromSavingsAccount, toSavingsAccount, withdrawal, deposit, transferType);
             this.accountTransferDetailRepository.save(accountTransferDetails);
@@ -317,10 +298,11 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         return builderx.build();
     }
 
-    @Transactional
-    public void sendTransactionFeeToBelatAccount(SavingsAccount belatAccount, SavingsAccount investorAccount, BigDecimal amount, LocalDate transactionDate) {
+
+    private void sendTransactionFeeToBelatAccount(SavingsAccount belatAccount, SavingsAccount investorAccount, BigDecimal amount, LocalDate transactionDate, Boolean isDisbursement) {
 
         Map<String, Object> transferData = new HashMap<>();
+        String transferDescription = isDisbursement ? "Disbursement commissions" : "investment commission of investor ".concat(investorAccount.getClient().getAccountNumber());
 
         // FIXME -> use AccountTransferDTO
 
@@ -332,8 +314,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         transferData.put("transferAmount", amount);
         transferData.put("transferDate",
                 transactionDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
-        transferData.put("transferDescription",
-                "investment commission of investor ".concat(investorAccount.getClient().getAccountNumber()));
+        transferData.put("transferDescription", transferDescription);
         transferData.put("dateFormat", "dd MMMM yyyy");
         transferData.put("locale", "es");
 
@@ -362,14 +343,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         final Long toSavingsId = configurationDomainService.getDefaultAccountId();
         final SavingsAccount toSavingsAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, backdatedTxnsAllowedTill);
 
-        validateCurrencyAccounts(investorAccount.getCurrency(), toSavingsAccount.getCurrency());
-
-        final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(toSavingsAccount, fmt, transactionDate,
-                amount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, isInvestment);
-
-        if (!investorAccount.getCurrency().getCode().equals(toSavingsAccount.getCurrency().getCode())) {
-            throw new DifferentCurrenciesException(investorAccount.getCurrency().getCode(), toSavingsAccount.getCurrency().getCode());
-        }
+        SavingsAccountTransaction deposit = validateCurrenciesAndMakeDeposit(investorAccount, amount, transactionDate, isRegularTransaction, fmt, isInvestment, paymentDetail, isAccountTransfer, backdatedTxnsAllowedTill, toSavingsAccount);
         JsonCommand jsonCommand = null;
         try {
             jsonCommand = createJsonCommand(transferData);
@@ -382,6 +356,18 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         final AccountTransferDetails accountTransferDetails = this.accountTransferAssembler.assembleSavingsToSavingsTransfer(jsonCommand,
                 investorAccount, toSavingsAccount, withdrawal, deposit, null);
         this.accountTransferDetailRepository.saveAndFlush(accountTransferDetails);
+    }
+
+    private SavingsAccountTransaction validateCurrenciesAndMakeDeposit(SavingsAccount investorAccount, BigDecimal amount, LocalDate transactionDate, boolean isRegularTransaction, DateTimeFormatter fmt, boolean isInvestment, PaymentDetail paymentDetail, boolean isAccountTransfer, boolean backdatedTxnsAllowedTill, SavingsAccount toSavingsAccount) {
+        validateCurrencyAccounts(investorAccount.getCurrency(), toSavingsAccount.getCurrency());
+
+        final SavingsAccountTransaction deposit = this.savingsAccountDomainService.handleDeposit(toSavingsAccount, fmt, transactionDate,
+                amount, paymentDetail, isAccountTransfer, isRegularTransaction, backdatedTxnsAllowedTill, isInvestment);
+
+        if (!investorAccount.getCurrency().getCode().equals(toSavingsAccount.getCurrency().getCode())) {
+            throw new DifferentCurrenciesException(investorAccount.getCurrency().getCode(), toSavingsAccount.getCurrency().getCode());
+        }
+        return deposit;
     }
 
     @Override
@@ -633,6 +619,9 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                 gsim.setParentDeposit(newBalance);
                 gsimRepository.save(gsim);
             }
+
+            createTransactionForDisbursement(fromLoanAccount.getId(), toSavingsAccount, deposit.getTransactionDate());
+
         } else {
             throw new GeneralPlatformDomainRuleException("error.msg.accounttransfer.loan.to.loan.not.supported",
                     "Account transfer from loan to another loan is not supported");
@@ -809,5 +798,40 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         }
         return JsonCommand.from(json, JsonParser.parseString(json), fromJsonHelper, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null);
+    }
+
+
+    /**
+     * This method reflects the discount to be made to a customer for the disbursement commission.
+     */
+    private void createTransactionForDisbursement(Long loanId, SavingsAccount clientAccount, LocalDate transactionDate) {
+
+        LoanRelationshipsData loanRelationshipsData = loanRelationshipsReadPlatformService.getLoanRelationshipsDataBySubLoanId(loanId);
+        if (loanRelationshipsData != null && loanRelationshipsData.getContainsCommission()) {
+            log.info("createTransactionForDisbursement: Creating transaction for commission");
+            final Long toSavingsId = configurationDomainService.getDefaultAccountId();
+            final SavingsAccount belatAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, false);
+            final BigDecimal amount = investmentProjectReadPlatformService.retrieveByLinkedLoan(loanRelationshipsData.getLoanSimulationId()).getAvailableTotalAmount();
+            log.info("createTransactionForDisbursement: Amount to transfer for disbursement commission [{}]", amount);
+            if (amount != null && amount.compareTo(BigDecimal.ZERO) > 0) {
+                sendTransactionFeeToBelatAccount(belatAccount, clientAccount, amount, transactionDate, true);
+                CodeValue codeValue = codeValueRepositoryWrapper.findOneByCodeNameAndLabelWithNotFoundDetection(AccountTransfersApiConstants.SAVINGS_TRANSACTION_FREEZE_REASON_CODE_NAME, AccountTransfersApiConstants.DISBURSEMENT_COMMISSION);
+                Map<String, Object> payload = new HashMap<>();
+                payload.put("reasonForBlock", codeValue.getId());
+                payload.put("transactionDate", transactionDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
+                payload.put("transactionAmount", amount);
+                payload.put("dateFormat", "dd MMMM yyyy");
+                payload.put("locale", "es");
+                createHoldTransaction(payload, belatAccount.getId());
+            }
+        } else {
+            log.info("This sub-credit doesn't contains commission");
+        }
+
+    }
+
+    private void createHoldTransaction(Map<String, Object> payload, Long accountId) {
+        final JsonCommand jsonCommand = createJsonCommand(payload);
+        savingsAccountWritePlatformService.holdAmount(accountId, jsonCommand);
     }
 }
