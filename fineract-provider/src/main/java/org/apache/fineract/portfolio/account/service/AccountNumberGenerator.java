@@ -250,4 +250,19 @@ public class AccountNumberGenerator {
         return generateAccountNumber(propertyMap, accountNumberFormat);
     }
 
+    public String generateClientMnemonic (Client client) {
+        String[] words = client.getDisplayName().trim().split("\\s+");
+        StringBuilder result = new StringBuilder();
+
+        for (String palabra : words) {
+            if (palabra.length() >= 2) {
+                result.append(palabra.substring(0, 2).toUpperCase());
+            } else {
+                result.append(palabra.toUpperCase()); // por si alguna palabra tiene 1 letra
+            }
+        }
+
+        return result.toString();
+    }
+
 }

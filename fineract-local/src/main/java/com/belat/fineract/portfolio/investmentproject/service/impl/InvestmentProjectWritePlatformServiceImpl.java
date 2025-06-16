@@ -216,7 +216,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         // Build loan data
         JsonObject loanJson = createLoanAccountData(investmentProject.getOwner().getId(), basedInLoanProductId, investmentProject.getAmount(),
-                investmentProject.getRate(), investmentProject.getPeriod());
+                investmentProject.getRate(), investmentProject.getPeriod(), mnemonic);
 
         JsonCommand loanCommand = JsonCommand.from(String.valueOf(loanJson), JsonParser.parseString(loanJson.toString()),
                 command.getFromApiJsonHelper());
@@ -540,7 +540,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     }
 
     private JsonObject createLoanAccountData(final Long clientId, final Long loanProductId, final BigDecimal amount,
-                                             final BigDecimal interest, final Integer periods) {
+                                             final BigDecimal interest, final Integer periods, final String mnemonic) {
         JsonObject accountJson = new JsonObject();
         // To format date in specific format
         DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
@@ -585,6 +585,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         accountJson.addProperty("loanType", "individual");
         accountJson.addProperty("principal", amount);
         accountJson.addProperty("allowPartialPeriodInterestCalcualtion", loanProductData.getAllowPartialPeriodInterestCalculation());
+        accountJson.addProperty("accountNo", mnemonic);
         return accountJson;
     }
 }
