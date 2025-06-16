@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LoanRelationshipsRepository extends JpaRepository<LoanRelationships, Long> {
 
-    @Query("SELECT lr FROM LoanRelationships lr WHERE lr.loanSimulationId = :loanSimulationId")
+    @Query(value = "SELECT * FROM e_loan_relationships WHERE loan_simulation_id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     LoanRelationships getLoanRelationshipsByLoanSimulationId(@Param("loanSimulationId") Long loanSimulationId);
 
-    @Query("SELECT lr FROM LoanRelationships lr WHERE lr.subLoanId = :subLoanId")
+    @Query(value = "SELECT * FROM e_loan_relationships WHERE sub_loan_id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     LoanRelationships getLoanRelationshipsBySubLoanId(@Param("subLoanId") Long subLoanId);
 }

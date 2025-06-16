@@ -3094,6 +3094,23 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             throw new PlatformApiDataValidationException("error.msg.resource.extract", "Error in extraction of base credit data", null);
         }
 
+        Loan lastByAccountNumber = loanRepository.retrieveByAccountNumberDetection(loan.getAccountNumber());
+
+        String lastTwo = lastByAccountNumber.getAccountNumber().substring(lastByAccountNumber.getAccountNumber().length() - 2);
+        String accountNo;
+        if (lastTwo.matches("\\d{2}")) {
+            int intValue = Integer.parseInt(lastTwo);
+            if (intValue < 9) {
+                accountNo = loan.getAccountNumber().concat("0".concat(String.valueOf(intValue + 1)));
+            } else {
+                accountNo = loan.getAccountNumber().concat(String.valueOf(intValue + 1));
+            }
+        } else {
+            accountNo = loan.getAccountNumber().concat("0".concat(String.valueOf(1)));
+        }
+
+        jsonMap.put("accountNo", accountNo);
+
         //Get client saving accounts
         List<SavingsAccount> savingsAccount = savingsAccountRepositoryWrapper.findSavingAccountByClientId(loan.getClientId());
 
