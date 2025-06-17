@@ -237,7 +237,7 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
         StatusHistoryProject historyProject = statusHistoryProjectRepository.getLastStatusByInvestmentProjectId(id);
         if (historyProject == null) {
             throw new PlatformApiDataValidationException("err.msj.validation", "no status history project found with id", "id", id);
-        } else if (!StatusHistoryProjectEnum.DRAFT.getValue().toString().trim().equals(historyProject.getStatusValue().getLabel().trim())) {
+        } else if (!StatusHistoryProjectEnum.DRAFT.getCode().trim().equals(historyProject.getStatusValue().getLabel().trim())) {
             throw new PlatformApiDataValidationException("err.msj.validation", "Expenses are editable only if the status is in draft form.", null);
         }
     }
