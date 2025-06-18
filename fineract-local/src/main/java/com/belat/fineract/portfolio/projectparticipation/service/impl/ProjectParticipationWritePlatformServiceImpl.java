@@ -74,7 +74,13 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
 
         BigDecimal projectAmount = investmentProject.getAmount();
         BigDecimal projectParticipationAmount = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(projectId);
-        BigDecimal availableAmount = projectAmount.subtract(projectParticipationAmount);
+        log.info("ProjectParticipationAmount: {}", projectParticipationAmount);
+        BigDecimal availableAmount = projectAmount;
+
+        if (projectParticipationAmount.doubleValue() > 0.0) {
+            availableAmount = availableAmount.subtract(projectParticipationAmount);
+        }
+        log.info("AvailableAmount: {}", availableAmount);
 
         if (availableAmount.compareTo(BigDecimal.ZERO) == 0) {
             throw new GeneralPlatformDomainRuleException("err.msg.not.available.to.participate", "Project amount has been reached");
