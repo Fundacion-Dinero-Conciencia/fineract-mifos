@@ -554,7 +554,7 @@ public final class MathUtil {
             return npv;
         };
         BrentSolver solver = new BrentSolver(1e-6, 1e-15);
-        return solver.solve(1000, f, -0.9999, 1.0, guessRate);
+        return solver.solve(1000, f, -0.9999, 1000.0, guessRate);
     }
 
     /**
