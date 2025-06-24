@@ -96,7 +96,7 @@ public class AccountAssociationsReadPlatformServiceImpl implements AccountAssoci
         final String sql = "select " + mapper.schema() + " where aa.linked_savings_account_id = ? and aa.association_type_enum = ?";
         try {
             final AccountAssociationsData accountAssociationsData = this.jdbcTemplate.queryForObject(sql, mapper, // NOSONAR
-                    new Object[] { savingsId, AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION.getValue() });
+                    new Object[] { savingsId, AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue() });
             if (accountAssociationsData != null) {
                 linkedAccount = accountAssociationsData.getAccount();
             }
