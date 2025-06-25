@@ -85,6 +85,7 @@ import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanSchedul
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleAssembler;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleCalculationPlatformService;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleHistoryWritePlatformService;
+import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleWritePlatformServiceImpl;
 import org.apache.fineract.portfolio.loanaccount.mapper.LoanChargeMapper;
 import org.apache.fineract.portfolio.loanaccount.mapper.LoanCollateralManagementMapper;
 import org.apache.fineract.portfolio.loanaccount.mapper.LoanTransactionMapper;
@@ -409,7 +410,7 @@ public class LoanAccountConfiguration {
                                                              SavingsAccountWritePlatformService savingsAccountWritePlatformService, ApplicationContext applicationContext,
                                                              CommandSourceRepository sourceRepository, LoanApplicationWritePlatformService loanApplicationWritePlatformService, LoanRelationshipsWritePlatformService loanRelationshipsWritePlatformService,
                                                              SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper, SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService,
-                                                             LoanFundServiceImpl loanFundService) {
+                                                             LoanFundServiceImpl loanFundService, LoanScheduleWritePlatformServiceImpl loanScheduleWritePlatformService) {
         return new LoanWritePlatformServiceJpaRepositoryImpl(context, loanTransactionValidator, loanUpdateCommandFromApiJsonDeserializer,
                 loanRepositoryWrapper, loanAccountDomainService, noteRepository, loanTransactionRepository,
                 loanTransactionRelationRepository, loanAssembler, journalEntryWritePlatformService, calendarInstanceRepository,
@@ -426,7 +427,7 @@ public class LoanAccountConfiguration {
                 reprocessLoanTransactionsService, loanAccountService, journalEntryPoster, loanAdjustmentService,
                 accountAssociationsRepository, savingsAccountWritePlatformService, applicationContext, sourceRepository,
                 loanApplicationWritePlatformService, loanRelationshipsWritePlatformService, savingsAccountRepositoryWrapper,
-                savingsApplicationProcessWritePlatformService, loanFundService);
+                savingsApplicationProcessWritePlatformService, loanFundService, loanScheduleWritePlatformService);
     }
 
     @Bean
