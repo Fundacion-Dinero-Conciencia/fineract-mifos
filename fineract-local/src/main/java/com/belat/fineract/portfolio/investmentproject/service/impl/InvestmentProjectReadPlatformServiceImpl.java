@@ -146,19 +146,22 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     @Override
     public InvestmentProjectData retrieveByLinkedLoan(Long loanId) {
         InvestmentProject project = investmentProjectRepository.retrieveOneByLoanId(loanId);
-        InvestmentProjectData projectData = investmentProjectMapper.map(project);
+        InvestmentProjectData projectData = null;
         if (project != null) {
-            factoryData(projectData, project, new ArrayList<>());
-            projectData.setImpactDescription(project.getDescription().getImpactDescription());
-            projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
-            projectData.setTeamDescription(project.getDescription().getTeamDescription());
-            projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
-            if (project.getDescription().getSocioEnvironmentalDescription() != null) {
-                projectData.setLittleSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getLittleDescription());
-                projectData.setDetailedSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getDetailedDescription());
-            }
-            if (project.getAmountToBeFinanced() != null && project.getAmountToBeDelivered() != null) {
-                projectData.setAvailableTotalAmount(project.getAmountToBeFinanced().subtract(project.getAmountToBeDelivered(), MoneyHelper.getMathContext()));
+            projectData = investmentProjectMapper.map(project);
+            if (project != null) {
+                factoryData(projectData, project, new ArrayList<>());
+                projectData.setImpactDescription(project.getDescription().getImpactDescription());
+                projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
+                projectData.setTeamDescription(project.getDescription().getTeamDescription());
+                projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
+                if (project.getDescription().getSocioEnvironmentalDescription() != null) {
+                    projectData.setLittleSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getLittleDescription());
+                    projectData.setDetailedSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getDetailedDescription());
+                }
+                if (project.getAmountToBeFinanced() != null && project.getAmountToBeDelivered() != null) {
+                    projectData.setAvailableTotalAmount(project.getAmountToBeFinanced().subtract(project.getAmountToBeDelivered(), MoneyHelper.getMathContext()));
+                }
             }
         }
         return projectData;

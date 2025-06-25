@@ -100,6 +100,7 @@ import org.apache.fineract.portfolio.loanaccount.guarantor.service.GuarantorDoma
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleModel;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.domain.LoanScheduleModelPeriod;
 import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleHistoryWritePlatformService;
+import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleWritePlatformServiceImpl;
 import org.apache.fineract.portfolio.loanaccount.rescheduleloan.domain.LoanRescheduleRequest;
 import org.apache.fineract.portfolio.loanaccount.serialization.*;
 import org.apache.fineract.portfolio.loanaccount.service.adjustment.LoanAdjustmentParameter;
@@ -127,6 +128,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -202,6 +204,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     private final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper;
     private final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService;
     private final LoanFundServiceImpl loanFundService;
+    private final LoanScheduleWritePlatformServiceImpl loanScheduleWritePlatformService;
 
     @Transactional
     @Override
@@ -3088,6 +3091,12 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             jsonMap.put("submittedOnDate", date.format(formatter));
             jsonMap.put("expectedDisbursementDate", date.plusDays(1).format(formatter));
             jsonMap.put("principal", amount);
+            jsonMap.put("graceOnInterestPayment", loan.repaymentScheduleDetail().getGraceOnInterestPayment());
+            jsonMap.put("graceOnPrincipalPayment", loan.repaymentScheduleDetail().getGraceOnPrincipalPayment());
+            jsonMap.put("graceOnArrearsAgeing", loan.repaymentScheduleDetail().getGraceOnArrearsAgeing());
+            jsonMap.put("numberOfRepayments", loan.repaymentScheduleDetail().getNumberOfRepayments());
+            jsonMap.put("repaymentFrequencyType", loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType().getValue());
+
 
         } catch (Exception e) {
             log.error("Error in extraction of base credit data");
@@ -3158,7 +3167,60 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         newJson = new Gson().toJson(jsonMap);
 
         if (loan.getLoanStatus().isSubmittedAndPendingApproval()) {
-            return cloneLoan(newJson, loanId);
+            CommandProcessingResult result = cloneLoan(newJson, loanId);
+
+            //Duplicate loan simulation schedule after clone
+
+            Loan createdLoan = loanRepositoryWrapper.findOneWithNotFoundDetection(result.getLoanId());
+
+            BigDecimal representativeValue = loan.getProposedPrincipal().divide(createdLoan.getProposedPrincipal(), 8, RoundingMode.HALF_UP);
+
+            List<LoanRepaymentScheduleInstallment> createdInstallments = loanRepositoryWrapper.getLoanRepaymentScheduleInstallments(result.getLoanId());
+
+            List<LoanRepaymentScheduleInstallment> simulationInstallments = loanRepositoryWrapper.getLoanRepaymentScheduleInstallments(loanId);
+
+            List<Map<String, String>> modifiedInstallments = new ArrayList<>();
+
+            //Iterate between installments
+            for (int i = 0; i < createdInstallments.size() - 1; i ++) {
+                LoanRepaymentScheduleInstallment createdInstallment = createdInstallments.get(i);
+                LoanRepaymentScheduleInstallment simulationInstallment = simulationInstallments.get(i);
+
+                BigDecimal outstandingWithPercentage = createdInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().multiply(representativeValue);
+
+                BigDecimal roundedSimulationInstallment = simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().setScale(1, RoundingMode.HALF_EVEN);
+
+                BigDecimal roundedCreatedInstallment = outstandingWithPercentage.setScale(1, RoundingMode.HALF_EVEN);
+
+                //Validate installment amounts
+                if (roundedCreatedInstallment.compareTo(roundedSimulationInstallment) != 0) {
+
+                    Map<String, String> installment = new HashMap<>();
+                    LocalDate dueDate = createdInstallment.getDueDate();
+                    installment.put("dueDate", dueDate.format(formatter));
+                    installment.put("installmentAmount", String.valueOf(simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().divide(representativeValue, 8, RoundingMode.HALF_UP)));
+
+                    modifiedInstallments.add(installment);
+                }
+            }
+
+            if (!modifiedInstallments.isEmpty()) {
+                Map<String, Object> exceptions = new HashMap<>();
+                exceptions.put("modifiedinstallments", modifiedInstallments);
+
+                Map<String, Object> root = new HashMap<>();
+                root.put("exceptions", exceptions);
+                root.put("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
+                root.put("locale", locale);
+
+                //Make Command
+                JsonElement element = this.fromApiJsonHelper.parse(root.toString());
+                JsonCommand commandVariations = JsonCommand.from(root.toString(), element, this.fromApiJsonHelper);
+
+                loanScheduleWritePlatformService.addLoanScheduleVariations(createdLoan.getId(), commandVariations);
+            }
+
+            return result;
         } else {
             throw new PlatformApiDataValidationException("error.msg.resource.status",
                     "A copy can only be created from a credit in pending approval status.", null);
