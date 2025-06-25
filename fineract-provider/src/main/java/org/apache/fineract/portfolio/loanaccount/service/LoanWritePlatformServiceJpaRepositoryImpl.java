@@ -3204,7 +3204,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 }
             }
 
-            if (!modifiedInstallments.isEmpty()) {
+            if (!modifiedInstallments.isEmpty() && modifiedInstallments.size() != 0) {
                 Map<String, Object> exceptions = new HashMap<>();
                 exceptions.put("modifiedinstallments", modifiedInstallments);
 
