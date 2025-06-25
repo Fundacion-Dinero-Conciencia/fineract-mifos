@@ -68,4 +68,5 @@
   <include relativeToChangelogFile="true" file="parts/9044_add_columns_to_saving_account_transaction.xml"/>
   <include relativeToChangelogFile="true" file="parts/9045_add_transactions_freeze_reason_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9046_add_sub_categories_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9047_alter_table_promissory_note.xml"/>
 </databaseChangeLog>
