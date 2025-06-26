@@ -105,7 +105,7 @@ public class PdfGeneratorWritePlatformServiceImpl implements PdfGeneratorWritePl
             throw new GeneralPlatformDomainRuleException("error.msg.project.id.is.mandatory", "Project id is mandatory");
         }
 
-        Client client = clientRepository.findById(projectId).stream().findFirst().orElseThrow(() ->
+        Client client = clientRepository.findById(clientId).stream().findFirst().orElseThrow(() ->
                 new ClientNotFoundException(clientId));
 
         InvestmentProject investmentProject = investmentProjectRepository.retrieveOneByProjectId(projectId);
