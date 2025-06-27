@@ -143,10 +143,16 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject.setCurrencyCode(currencyRepositoryWrapper.findOneWithNotFoundDetection(currencyCode).getCode());
 
         final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
-        investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
+        if (categoryId != null) {
+            investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
+        }
+
 
         final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
-        investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
+        if (areaId != null) {
+            investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
+        }
+
 
         final BigDecimal maxAmount = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.maxAmountParamName);
 
@@ -194,24 +200,29 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
 
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
-        List<CodeValue> codeSubCategories = getInvestmentProjectCategoryData(subcategories);
         InvestmentProject finalInvestmentProject = investmentProject;
-        codeSubCategories
-                .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
+        if (subcategories != null && !subcategories.isEmpty()) {
+            List<CodeValue> codeSubCategories = getInvestmentProjectCategoryData(subcategories);
+            codeSubCategories
+                    .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
+        }
         final String objectives = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
-        List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectives);
+        if (objectives != null && !objectives.isEmpty()) {
+            List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectives);
+            codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject)));
 
-        codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject)));
+        }
 
         final Long statusCodeId = command.longValueOfParameterNamed(InvestmentProjectConstants.statusIdParamName);
-        final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
+        if (statusCodeId != null) {
 
-        StatusHistoryProject historyProject = new StatusHistoryProject();
-        historyProject.setInvestmentProject(investmentProject);
-        historyProject.setStatusValue(newStatus);
-        statusHistoryProjectRepository.save(historyProject);
-
+            final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
+            StatusHistoryProject historyProject = new StatusHistoryProject();
+            historyProject.setInvestmentProject(investmentProject);
+            historyProject.setStatusValue(newStatus);
+            statusHistoryProjectRepository.save(historyProject);
+        }
         Long basedInLoanProductId = command.longValueOfParameterNamed(InvestmentProjectConstants.basedInLoanProductIdParamName);
 
         // Build loan data
@@ -349,8 +360,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String projectNameParam = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectNameParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectNameParamName).value(projectNameParam).notBlank().notNull();
 
-        final String subtitleParam = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subtitleParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.subtitleParamName).value(subtitleParam).notBlank().notNull();
+//        final String subtitleParam = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subtitleParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.subtitleParamName).value(subtitleParam).notBlank().notNull();
 
         final String ownerId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectOwnerIdParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectOwnerIdParamName).value(ownerId).notBlank().notNull();
@@ -370,62 +381,62 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String countryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.countryIdParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.countryIdParamName).value(countryId).notBlank().notNull();
 
-        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName,
-                jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank()
-                .notNull();
+//        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName,
+//                jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank()
+//                .notNull();
 
-        final String institutionDescription = fromApiJsonHelper
-                .extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription)
-                .notBlank().notNull();
+//        final String institutionDescription = fromApiJsonHelper
+//                .extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription)
+//                .notBlank().notNull();
+//
+//        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName,
+//                jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank()
+//                .notNull();
 
-        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName,
-                jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank()
-                .notNull();
+//        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName,
+//                jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank()
+//                .notNull();
 
-        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName,
-                jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank()
-                .notNull();
+//        final String isActive = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull()
+//                .validateForBooleanValue();
+//
+//        final String categoryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoryParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoryParamName).value(categoryId).notBlank().notNull();
+//
+//        final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
+//
+//        final String objectives = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.objectivesParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.objectivesParamName).value(objectives).notBlank().notNull();
+//
+//        final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
+//
+//        final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
+//
+//        final String minAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.minAmountParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.minAmountParamName).value(minAmount).notBlank().notNull();
 
-        final String isActive = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull()
-                .validateForBooleanValue();
-
-        final String categoryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoryParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoryParamName).value(categoryId).notBlank().notNull();
-
-        final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
-
-        final String objectives = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.objectivesParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.objectivesParamName).value(objectives).notBlank().notNull();
-
-        final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
-
-        final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
-
-        final String minAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.minAmountParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.minAmountParamName).value(minAmount).notBlank().notNull();
-
-        final Long statusId = fromApiJsonHelper.extractLongNamed(InvestmentProjectConstants.statusIdParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.statusIdParamName).value(statusId).notNull();
-
+//        final Long statusId = fromApiJsonHelper.extractLongNamed(InvestmentProjectConstants.statusIdParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.statusIdParamName).value(statusId).notNull();
+//
         final String mnemonic = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.mnemonicParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.mnemonicParamName).value(mnemonic).notBlank().notNull();
 
-        final String littleSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName).value(littleSocioEnvironmentalDescription).notBlank().notNull();
-
-        final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
-
-        final String position = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.positionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.positionParamName).value(position).notBlank().notNull();
+//        final String littleSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName).value(littleSocioEnvironmentalDescription).notBlank().notNull();
+//
+//        final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
+//
+//        final String position = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.positionParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.positionParamName).value(position).notBlank().notNull();
 
         final String basedInLoanProductId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.basedInLoanProductIdParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.basedInLoanProductIdParamName).value(basedInLoanProductId).notBlank().notNull();
@@ -454,61 +465,61 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String name = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectNameParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectNameParamName).value(name).notBlank().notNull();
 
-        final String subtitle = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subtitleParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.subtitleParamName).value(subtitle).notBlank().notNull();
+//        final String subtitle = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subtitleParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.subtitleParamName).value(subtitle).notBlank().notNull();
 
         final String rate = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectRateParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectRateParamName).value(rate).notBlank().notNull();
 
-        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName,
-                jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank()
-                .notNull();
-
-        final String institutionDescription = fromApiJsonHelper
-                .extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription)
-                .notBlank().notNull();
-
-        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName,
-                jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank()
-                .notNull();
-
-        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName,
-                jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank()
-                .notNull();
-
-        final Boolean isActive = fromApiJsonHelper.extractBooleanNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull();
-
-        final String categoryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoryParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoryParamName).value(categoryId).notBlank().notNull();
-
-        final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
-
-        final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
-
-        final String objectives = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.objectivesParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.objectivesParamName).value(objectives).notBlank().notNull();
-
-        final String minAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.minAmountParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.minAmountParamName).value(minAmount).notBlank().notNull();
-
-        final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
+//        final String impactDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.impactDescriptionParamName,
+//                jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.impactDescriptionParamName).value(impactDescription).notBlank()
+//                .notNull();
+//
+//        final String institutionDescription = fromApiJsonHelper
+//                .extractStringNamed(InvestmentProjectConstants.institutionDescriptionParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.institutionDescriptionParamName).value(institutionDescription)
+//                .notBlank().notNull();
+//
+//        final String teamDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.teamDescriptionParamName,
+//                jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.teamDescriptionParamName).value(teamDescription).notBlank()
+//                .notNull();
+//
+//        final String financingDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.financingDescriptionParamName,
+//                jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.financingDescriptionParamName).value(financingDescription).notBlank()
+//                .notNull();
+//
+//        final Boolean isActive = fromApiJsonHelper.extractBooleanNamed(InvestmentProjectConstants.isActiveParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.isActiveParamName).value(isActive).notBlank().notNull();
+//
+//        final String categoryId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.categoryParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.categoryParamName).value(categoryId).notBlank().notNull();
+//
+//        final String areaId = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.areaParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.areaParamName).value(areaId).notBlank().notNull();
+//
+//        final String subCategories = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.subCategoriesParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.subCategoriesParamName).value(subCategories).notBlank().notNull();
+//
+//        final String objectives = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.objectivesParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.objectivesParamName).value(objectives).notBlank().notNull();
+//
+//        final String minAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.minAmountParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.minAmountParamName).value(minAmount).notBlank().notNull();
+//
+//        final String maxAmount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.maxAmountParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.maxAmountParamName).value(maxAmount).notBlank().notNull();
 
         final String mnemonic = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.mnemonicParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.mnemonicParamName).value(mnemonic).notBlank().notNull();
 
-        final String littleSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName).value(littleSocioEnvironmentalDescription).notBlank().notNull();
-
-        final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
+//        final String littleSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.littleSocioEnvironmentalDescriptionParamName).value(littleSocioEnvironmentalDescription).notBlank().notNull();
+//
+//        final String detailedSocioEnvironmentalDescription = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.detailedSocioEnvironmentalDescriptionParamName).value(detailedSocioEnvironmentalDescription).notBlank().notNull();
 
         final String position = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.positionParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.positionParamName).value(position).notBlank().notNull();
