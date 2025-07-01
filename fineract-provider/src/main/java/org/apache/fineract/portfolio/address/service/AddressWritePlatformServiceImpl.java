@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepository;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -110,8 +111,9 @@ public class AddressWritePlatformServiceImpl implements AddressWritePlatformServ
     @Override
     public Address createAddress(JsonObject jsonObject) {
         CodeValue stateIdCodeValue = null;
-        if (jsonObject.get("stateProvinceId") != null) {
-            long stateId = jsonObject.get("stateProvinceId").getAsLong();
+        val jsonProvinceId = jsonObject.get("stateProvinceId");
+        if (jsonProvinceId != null && !jsonProvinceId.getAsString().isBlank()) {
+            long stateId = jsonProvinceId.getAsLong();
             stateIdCodeValue = codeValueRepository.getReferenceById(stateId);
         }
 
