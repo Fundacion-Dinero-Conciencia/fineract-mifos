@@ -4,6 +4,9 @@ import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.domain.commission.AdditionalExpenses;
 import com.belat.fineract.portfolio.investmentproject.domain.commission.AdditionalExpensesRepository;
+import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProject;
+import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectEnum;
+import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectRepository;
 import com.belat.fineract.portfolio.pdfgenerator.api.PdfGeneratorConstants;
 import com.belat.fineract.portfolio.pdfgenerator.service.simulation.SimulationPdfGeneratorService;
 import com.google.gson.JsonElement;
@@ -16,11 +19,14 @@ import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -53,8 +59,33 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
     private final FromJsonHelper fromApiJsonHelper;
     private final ClientIdentifierRepository clientIdentifierRepository;
     private final InvestmentProjectRepository investmentProjectRepository;
+    private final StatusHistoryProjectRepository statusHistoryProjectRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final AdditionalExpensesRepository additionalExpensesRepository;
+
+    static class Watermark extends PdfPageEventHelper {
+        private final String watermarkText;
+        private final Font FONT;
+
+        public Watermark(String watermarkText) throws Exception {
+            this.watermarkText = watermarkText;
+            this.FONT = new Font(Font.FontFamily.HELVETICA, 50, Font.NORMAL, new BaseColor(200, 200, 200));
+        }
+
+        @Override
+        public void onEndPage(PdfWriter writer, Document document) {
+            PdfContentByte canvas = writer.getDirectContent(); // Use getDirectContent() for overlay
+            Phrase watermark = new Phrase(watermarkText, FONT);
+            ColumnText.showTextAligned(
+                    canvas,
+                    Element.ALIGN_CENTER,
+                    watermark,
+                    (document.getPageSize().getWidth()) / 2,
+                    (document.getPageSize().getHeight()) / 2,
+                    45 // angle
+            );
+        }
+    }
 
     @Override
     public String generateSimulationV1(String json) {
@@ -87,6 +118,11 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             PdfWriter writer = PdfWriter.getInstance(document, baos);
+
+            StatusHistoryProject lastStatus = statusHistoryProjectRepository.getLastStatusByInvestmentProjectId(investmentProject.getId());
+            if (lastStatus != null && StatusHistoryProjectEnum.DRAFT.getCode().trim().equals(lastStatus.getStatusValue().getLabel().trim())) {
+                writer.setPageEvent(new Watermark(StatusHistoryProjectEnum.DRAFT.getCode().trim()));
+            }
 
             Image logo = Image.getInstance(new URL("https://s3.us-east-2.amazonaws.com/fineract.dev.public/logo-doble-impacto-con-bajada.png"));
             logo.scaleToFit(150, 50);
@@ -146,6 +182,10 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static String formatNumberWithThousandsSeparatorAndTwoDecimals(double number) {
+        return String.format("%.2f", number).replace(".", ",").replaceAll("\\B(?=(\\d{3})+(?!\\d))", ".");
     }
 
     private PdfPTable createSimulationTableInfo (List<LoanRepaymentScheduleInstallment> list, InvestmentProject investmentProject, BaseColor purpleBackground, BaseColor whiteText) {
@@ -226,14 +266,14 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
         String[][] rows = {
                 {"Nombre Cliente", investmentProject.getLoan().getClient().getDisplayName()},
                 {"RUT", projectOwnerDocument.documentKey()},
-                {"Monto Financiamiento", "$" + total.setScale(2, RoundingMode.HALF_EVEN)},
-                {"Asesoría Estructura Financiera (1) (AEF Banca Ética)", "$" + aefCommission.longValue()},
-                {"IVA Asesoría Estructura Financiera (2) (AEF Banca Ética)", "$" + aefCommissionIva.longValue()},
-                {"Impuesto Timbres y Estampillas (3)", "$" + iteCommission.longValue()},
-                {"Gastos Notariales (4)", "$" + notarialExpenses.longValue()},
-                {"Otros Gastos (5)", "$" + otherExpenses.longValue()},
-                {"Gasto Total Operación (1)+(2)+(3)+(4)+(5)", "$" + totalOperation.longValue()},
-                {"Monto a Entregar Cliente", "$" + investmentProject.getLoan().getNetDisbursalAmount().longValue()},
+                {"Monto Financiamiento", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(total.setScale(2, RoundingMode.HALF_EVEN).doubleValue())},
+                {"Asesoría Estructura Financiera (1) (AEF Banca Ética)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(aefCommission.longValue())},
+                {"IVA Asesoría Estructura Financiera (2) (AEF Banca Ética)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(aefCommissionIva.longValue())},
+                {"Impuesto Timbres y Estampillas (3)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(iteCommission.longValue())},
+                {"Gastos Notariales (4)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(notarialExpenses.longValue())},
+                {"Otros Gastos (5)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(otherExpenses.longValue())},
+                {"Gasto Total Operación (1)+(2)+(3)+(4)+(5)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(totalOperation.longValue())},
+                {"Monto a Entregar Cliente", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(investmentProject.getLoan().getNetDisbursalAmount().longValue())},
                 {"CAE", MathUtil.calculateAnnualIRR(doubleArray) + "%"},
                 {"Tasa AEF Banca Ética (anual)", aefTax.setScale(2, RoundingMode.HALF_EVEN) + "%"},
                 {"Tasa Retorno Inversionista (anual)", investmentProject.getRate().setScale(2, RoundingMode.HALF_EVEN) + "%"},
@@ -334,7 +374,7 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             table.addCell(cell1);
 
             BigDecimal principal = item.getPrincipal();
-            PdfPCell cell2 = new PdfPCell(new Paragraph("$" + (principal != null ? principal.setScale(2, RoundingMode.HALF_EVEN) : "0"), dataFont));
+            PdfPCell cell2 = new PdfPCell(new Paragraph("$" + (principal != null ? formatNumberWithThousandsSeparatorAndTwoDecimals(principal.setScale(2, RoundingMode.HALF_EVEN).doubleValue()) : "0"), dataFont));
             cell2.setPadding(5f);
             cell2.setBorderColor(BaseColor.WHITE);
             cell2.setBackgroundColor(backgroundColor);
@@ -342,7 +382,7 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             table.addCell(cell2);
 
             BigDecimal interest = item.getInterestCharged();
-            PdfPCell cell3 = new PdfPCell(new Paragraph("$" + (interest != null ? interest.setScale(2, RoundingMode.HALF_EVEN) : "0"), dataFont));
+            PdfPCell cell3 = new PdfPCell(new Paragraph("$" + (interest != null ? formatNumberWithThousandsSeparatorAndTwoDecimals(interest.setScale(2, RoundingMode.HALF_EVEN).doubleValue()) : "0"), dataFont));
             cell3.setPadding(5f);
             cell3.setBorderColor(BaseColor.WHITE);
             cell3.setBackgroundColor(backgroundColor);
@@ -350,7 +390,7 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             table.addCell(cell3);
 
             BigDecimal totalOutstanding = item.getTotalOutstanding(MonetaryCurrency.fromCurrencyData(loan.getCurrency().toData())).getAmount();
-            PdfPCell cell4 = new PdfPCell(new Paragraph("$" + totalOutstanding.setScale(2, RoundingMode.HALF_EVEN), dataFont));
+            PdfPCell cell4 = new PdfPCell(new Paragraph("$" + formatNumberWithThousandsSeparatorAndTwoDecimals(totalOutstanding.setScale(2, RoundingMode.HALF_EVEN).doubleValue()), dataFont));
             cell4.setPadding(5f);
             cell4.setBorderColor(BaseColor.WHITE);
             cell4.setBackgroundColor(backgroundColor);
@@ -363,6 +403,8 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
     private static class HeaderFooterEvent extends PdfPageEventHelper {
         private final Image logo;
         private final String footerText;
+        private PdfTemplate totalPageTemplate;
+        private BaseFont baseFont;
 
         public HeaderFooterEvent(Image logo, String footerText) {
             this.logo = logo;
@@ -370,8 +412,20 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
         }
 
         @Override
+        public void onOpenDocument(PdfWriter writer, Document document) {
+            totalPageTemplate = writer.getDirectContent().createTemplate(50, 50);
+            try {
+                baseFont = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
+            } catch (Exception e) {
+                throw new RuntimeException("Error initializing base font", e);
+            }
+        }
+
+        @Override
         public void onEndPage(PdfWriter writer, Document document) {
             PdfContentByte cb = writer.getDirectContent();
+            int pageNumber = writer.getPageNumber();
+            Rectangle pageSize = document.getPageSize();
 
             if (logo != null) {
                 try {
@@ -389,6 +443,32 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT,
                     new Phrase(footerText, FontFactory.getFont(FontFactory.HELVETICA, 8, BaseColor.GRAY)),
                     document.right(), document.bottom() - 20, 0);
+
+            // Page number: "1/X"
+            String text = pageNumber + "/";
+            float textBase = pageSize.getBottom() + 30;
+            float textSize = baseFont.getWidthPoint(text, 9);
+            float x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+
+            cb.beginText();
+            cb.setFontAndSize(baseFont, 9);
+            cb.setTextMatrix(x - textSize / 2, textBase);
+            cb.showText(text);
+            cb.endText();
+
+            // Reserve space for total page count
+            cb.addTemplate(totalPageTemplate, x - textSize / 2 + baseFont.getWidthPoint(text, 9), textBase);
+        }
+
+        @Override
+        public void onCloseDocument(PdfWriter writer, Document document) {
+            int totalPageCount = writer.getPageNumber() - 1;
+            String totalText = String.valueOf(totalPageCount);
+            totalPageTemplate.beginText();
+            totalPageTemplate.setFontAndSize(baseFont, 9);
+            totalPageTemplate.setTextMatrix(0, 0);
+            totalPageTemplate.showText(totalText);
+            totalPageTemplate.endText();
         }
     }
 }
