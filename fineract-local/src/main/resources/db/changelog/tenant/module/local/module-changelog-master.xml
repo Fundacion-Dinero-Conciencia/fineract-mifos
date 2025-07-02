@@ -70,4 +70,5 @@
   <include relativeToChangelogFile="true" file="parts/9046_add_sub_categories_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9047_alter_table_promissory_note.xml"/>
   <include relativeToChangelogFile="true" file="parts/9048_add_status_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9049_add_mnemonic_for_clients.xml"/>
 </databaseChangeLog>

@@ -54,6 +54,7 @@ public interface ClientMapper {
     @Mapping(target = "clientClassification", source = "source", qualifiedByName = "clientClassificationCode")
     @Mapping(target = "legalForm", source = "source", qualifiedByName = "clientLegalFormEnum")
     @Mapping(target = "isStaff", source = "source", qualifiedByName = "clientIsStaff")
+    @Mapping(target = "mnemonic", source = "source.mnemonic")
     @Mapping(target = "imagePresent", ignore = true)
     @Mapping(target = "officeOptions", ignore = true)
     @Mapping(target = "staffOptions", ignore = true)
