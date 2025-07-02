@@ -73,7 +73,7 @@ public class SearchingClientRepositoryImpl implements SearchingClientRepository 
             String searchLikeValue = "%" + searchText + "%";
             predicates.add(cb.or(cb.like(r.get("accountNumber"), searchLikeValue), cb.like(r.get("displayName"), searchLikeValue),
                     cb.like(r.get("externalId"), searchLikeValue), cb.like(r.get("mobileNo"), searchLikeValue),
-                    cb.like(identity.get("documentKey"), searchLikeValue)));
+                    cb.like(identity.get("documentKey"), searchLikeValue), cb.like(r.get("mnemonic"), searchLikeValue)));
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -84,7 +84,7 @@ public class SearchingClientRepositoryImpl implements SearchingClientRepository 
 
         query.select(cb.construct(SearchedClient.class, root.get("id"), root.get("displayName"), root.get("externalId"),
                 root.get("accountNumber"), office.get("id"), office.get("name"), root.get("mobileNo"), root.get("status"),
-                root.get("activationDate"), root.get("createdDate")));
+                root.get("activationDate"), root.get("createdDate"), root.get("mnemonic")));
 
         TypedQuery<SearchedClient> queryToExecute = entityManager.createQuery(query);
 
