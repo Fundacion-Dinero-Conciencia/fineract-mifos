@@ -87,8 +87,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     private final LoanApplicationWritePlatformService loanApplicationWritePlatformService;
     private final LoanProductReadPlatformService loanProductReadPlatformService;
     private final CommandSourceService commandSourceService;
-    @Autowired
-    private PlatformSecurityContext context;
+    private final PlatformSecurityContext context;
 
     @Override
     public CommandProcessingResult createInvestmentProject(JsonCommand command) {
@@ -114,7 +113,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject.setCurrencyCode(currencyRepositoryWrapper.findOneWithNotFoundDetection(currencyCode).getCode());
 
         investmentProject.setRate(command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.projectRateParamName));
-        investmentProject.setPeriod(command.integerValueSansLocaleOfParameterNamed(InvestmentProjectConstants.periodParamName));
+        investmentProject.setPeriod(command.integerValueOfParameterNamed(InvestmentProjectConstants.periodParamName));
 
         final Long countryId = command.longValueOfParameterNamed(InvestmentProjectConstants.countryIdParamName);
         CodeValue countryValue = codeValueRepositoryWrapper.findOneWithNotFoundDetection(countryId);
@@ -369,8 +368,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String amount = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.amountParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.amountParamName).value(amount).notBlank().notNull();
 
-        final String currencyCode = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.currencyCodeParamName, jsonElement);
-        baseDataValidator.reset().parameter(InvestmentProjectConstants.currencyCodeParamName).value(currencyCode).notBlank().notNull();
+//        final String currencyCode = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.currencyCodeParamName, jsonElement);
+//        baseDataValidator.reset().parameter(InvestmentProjectConstants.currencyCodeParamName).value(currencyCode).notBlank().notNull();
 
         final String rate = fromApiJsonHelper.extractStringNamed(InvestmentProjectConstants.projectRateParamName, jsonElement);
         baseDataValidator.reset().parameter(InvestmentProjectConstants.projectRateParamName).value(rate).notBlank().notNull();
