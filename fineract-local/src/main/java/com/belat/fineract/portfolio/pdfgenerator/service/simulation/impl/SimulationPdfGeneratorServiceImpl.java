@@ -184,8 +184,8 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
         return null;
     }
 
-    private static String formatNumberWithThousandsSeparatorAndTwoDecimals(double number) {
-        return String.format("%.2f", number).replace(".", ",").replaceAll("\\B(?=(\\d{3})+(?!\\d))", ".");
+    private static String formatNumberWithThousandsSeparatorAndTwoDecimals(long number) {
+        return String.format("%d", number).replaceAll("\\B(?=(\\d{3})+(?!\\d))", ".");
     }
 
     private PdfPTable createSimulationTableInfo (List<LoanRepaymentScheduleInstallment> list, InvestmentProject investmentProject, BaseColor purpleBackground, BaseColor whiteText) {
@@ -266,7 +266,7 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
         String[][] rows = {
                 {"Nombre Cliente", investmentProject.getLoan().getClient().getDisplayName()},
                 {"RUT", projectOwnerDocument.documentKey()},
-                {"Monto Financiamiento", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(total.setScale(2, RoundingMode.HALF_EVEN).doubleValue())},
+                {"Monto Financiamiento", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(total.setScale(2, RoundingMode.HALF_EVEN).longValue())},
                 {"Asesoría Estructura Financiera (1) (AEF Banca Ética)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(aefCommission.longValue())},
                 {"IVA Asesoría Estructura Financiera (2) (AEF Banca Ética)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(aefCommissionIva.longValue())},
                 {"Impuesto Timbres y Estampillas (3)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(iteCommission.longValue())},
@@ -374,7 +374,7 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             table.addCell(cell1);
 
             BigDecimal principal = item.getPrincipal();
-            PdfPCell cell2 = new PdfPCell(new Paragraph("$" + (principal != null ? formatNumberWithThousandsSeparatorAndTwoDecimals(principal.setScale(2, RoundingMode.HALF_EVEN).doubleValue()) : "0"), dataFont));
+            PdfPCell cell2 = new PdfPCell(new Paragraph("$" + (principal != null ? formatNumberWithThousandsSeparatorAndTwoDecimals(principal.setScale(2, RoundingMode.HALF_EVEN).longValue()) : "0"), dataFont));
             cell2.setPadding(5f);
             cell2.setBorderColor(BaseColor.WHITE);
             cell2.setBackgroundColor(backgroundColor);
@@ -382,7 +382,7 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             table.addCell(cell2);
 
             BigDecimal interest = item.getInterestCharged();
-            PdfPCell cell3 = new PdfPCell(new Paragraph("$" + (interest != null ? formatNumberWithThousandsSeparatorAndTwoDecimals(interest.setScale(2, RoundingMode.HALF_EVEN).doubleValue()) : "0"), dataFont));
+            PdfPCell cell3 = new PdfPCell(new Paragraph("$" + (interest != null ? formatNumberWithThousandsSeparatorAndTwoDecimals(interest.setScale(2, RoundingMode.HALF_EVEN).longValue()) : "0"), dataFont));
             cell3.setPadding(5f);
             cell3.setBorderColor(BaseColor.WHITE);
             cell3.setBackgroundColor(backgroundColor);
@@ -390,7 +390,7 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             table.addCell(cell3);
 
             BigDecimal totalOutstanding = item.getTotalOutstanding(MonetaryCurrency.fromCurrencyData(loan.getCurrency().toData())).getAmount();
-            PdfPCell cell4 = new PdfPCell(new Paragraph("$" + formatNumberWithThousandsSeparatorAndTwoDecimals(totalOutstanding.setScale(2, RoundingMode.HALF_EVEN).doubleValue()), dataFont));
+            PdfPCell cell4 = new PdfPCell(new Paragraph("$" + formatNumberWithThousandsSeparatorAndTwoDecimals(totalOutstanding.setScale(2, RoundingMode.HALF_EVEN).longValue()), dataFont));
             cell4.setPadding(5f);
             cell4.setBorderColor(BaseColor.WHITE);
             cell4.setBackgroundColor(backgroundColor);
