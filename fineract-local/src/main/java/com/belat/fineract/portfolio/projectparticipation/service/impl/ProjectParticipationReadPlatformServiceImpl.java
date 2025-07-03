@@ -184,15 +184,9 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
                             Optional <Loan> loan = loanRepository.findById(accountData.getId()).stream().findFirst();
                             if (loan.isPresent()) {
                                 BigDecimal totalOutstanding = loanReadPlatformServiceCommon.getLoanTotalExpectedRepaymentDerived(loan.get().getId());
-                                BigDecimal disbursedAmount = loan.get().getDisbursedAmount();
-                                BigDecimal participationAmount = project.getAmount();
-
-                                BigDecimal participationPercentage = participationAmount
-                                        .divide(disbursedAmount, 4, RoundingMode.HALF_UP)  // 4 decimales de precisión
-                                        .multiply(BigDecimal.valueOf(100));                // convertir a porcentaje
 
                                 BigDecimal participationValue = totalOutstanding
-                                        .multiply(participationPercentage)
+                                        .multiply(promissoryNote.getPercentageShare())
                                         .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
 
                                 pendingAmount = pendingAmount.add(participationValue);
