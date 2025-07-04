@@ -72,4 +72,5 @@
   <include relativeToChangelogFile="true" file="parts/9048_add_status_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9049_add_mnemonic_for_clients.xml"/>
   <include relativeToChangelogFile="true" file="parts/9050_add_client_data_tables.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9051_add_missing_code_values.xml"/>
 </databaseChangeLog>
