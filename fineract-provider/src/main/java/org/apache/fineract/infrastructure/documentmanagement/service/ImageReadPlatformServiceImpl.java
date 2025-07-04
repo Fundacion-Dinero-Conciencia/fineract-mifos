@@ -107,4 +107,31 @@ public class ImageReadPlatformServiceImpl implements ImageReadPlatformService {
             throw new ImageNotFoundException("clients", entityId, e);
         }
     }
+
+    @Override
+    public String getImageLocation(final Long entityId, final String entityType) {
+        try {
+            String displayName;
+            if (EntityTypeForImages.CLIENTS.toString().equalsIgnoreCase(entityType)) {
+                Client owner = this.clientRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.getDisplayName();
+            } else if (EntityTypeForImages.STAFF.toString().equalsIgnoreCase(entityType)) {
+                Staff owner = this.staffRepositoryWrapper.findOneWithNotFoundDetection(entityId);
+                displayName = owner.displayName();
+            } else {
+                displayName = "UnknownEntityType:" + entityType;
+            }
+            final ImageMapper imageMapper = new ImageMapper(displayName);
+
+            final String sql = "select " + imageMapper.schema(entityType); // NOSONAR
+
+            final ImageData imageData = this.jdbcTemplate.queryForObject(sql, imageMapper, entityId); // NOSONAR
+            if (imageData == null) {
+                return null;
+            }
+            return imageData.location();
+        } catch (final EmptyResultDataAccessException e) {
+            throw new ImageNotFoundException("clients", entityId, e);
+        }
+    }
 }

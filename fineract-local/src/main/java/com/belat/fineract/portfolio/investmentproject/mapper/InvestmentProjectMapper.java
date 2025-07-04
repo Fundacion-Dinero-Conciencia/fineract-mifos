@@ -20,6 +20,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "country", ignore = true)
     @Mapping(target = "images", ignore = true)
+    @Mapping(target = "logo", ignore = true)
     @Mapping(target = "subCategories", ignore = true)
     @Mapping(target = "occupancyPercentage", ignore = true)
     @Mapping(target = "loanId", ignore = true)
