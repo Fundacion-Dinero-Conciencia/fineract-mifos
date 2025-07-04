@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="1" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'BANCOS'
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code">
+            <column name="code_name" value="BANCOS"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'TIPO_CUENTA'
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code">
+            <column name="code_name" value="TIPO_CUENTA"/>
+        </insert>
+    </changeSet>
+
+    <!--Change datatables name-->
+    <changeSet id="3" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'DATOS_BANCARIOS'
+            </sqlCheck>
+        </preConditions>
+
+        <sql>
+            ALTER TABLE "DATOS_BANCARIOS" RENAME TO "BANK_DETAILS";
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'DATOS_BANCARIOS_EMP'
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            ALTER TABLE "DATOS_BANCARIOS_EMP" RENAME TO "COMP_BANK_DETAILS";
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'DESCRIPCION'
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            ALTER TABLE "DESCRIPCION" RENAME TO "DESCRIPTION";
+        </sql>
+    </changeSet>
+
+    <changeSet id="6" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'PERFILAMIENTO'
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            ALTER TABLE "PERFILAMIENTO" RENAME TO "PROFILING";
+        </sql>
+    </changeSet>
+
+    <changeSet id="7" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'SECTOR_DE_INTERES'
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            ALTER TABLE "SECTOR_DE_INTERES" RENAME TO "INTEREST_SECTOR";
+        </sql>
+        <sql>
+            ALTER TABLE "INTEREST_SECTOR" RENAME COLUMN "SECTORES_cd_SECTOR" TO "INVESTMENT_PROJECT_CATEGORY_cd_SECTOR";
+            ALTER TABLE "INTEREST_SECTOR" RENAME COLUMN "AREAS_cd_AREA" TO "INVESTMENT_PROJECT_AREA_cd_AREA";
+        </sql>
+    </changeSet>
+
+    <!--Create tables if not exists-->
+    <changeSet id="8" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = 'public' AND table_name = 'BANK_DETAILS'
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            CREATE TABLE "BANK_DETAILS" (
+            "client_id" BIGINT PRIMARY KEY REFERENCES "m_client"("id"),
+            "NUMERO_CUENTA" INTEGER,
+            "BANCOS_cd_BANCO" INTEGER,
+            "TIPO_CUENTA_cd_TIPO_CUENTA" INTEGER,
+            "EMAIL" VARCHAR(100),
+            "created_at" TIMESTAMP WITHOUT TIME ZONE,
+            "updated_at" TIMESTAMP WITHOUT TIME ZONE
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="9" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_name = 'COMP_BANK_DETAILS'
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE "COMP_BANK_DETAILS" (
+            "client_id" BIGINT PRIMARY KEY REFERENCES "m_client"("id"),
+            "NUMERO_CUENTA" INTEGER,
+            "BANCOS_cd_BANCO" INTEGER,
+            "TIPO_CUENTA_cd_TIPO_CUENTA" INTEGER,
+            "EMAIL" VARCHAR(100),
+            "created_at" TIMESTAMP WITHOUT TIME ZONE,
+            "updated_at" TIMESTAMP WITHOUT TIME ZONE
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="10" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_name = 'DESCRIPTION'
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE "DESCRIPTION" (
+            "client_id" BIGINT PRIMARY KEY REFERENCES "m_client"("id"),
+            "SITIO_WEB" VARCHAR(500),
+            "LOCALE" VARCHAR(5),
+            "created_at" TIMESTAMP WITHOUT TIME ZONE,
+            "updated_at" TIMESTAMP WITHOUT TIME ZONE
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="11" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_name = 'PROFILING'
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE "PROFILING" (
+            "client_id" BIGINT PRIMARY KEY REFERENCES "m_client"("id"),
+            "OCUPACION" VARCHAR(100),
+            "COUNTRY_cd_NACIONALIDAD" INTEGER,
+            "MARITAL STATUS_cd_ESTADO_CIVIL" INTEGER,
+            "P_EXPUESTA" BOOLEAN,
+            "INV_CALIFICADO" BOOLEAN,
+            "created_at" TIMESTAMP WITHOUT TIME ZONE,
+            "updated_at" TIMESTAMP WITHOUT TIME ZONE
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="12" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_name = 'INTEREST_SECTOR'
+                </sqlCheck>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE "INTEREST_SECTOR" (
+            "client_id" BIGINT PRIMARY KEY REFERENCES "m_client"("id"),
+            "INVESTMENT_PROJECT_CATEGORY_cd_SECTOR" INTEGER,
+            "INVESTMENT_PROJECT_AREA_cd_AREA" INTEGER,
+            "INVESTMENT_PROJECT_SUBCATEGORY_cd_SUBSECTOR" INTEGER,
+            "created_at" TIMESTAMP WITHOUT TIME ZONE,
+            "updated_at" TIMESTAMP WITHOUT TIME ZONE
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="13" author="fineract">
+        <delete tableName="m_entity_datatable_check"/>
+    </changeSet>
+
+    <!--Change name if exists in x_registered_table-->
+    <changeSet id="14" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'DATOS_BANCARIOS'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="x_registered_table">
+            <column name="registered_table_name" value="BANK_DETAILS"/>
+            <where>registered_table_name = 'DATOS_BANCARIOS'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="15" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'DATOS_BANCARIOS_EMP'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="x_registered_table">
+            <column name="registered_table_name" value="COMP_BANK_DETAILS"/>
+            <where>registered_table_name = 'DATOS_BANCARIOS_EMP'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="16" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'DESCRIPCION'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="x_registered_table">
+            <column name="registered_table_name" value="DESCRIPTION"/>
+            <where>registered_table_name = 'DESCRIPCION'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="17" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'PERFILAMIENTO'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="x_registered_table">
+            <column name="registered_table_name" value="PROFILING"/>
+            <where>registered_table_name = 'PERFILAMIENTO'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="18" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'SECTOR_DE_INTERES'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="x_registered_table">
+            <column name="registered_table_name" value="INTEREST_SECTOR"/>
+            <where>registered_table_name = 'SECTOR_DE_INTERES'</where>
+        </update>
+    </changeSet>
+
+    <!--Create register if not exist in x_registered_table-->
+    <changeSet id="19" author="fineract">
+        <preConditions onFail="MARK_RAN">
+
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'BANK_DETAILS'
+                </sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert tableName="x_registered_table">
+            <column name="registered_table_name" value="BANK_DETAILS"/>
+            <column name="application_table_name" value="m_client"/>
+            <column name="entity_subtype" value="Person"/>
+            <column name="category" value="100"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20" author="fineract">
+        <preConditions onFail="MARK_RAN">
+
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'COMP_BANK_DETAILS'
+                </sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert tableName="x_registered_table">
+            <column name="registered_table_name" value="COMP_BANK_DETAILS"/>
+            <column name="application_table_name" value="m_client"/>
+            <column name="entity_subtype" value="Legal"/>
+            <column name="category" value="100"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="21" author="fineract">
+        <preConditions onFail="MARK_RAN">
+
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'DESCRIPTION'
+                </sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert tableName="x_registered_table">
+            <column name="registered_table_name" value="DESCRIPTION"/>
+            <column name="application_table_name" value="m_client"/>
+            <column name="entity_subtype" value="Legal"/>
+            <column name="category" value="100"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="22" author="fineract">
+        <preConditions onFail="MARK_RAN">
+
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'PROFILING'
+                </sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert tableName="x_registered_table">
+            <column name="registered_table_name" value="PROFILING"/>
+            <column name="application_table_name" value="m_client"/>
+            <column name="entity_subtype" value="Person"/>
+            <column name="category" value="100"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="23" author="fineract">
+        <preConditions onFail="MARK_RAN">
+
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM x_registered_table WHERE registered_table_name = 'INTEREST_SECTOR'
+                </sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert tableName="x_registered_table">
+            <column name="registered_table_name" value="INTEREST_SECTOR"/>
+            <column name="application_table_name" value="m_client"/>
+            <column name="entity_subtype" value="Person"/>
+            <column name="category" value="100"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
