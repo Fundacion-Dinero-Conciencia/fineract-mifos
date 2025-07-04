@@ -25,6 +25,7 @@ public class InvestmentProjectData {
     private BigDecimal occupancyPercentage;
     private DataCode country;
     private List<ImageDocument> images;
+    private String logo;
     private List<DataCode> subCategories;
     private List<DataCode> objectives;
     private Long loanId;

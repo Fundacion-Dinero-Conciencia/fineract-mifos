@@ -24,4 +24,5 @@ public interface ImageReadPlatformService {
 
     FileData retrieveImage(String entityType, Long entityId);
 
+    String getImageLocation(Long entityId, String entityType);
 }
