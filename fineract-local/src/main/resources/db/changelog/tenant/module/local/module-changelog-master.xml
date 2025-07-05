@@ -76,4 +76,7 @@
   <include relativeToChangelogFile="true" file="parts/9052_add_missing_chile_bank_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9053_add_missing_argentina_bank_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9054_add_missing_uruguay_bank_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9055_fix_add_missing_chile_bank_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9056_fix_add_missing_argentina_bank_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9057_fix_add_missing_uruguay_bank_code_values.xml"/>
 </databaseChangeLog>
