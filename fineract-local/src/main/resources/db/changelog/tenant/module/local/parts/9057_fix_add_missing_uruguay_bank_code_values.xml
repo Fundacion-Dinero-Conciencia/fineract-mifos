@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!--For Uruguay tenant-->
+    <changeSet id="1" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BANCO DE LA REPÚBLICA ORIENTAL DEL URUGUAY (BROU)')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BANCO DE LA REPÚBLICA ORIENTAL DEL URUGUAY (BROU)"/>
+            <column name="code_description" value="001"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BANCO BANDES URUGUAY')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BANCO BANDES URUGUAY"/>
+            <column name="code_description" value="110"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BANCO ITAU URUGUAY S.A.')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BANCO ITAU URUGUAY S.A."/>
+            <column name="code_description" value="113"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('SCOTIABANK S.A')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="SCOTIABANK S.A"/>
+            <column name="code_description" value="128"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BANCO SANTANDER')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BANCO SANTANDER"/>
+            <column name="code_description" value="137"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BBVA')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BBVA"/>
+            <column name="code_description" value="153"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="7" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('HSBC BANK URUGUAY S.A.')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="HSBC BANK URUGUAY S.A."/>
+            <column name="code_description" value="157"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="8" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BANQUE HERITAGE (URUGUAY)')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BANQUE HERITAGE (URUGUAY)"/>
+            <column name="code_description" value="162"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="9" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('CITIBANK NA SUCURSAL URUGUAY')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="CITIBANK NA SUCURSAL URUGUAY"/>
+            <column name="code_description" value="205"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="10" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BANCO DE LA NACIÓN ARGENTINA (URUGUAY)')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BANCO DE LA NACIÓN ARGENTINA (URUGUAY)"/>
+            <column name="code_description" value="246"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="11" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('BAPRO URUGUAY')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="BAPRO URUGUAY"/>
+            <column name="code_description" value="361"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="12" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('FORTEX SERVICIOS FINANCIEROS')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="FORTEX SERVICIOS FINANCIEROS"/>
+            <column name="code_description" value="452"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="13" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('ASPEN SERVICIOS FINANCIEROS')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="ASPEN SERVICIOS FINANCIEROS"/>
+            <column name="code_description" value="466"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="14" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('VAL SERVICIOS FINANCIEROS')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="VAL SERVICIOS FINANCIEROS"/>
+            <column name="code_description" value="556"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="15" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('INDUMEX SERVICIOS FINANCIEROS')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="INDUMEX SERVICIOS FINANCIEROS"/>
+            <column name="code_description" value="558"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="16" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('CENTRO SUDAMERICANO (DELTA SERVICIOS FINANCIEROS)')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="CENTRO SUDAMERICANO (DELTA SERVICIOS FINANCIEROS)"/>
+            <column name="code_description" value="564"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="17" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('GALES SERVICIOS FINANCIEROS S.A.')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="GALES SERVICIOS FINANCIEROS S.A."/>
+            <column name="code_description" value="566"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="18" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('MULTIDIVISA S.A. SERVICIOS FINANCIEROS')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="MULTIDIVISA S.A. SERVICIOS FINANCIEROS"/>
+            <column name="code_description" value="575"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="19" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('NIXUS S.A. SERVICIOS FINANCIEROS')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="NIXUS S.A. SERVICIOS FINANCIEROS"/>
+            <column name="code_description" value="587"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT CASE WHEN current_database() = 'fineract_uruguay' THEN 1 ELSE 0 END
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')
+                AND lower(code_value) = lower('UTE - ADM.NACIONAL DE USINAS Y TRANSMISIONES ELÉCTRICAS')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'BANCOS')"/>
+            <column name="code_value" value="UTE - ADM.NACIONAL DE USINAS Y TRANSMISIONES ELÉCTRICAS"/>
+            <column name="code_description" value="910"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'BANCOS')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
+
+
