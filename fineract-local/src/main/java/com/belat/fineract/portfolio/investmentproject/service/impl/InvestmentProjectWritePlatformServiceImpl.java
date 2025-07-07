@@ -113,7 +113,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         investmentProject.setCurrencyCode(currencyRepositoryWrapper.findOneWithNotFoundDetection(currencyCode).getCode());
 
         investmentProject.setRate(command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.projectRateParamName));
-        investmentProject.setPeriod(command.integerValueOfParameterNamed(InvestmentProjectConstants.periodParamName));
+        investmentProject.setPeriod(command.integerValueSansLocaleOfParameterNamed(InvestmentProjectConstants.periodParamName));
 
         final Long countryId = command.longValueOfParameterNamed(InvestmentProjectConstants.countryIdParamName);
         CodeValue countryValue = codeValueRepositoryWrapper.findOneWithNotFoundDetection(countryId);
