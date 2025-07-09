@@ -19,15 +19,6 @@
 package org.apache.fineract.portfolio.loanaccount.data;
 
 import jakarta.persistence.Transient;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -59,6 +50,16 @@ import org.apache.fineract.portfolio.loanproduct.data.TransactionProcessingStrat
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductValueConditionType;
 import org.apache.fineract.portfolio.note.data.NoteData;
 import org.apache.fineract.portfolio.rate.data.RateData;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -666,13 +667,13 @@ public class LoanAccountData {
         return LoanStatus.fromInt(getStatus().getId().intValue()).isActive();
     }
 
-    public Integer getTermInMonths() {
+    public Double getTermInMonths() {
         if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.DAYS.getValue())) {
-            return this.termFrequency / 30;
+            return (double) (this.termFrequency / 30);
         } else if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.MONTHS.getValue())) {
-            return this.termFrequency;
+            return (double) this.termFrequency;
         } else if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.YEARS.getValue())) {
-            return this.termFrequency / 12;
+            return (double) (this.termFrequency / 12);
         } else {
             throw new PlatformApiDataValidationException("error.msg.period.frequency",
                     "Error obtaining the credit period frequency to calculate the commission calculation", null);
