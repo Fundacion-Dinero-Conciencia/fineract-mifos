@@ -3,6 +3,7 @@ package com.belat.fineract.portfolio.investmentproject.api.commissions;
 import com.belat.fineract.portfolio.investmentproject.data.AdditionalExpensesData;
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
 import com.belat.fineract.portfolio.investmentproject.service.AdditionalExpensesReadPlatformService;
+import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -111,9 +112,11 @@ public class AdditionalExpensesApiResource {
     @Path("/{id}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public String deleteAdditionalExpensesById(@Parameter(hidden = true) @PathParam("id") final Long id) {
+    public String deleteAdditionalExpensesById(@Parameter(hidden = true) @PathParam("id") final Long id, @Parameter(hidden = true) @QueryParam("flagAllDelete") final boolean flagAllDelete) {
         platformUserRightsContext.isAuthenticated();
-        final CommandWrapper commandRequest = new CommandWrapperBuilder().withSubEntityId(id).deleteAdditionalExpenses(id).build();
+        JsonObject asJson = new JsonObject();
+        asJson.addProperty("flagAllDelete", flagAllDelete);
+        final CommandWrapper commandRequest = new CommandWrapperBuilder().withSubEntityId(id).deleteAdditionalExpenses(id).withJson(apiJsonSerializerService.serializeResult(asJson)).build();
         CommandProcessingResult result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
         return apiJsonSerializerService.serialize(result);
     }

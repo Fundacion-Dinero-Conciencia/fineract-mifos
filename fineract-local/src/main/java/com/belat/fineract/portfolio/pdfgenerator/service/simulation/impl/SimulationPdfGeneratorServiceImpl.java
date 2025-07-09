@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -123,8 +124,8 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
             if (lastStatus != null && StatusHistoryProjectEnum.DRAFT.getCode().trim().equals(lastStatus.getStatusValue().getLabel().trim())) {
                 writer.setPageEvent(new Watermark(StatusHistoryProjectEnum.DRAFT.getCode().trim()));
             }
-
-            Image logo = Image.getInstance(new URL("https://s3.us-east-2.amazonaws.com/fineract.dev.public/logo-doble-impacto-con-bajada.png"));
+            URI uri = URI.create("https://s3.us-east-2.amazonaws.com/fineract.dev.public/logo-doble-impacto-con-bajada.png");
+            Image logo = Image.getInstance(uri.toURL());
             logo.scaleToFit(150, 50);
 
             // Evento para header/footer

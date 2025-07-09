@@ -72,6 +72,7 @@ public class LoanAccountData {
     private Long id;
     private String accountNo;
     private ExternalId externalId = ExternalId.empty();
+    private String shortName;
 
     // status
     private LoanStatusEnumData status;

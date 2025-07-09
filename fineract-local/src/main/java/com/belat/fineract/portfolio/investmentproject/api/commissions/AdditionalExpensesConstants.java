@@ -19,6 +19,7 @@ public class AdditionalExpensesConstants {
     public static final String expenseIdParamName = "id";
     public static final String commissionTypeParamName = "commissionTypeId";
     public static final String totalAmountParamName = "total";
+    public static final String flagAllDeleteParamName = "flagAllDelete";
 
     public static final String AEF_COMMISSION = "AEF";
     public static final String IVA_AEF_COMMISSION = "IVA-AEF";

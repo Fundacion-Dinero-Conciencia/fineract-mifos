@@ -46,6 +46,7 @@ import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Getter
@@ -139,6 +140,18 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     private BigDecimal amountToBeDelivered;
 
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
+        if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.amountParamName, getAmount())) {
+            final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountParamName);
+            actualChanges.put(InvestmentProjectConstants.amountParamName, newValue);
+            this.amount = newValue;
+        }
+
+        if (command.isChangeInIntegerParameterNamed(InvestmentProjectConstants.periodParamName, getPeriod(), Locale.ENGLISH)) {
+            final Integer newValue = command.integerValueOfParameterNamed(InvestmentProjectConstants.periodParamName, Locale.ENGLISH);
+            actualChanges.put(InvestmentProjectConstants.periodParamName, newValue);
+            this.period = newValue;
+        }
+
         if (command.isChangeInStringParameterNamed(InvestmentProjectConstants.projectNameParamName, getName())) {
             final String newValue = command.stringValueOfParameterNamed(InvestmentProjectConstants.projectNameParamName);
             actualChanges.put(InvestmentProjectConstants.projectNameParamName, newValue);
