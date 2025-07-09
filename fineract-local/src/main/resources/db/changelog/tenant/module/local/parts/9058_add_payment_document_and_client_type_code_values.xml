@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!--For PaymentType codes-->
+    <changeSet id="1" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')
+                AND lower(code_value) = lower('Kiphu')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'PaymentType')"/>
+            <column name="code_value" value="Kiphu"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')
+                AND lower(code_value) = lower('Transferencia Bancaria')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'PaymentType')"/>
+            <column name="code_value" value="Transferencia Bancaria"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')
+                AND lower(code_value) = lower('Transferencia interna')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'PaymentType')"/>
+            <column name="code_value" value="Transferencia Interna"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')
+                AND lower(code_value) = lower('Otra no especificada')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'PaymentType')"/>
+            <column name="code_value" value="Otra no especificada"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'PaymentType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For ClientType codes-->
+    <changeSet id="5" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND lower(code_value) = lower('Grupo BELat')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ClientType')"/>
+            <column name="code_value" value="Grupo Belat"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND lower(code_value) = lower('Cliente de Inversión')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ClientType')"/>
+            <column name="code_value" value="Cliente de Inversión"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="7" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND lower(code_value) = lower('Cliente de Crédito')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ClientType')"/>
+            <column name="code_value" value="Cliente de Crédito"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="8" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND lower(code_value) = lower('Fondo de Inversión')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ClientType')"/>
+            <column name="code_value" value="Fondo de Inversión"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="9" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND lower(code_value) = lower('No especificado')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ClientType')"/>
+            <column name="code_value" value="No especificado"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For Customer Documents codes-->
+
+    <changeSet id="10" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Imagen - Fondo de Caja')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Imagen - Fondo de Caja"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="11" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Imágenes - carrusel')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Imágenes - carrusel"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="12" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Imágenes - Logo')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Imágenes - Logo"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="13" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Certificado de Matrimonio avales')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Certificado de Matrimonio avales"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="14" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Estado de situación de avales')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Estado de situación de avales"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="15" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Certificado Deuda SBIF')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Certificado Deuda SBIF"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="16" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Certificado F30')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Certificado F30"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="17" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Proyección de ingresos y egresos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Proyección de ingresos y egresos"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="18" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Certificado Deudas Tesorería')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Certificado Deudas Tesorería"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="19" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Tres últimos balances')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Tres últimos balances"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Carpeta Tributaria SII para créditos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Carpeta Tributaria SII para créditos"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="21" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Cédula Representantes Legales')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Cédula Representantes Legales"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="22" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Formulario de evaluación')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Formulario de evaluación"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="23" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Ficha de Inclusión')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Ficha de Inclusión"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="24" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Aceptación de Términos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Aceptación de Términos"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="25" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Pagaré')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Pagaré"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="26" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Mandato')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Mandato"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="27" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('Simulación')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Simulación"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="28" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')
+                AND lower(code_value) = lower('No especificado (*)')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="No especificado (*)"/>
+            <column name="order_position" valueComputed="COALESCE((SELECT MAX(order_position) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')), 1)"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
+
+
