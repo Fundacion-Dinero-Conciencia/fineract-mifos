@@ -1,6 +1,5 @@
 package com.belat.fineract.portfolio.investmentproject.service.impl;
 
-import com.belat.fineract.portfolio.investmentproject.api.InvestmentProjectConstants;
 import com.belat.fineract.portfolio.investmentproject.api.commissions.AdditionalExpensesConstants;
 import com.belat.fineract.portfolio.investmentproject.data.AdditionalExpensesData;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
@@ -19,7 +18,6 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.fineract.infrastructure.codes.data.CodeValueData;
 import org.apache.fineract.infrastructure.codes.domain.Code;
 import org.apache.fineract.infrastructure.codes.domain.CodeRepository;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
@@ -33,12 +31,15 @@ import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
-import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -142,20 +143,24 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
     @Transactional
     public CommandProcessingResult deleteAdditionalExpensesById(JsonCommand jsonCommand) {
 
-        AdditionalExpenses additionalExpenses = additionalExpensesRepository.findById(jsonCommand.getSubresourceId()).orElseThrow( () -> new AdditionalExpensesNotFoundException(jsonCommand.entityId()));
-        final Long projectId = additionalExpenses.getProject().getId();
-        validateStatusInvestmentProject(projectId);
-        CodeValue codeValue = codeValueRepositoryWrapper.findOneByCodeNameAndLabelWithNotFoundDetection(AdditionalExpensesConstants.CONFIG_COMMISSION_TAXES_CODE_NAME, AdditionalExpensesConstants.IVA_AEF_COMMISSION);
-        boolean isAEF = AdditionalExpensesConstants.AEF_COMMISSION.equals(additionalExpenses.getCommissionType().getLabel());
+        if  (jsonCommand.parameterExists(AdditionalExpensesConstants.flagAllDeleteParamName) && jsonCommand.booleanPrimitiveValueOfParameterNamed(AdditionalExpensesConstants.flagAllDeleteParamName)) {
+            additionalExpensesRepository.deleteAllByInvestmentProjectId(jsonCommand.getSubresourceId());
+        } else {
+            AdditionalExpenses additionalExpenses = additionalExpensesRepository.findById(jsonCommand.getSubresourceId()).orElseThrow( () -> new AdditionalExpensesNotFoundException(jsonCommand.entityId()));
+            final Long projectId = additionalExpenses.getProject().getId();
+            validateStatusInvestmentProject(projectId);
+            CodeValue codeValue = codeValueRepositoryWrapper.findOneByCodeNameAndLabelWithNotFoundDetection(AdditionalExpensesConstants.CONFIG_COMMISSION_TAXES_CODE_NAME, AdditionalExpensesConstants.IVA_AEF_COMMISSION);
+            boolean isAEF = AdditionalExpensesConstants.AEF_COMMISSION.equals(additionalExpenses.getCommissionType().getLabel());
 
-        if (isAEF) {
-            securityContext.authenticatedUser().validateHasUpdatePermission(AdditionalExpensesConstants.UPDATE_ADDITIONAL_EXPENSES);
-        }
-        additionalExpensesRepository.delete(additionalExpenses);
+            if (isAEF) {
+                securityContext.authenticatedUser().validateHasUpdatePermission(AdditionalExpensesConstants.UPDATE_ADDITIONAL_EXPENSES);
+            }
+            additionalExpensesRepository.delete(additionalExpenses);
 
-        if (isAEF) {
-            AdditionalExpenses additionalExpensesIvaAEF = additionalExpensesRepository.findByInvestmentProjectIdAndCommissionTypeId(projectId, codeValue.getId());
-            additionalExpensesRepository.delete(additionalExpensesIvaAEF);
+            if (isAEF) {
+                AdditionalExpenses additionalExpensesIvaAEF = additionalExpensesRepository.findByInvestmentProjectIdAndCommissionTypeId(projectId, codeValue.getId());
+                additionalExpensesRepository.delete(additionalExpensesIvaAEF);
+            }
         }
 
         return new CommandProcessingResultBuilder() //

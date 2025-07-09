@@ -251,7 +251,7 @@ public class LoansApiResource {
             LoanApiConstants.clientActiveLoanOptions, LoanApiConstants.datatables, LoanProductConstants.RATES_PARAM_NAME,
             LoanApiConstants.MULTIDISBURSE_DETAILS_PARAMNAME, LoanApiConstants.EMI_AMOUNT_VARIATIONS_PARAMNAME,
             LoanApiConstants.COLLECTION_PARAMNAME, LoanApiConstants.INTEREST_RECOGNITION_ON_DISBURSEMENT_DATE,
-            LoanApiConstants.daysInYearCustomStrategyParameterName));
+            LoanApiConstants.daysInYearCustomStrategyParameterName, "shortName"));
 
     private static final Set<String> LOAN_APPROVAL_DATA_PARAMETERS = new HashSet<>(Arrays.asList("approvalDate", "approvalAmount"));
     private static final Set<String> GLIM_ACCOUNTS_DATA_PARAMETERS = new HashSet<>(Arrays.asList("glimId", "groupId", "clientId",
@@ -1048,10 +1048,11 @@ public class LoansApiResource {
         PaidInAdvanceData paidInAdvanceTemplate;
         Collection<LoanAccountSummaryData> clientActiveLoanOptions = null;
 
+        product = this.loanProductReadPlatformService.retrieveLoanProduct(loanBasicDetails.getLoanProductId());
+        String shortName = product.getShortName();
         final boolean template = ApiParameterHelper.template(uriInfo.getQueryParameters());
         if (template) {
             productOptions = this.loanProductReadPlatformService.retrieveAllLoanProductsForLookup();
-            product = this.loanProductReadPlatformService.retrieveLoanProduct(loanBasicDetails.getLoanProductId());
             loanBasicDetails.setProduct(product);
             loanTermFrequencyTypeOptions = this.dropdownReadPlatformService.retrieveLoanTermFrequencyTypeOptions();
             repaymentFrequencyTypeOptions = this.dropdownReadPlatformService.retrieveRepaymentFrequencyTypeOptions();
@@ -1143,7 +1144,7 @@ public class LoansApiResource {
                 overdueCharges, paidInAdvanceTemplate, interestRatesPeriods, clientActiveLoanOptions, rates, isRatesEnabled, collectionData,
                 LoanScheduleType.getValuesAsEnumOptionDataList(), LoanScheduleProcessingType.getValuesAsEnumOptionDataList(),
                 loanTermVariations, DaysInYearCustomStrategyType.getValuesAsStringEnumOptionDataList());
-
+        loanAccount.setShortName(shortName);
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters(),
                 mandatoryResponseParameters);
         return this.toApiJsonSerializer.serialize(settings, loanAccount, LOAN_DATA_PARAMETERS);

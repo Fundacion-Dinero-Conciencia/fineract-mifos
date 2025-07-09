@@ -9,6 +9,7 @@ public class InvestmentProjectConstants {
 
     private InvestmentProjectConstants() {}
 
+    public static final String SHORT_NAME_FACTORING = "FACT";
     public static final String projectNameParamName = "name";
     public static final String subtitleParamName = "subtitle";
     public static final String projectOwnerIdParamName = "ownerId";
@@ -16,6 +17,7 @@ public class InvestmentProjectConstants {
     public static final String currencyCodeParamName = "currencyCode";
     public static final String projectRateParamName = "projectRate";
     public static final String periodParamName = "period";
+    public static final String loanTermFrequencyType = "loanTermFrequencyType";
     public static final String countryIdParamName = "countryId";
     public static final String isActiveParamName = "isActive";
     public static final String categoryParamName = "categoryId";
@@ -49,7 +51,7 @@ public class InvestmentProjectConstants {
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
             isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
             minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName,
-            positionParamName, basedInLoanProductIdParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName));
+            positionParamName, basedInLoanProductIdParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName, loanTermFrequencyType));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -59,6 +61,7 @@ public class InvestmentProjectConstants {
             subtitleParamName, projectRateParamName, impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName,
             financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName,
             maxAmountParamName, minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName,
-            detailedSocioEnvironmentalDescriptionParamName, positionParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName));
+            detailedSocioEnvironmentalDescriptionParamName, positionParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName,
+            loanTermFrequencyType, amountParamName, periodParamName, projectRateParamName));
 
 }

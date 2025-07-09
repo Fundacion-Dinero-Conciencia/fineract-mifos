@@ -49,6 +49,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
+import org.apache.fineract.portfolio.common.domain.PeriodFrequencyType;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.service.LoanApplicationWritePlatformService;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
@@ -66,6 +67,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.belat.fineract.portfolio.investmentproject.api.InvestmentProjectConstants.SHORT_NAME_FACTORING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -91,7 +94,6 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
     @Override
     public CommandProcessingResult createInvestmentProject(JsonCommand command) {
-
         this.validateForCreate(command.json());
 
         InvestmentProject investmentProject = new InvestmentProject();
@@ -556,7 +558,10 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
 
         LoanProductData loanProductData = loanProductReadPlatformService.retrieveLoanProduct(loanProductId);
-
+        Integer loanTermFrequencyType = PeriodFrequencyType.MONTHS.getValue();
+        if (SHORT_NAME_FACTORING.equals(loanProductData.getShortName())) {
+            loanTermFrequencyType = PeriodFrequencyType.DAYS.getValue();
+        }
         accountJson.addProperty("productId", loanProductData.getId());
         accountJson.addProperty("loanOfficerId", "");
         accountJson.addProperty("loanPurposeId", "");
@@ -567,7 +572,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         accountJson.addProperty("linkAccountId", "");
         accountJson.addProperty("createStandingInstructionAtDisbursement", "");
         accountJson.addProperty("loanTermFrequency", periods);
-        accountJson.addProperty("loanTermFrequencyType", 2);
+        accountJson.addProperty("loanTermFrequencyType", loanTermFrequencyType);
         accountJson.addProperty("numberOfRepayments", periods);
         accountJson.addProperty("repaymentEvery", loanProductData.getRepaymentEvery());
         accountJson.addProperty("repaymentFrequencyType", loanProductData.getRepaymentFrequencyType().getId());
