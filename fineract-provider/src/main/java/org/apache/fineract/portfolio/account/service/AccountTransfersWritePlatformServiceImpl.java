@@ -55,9 +55,15 @@ import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
 import org.apache.fineract.portfolio.account.data.AccountTransfersDataValidator;
 import org.apache.fineract.portfolio.account.data.request.AccountTransferRequest;
-import org.apache.fineract.portfolio.account.domain.*;
+import org.apache.fineract.portfolio.account.domain.AccountTransferAssembler;
+import org.apache.fineract.portfolio.account.domain.AccountTransferDetailRepository;
+import org.apache.fineract.portfolio.account.domain.AccountTransferDetails;
+import org.apache.fineract.portfolio.account.domain.AccountTransferRepository;
+import org.apache.fineract.portfolio.account.domain.AccountTransferTransaction;
+import org.apache.fineract.portfolio.account.domain.AccountTransferType;
 import org.apache.fineract.portfolio.account.exception.DifferentCurrenciesException;
 import org.apache.fineract.portfolio.loanaccount.data.HolidayDetailDTO;
+import org.apache.fineract.portfolio.loanaccount.data.LoanAccountData;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanAccountDomainService;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTransaction;
@@ -67,20 +73,31 @@ import org.apache.fineract.portfolio.loanaccount.service.LoanAssembler;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformService;
 import org.apache.fineract.portfolio.paymentdetail.PaymentDetailConstants;
 import org.apache.fineract.portfolio.paymentdetail.domain.PaymentDetail;
-import org.apache.fineract.portfolio.paymentdetail.service.PaymentDetailWritePlatformService;
 import org.apache.fineract.portfolio.savings.SavingsTransactionBooleanValues;
-import org.apache.fineract.portfolio.savings.domain.*;
+import org.apache.fineract.portfolio.savings.domain.GSIMRepositoy;
+import org.apache.fineract.portfolio.savings.domain.GroupSavingsIndividualMonitoring;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountAssembler;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountWritePlatformService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import static org.apache.fineract.portfolio.account.AccountDetailConstants.*;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
+import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 
@@ -119,6 +136,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             String json = new Gson().toJson(investmentsList.get(i));
             JsonElement jsonElement = this.fromJsonHelper.parse(json);
             JsonCommand jsonCommand = JsonCommand.from(json, jsonElement, this.fromJsonHelper);
+            // TODO -> it´s possible relation to investment transaction with project using projectId getting name
             Long projectId = jsonCommand.longValueOfParameterNamed(AccountTransfersApiConstants.projectIdParamName);
             BigDecimal amount = jsonCommand.bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.amountProjectParamName);
             changes.put("transaction".concat(String.valueOf((i + 1))), create(jsonCommand).getSavingsId().toString());
@@ -132,7 +150,6 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     public CommandProcessingResult create(final JsonCommand command) {
 
         boolean isRegularTransaction = true;
-        final MathContext mc = MoneyHelper.getMathContext(2);
         this.accountTransfersDataValidator.validate(command);
 
         final LocalDate transactionDate = command.localDateValueOfParameterNamed(transferDateParamName);
@@ -179,7 +196,8 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     feePercentage = feePercentage.divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
                     final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId)
                             .getId();
-                    final Integer period = loanReadPlatformService.retrieveOne(loanAccountId).getTermInMonths();
+                    LoanAccountData loanData = loanReadPlatformService.retrieveOne(loanAccountId);
+                    final Double period = loanData.getTermInMonths();
                     BigDecimal baseAmount = transactionAmount.divide(
                             BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period > 10 ? 10 : period))),
                             MoneyHelper.getMathContext());
