@@ -19,16 +19,15 @@
 package org.apache.fineract.infrastructure.core.service;
 
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.solvers.BrentSolver;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.text.DecimalFormat;
 
 public final class MathUtil {
 
@@ -521,9 +520,9 @@ public final class MathUtil {
      *            amount in settings
      * @return value to CUP percentage
      */
-    public static BigDecimal calculateCUPValue(Integer periodMonths, BigDecimal investmentAmount, BigDecimal percentageValue) {
+    public static BigDecimal calculateCUPValue(Double periodMonths, BigDecimal investmentAmount, BigDecimal percentageValue) {
         if (periodMonths > 10) {
-            periodMonths = 10;
+            periodMonths = 10d;
         }
         return percentageValue.multiply(BigDecimal.valueOf(periodMonths).multiply(investmentAmount), MoneyHelper.getMathContext());
     }
