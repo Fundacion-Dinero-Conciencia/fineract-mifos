@@ -25,6 +25,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 
@@ -51,11 +52,14 @@ public class ClientFamilyMembers extends AbstractPersistableCustom<Long> {
     @Column(name = "mobile_number")
     private String mobileNumber;
 
+    @Column(name = "email_address")
+    private String email;
+
     @Column(name = "age")
     private Long age;
 
-    @Column(name = "is_dependent")
-    private Boolean isDependent;
+    @Column(name = "is_marital_partnership")
+    private Boolean isMaritalPartnership;
 
     @ManyToOne
     @JoinColumn(name = "relationship_cv_id")
@@ -76,9 +80,23 @@ public class ClientFamilyMembers extends AbstractPersistableCustom<Long> {
     @Column(name = "date_of_birth", nullable = true)
     private LocalDate dateOfBirth;
 
+    @ManyToOne
+    @JoinColumn(name = "document_type_cv_id")
+    private CodeValue documentType;
+
+    @Column(name = "document_key")
+    private String documentNumber;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "expiration_date")
+    private LocalDate expirationDate;
+
     private ClientFamilyMembers(final Client client, final String firstName, final String middleName, final String lastName,
             final String qualification, final String mobileNumber, final Long age, final Boolean isDependent, final CodeValue relationship,
-            final CodeValue maritalStatus, final CodeValue gender, final LocalDate dateOfBirth, final CodeValue profession) {
+            final CodeValue maritalStatus, final CodeValue gender, final LocalDate dateOfBirth, final CodeValue profession, final String email,
+            final CodeValue documentType, final String documentNumber, final String address, final LocalDate expirationDate) {
 
         this.client = client;
         this.firstName = firstName;
@@ -87,12 +105,17 @@ public class ClientFamilyMembers extends AbstractPersistableCustom<Long> {
         this.qualification = qualification;
         this.age = age;
         this.mobileNumber = mobileNumber;
-        this.isDependent = isDependent;
+        this.email = email;
+        this.isMaritalPartnership = isDependent;
         this.relationship = relationship;
         this.maritalStatus = maritalStatus;
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.profession = profession;
+        this.documentType = documentType;
+        this.documentNumber = documentNumber;
+        this.address = address;
+        this.expirationDate = expirationDate;
     }
 
     public ClientFamilyMembers() {
@@ -100,10 +123,11 @@ public class ClientFamilyMembers extends AbstractPersistableCustom<Long> {
     }
 
     public static ClientFamilyMembers fromJson(final Client client, final String firstName, final String middleName, final String lastName,
-            final String qualification, final String mobileNumber, final Long age, final Boolean isDependent, final CodeValue relationship,
-            final CodeValue maritalStatus, final CodeValue gender, final LocalDate dateOfBirth, final CodeValue profession) {
+            final String qualification, final String mobileNumber, final String email, final Long age, final Boolean isDependent,
+            final CodeValue relationship, final CodeValue maritalStatus, final CodeValue gender, final LocalDate dateOfBirth,
+            final CodeValue profession, final CodeValue documentType, final String documentNumber, final String address, final LocalDate expirationDate) {
         return new ClientFamilyMembers(client, firstName, middleName, lastName, qualification, mobileNumber, age, isDependent, relationship,
-                maritalStatus, gender, dateOfBirth, profession);
+                maritalStatus, gender, dateOfBirth, profession, email, documentType, documentNumber, address, expirationDate);
     }
 
     public Client getClient() {
@@ -194,6 +218,14 @@ public class ClientFamilyMembers extends AbstractPersistableCustom<Long> {
         this.mobileNumber = mobileNumber;
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Long getAge() {
         return this.age;
     }
@@ -202,12 +234,44 @@ public class ClientFamilyMembers extends AbstractPersistableCustom<Long> {
         this.age = age;
     }
 
-    public Boolean getIsDependent() {
-        return this.isDependent;
+    public Boolean getIsMaritalPartnership() {
+        return this.isMaritalPartnership;
     }
 
-    public void setIsDependent(Boolean isDependent) {
-        this.isDependent = isDependent;
+    public void setIsMaritalPartnership(Boolean isMaritalPartnership) {
+        this.isMaritalPartnership = isMaritalPartnership;
+    }
+
+    public CodeValue getDocumentType() {
+        return this.documentType;
+    }
+
+    public void setDocumentType(CodeValue documentType) {
+        this.documentType = documentType;
+    }
+
+    public String getDocumentNumber() {
+        return this.documentNumber;
+    }
+
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LocalDate getExpiationDate() {
+        return this.expirationDate;
+    }
+
+    public void setExpiationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
 }

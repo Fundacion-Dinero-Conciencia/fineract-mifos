@@ -54,12 +54,14 @@ public class ClientFamilyMembersReadPlatformServiceImpl implements ClientFamilyM
 
         public String schema() {
             return "fmb.id AS id, fmb.client_id AS clientId, fmb.firstname AS firstName, fmb.middlename AS middleName,"
-                    + "fmb.lastname AS lastName,fmb.qualification AS qualification,fmb.mobile_number as mobileNumber,fmb.age as age,fmb.is_dependent as isDependent,cv.code_value AS relationship,fmb.relationship_cv_id AS relationshipId,"
+                    + "fmb.lastname AS lastName,fmb.qualification AS qualification,fmb.mobile_number as mobileNumber,fmb.age as age,fmb.is_marital_partnership as isMaritalPartnership,cv.code_value AS relationship,fmb.relationship_cv_id AS relationshipId,"
                     + "c.code_value AS maritalStatus,fmb.marital_status_cv_id AS maritalStatusId,"
-                    + "c1.code_value AS gender, fmb.gender_cv_id AS genderId, fmb.date_of_birth AS dateOfBirth, c2.code_value AS profession, fmb.profession_cv_id AS professionId"
+                    + "c1.code_value AS gender, fmb.gender_cv_id AS genderId, fmb.date_of_birth AS dateOfBirth, c2.code_value AS profession, fmb.profession_cv_id AS professionId, "
+                    + "c3.code_value AS documentType, fmb.document_type_cv_id AS documentTypeId, fmb.document_key AS documentNumber, fmb.email_address AS email, "
+                    + "fmb.address AS address, fmb.expiration_date AS expirationDate"
                     + " FROM m_family_members fmb" + " LEFT JOIN m_code_value cv ON fmb.relationship_cv_id=cv.id"
                     + " LEFT JOIN m_code_value c ON fmb.marital_status_cv_id=c.id" + " LEFT JOIN m_code_value c1 ON fmb.gender_cv_id=c1.id"
-                    + " LEFT JOIN m_code_value c2 ON fmb.profession_cv_id=c2.id";
+                    + " LEFT JOIN m_code_value c2 ON fmb.profession_cv_id=c2.id" + " LEFT JOIN m_code_value c3 ON fmb.document_type_cv_id=c3.id";
         }
 
         @Override
@@ -72,7 +74,7 @@ public class ClientFamilyMembersReadPlatformServiceImpl implements ClientFamilyM
             final String qualification = rs.getString("qualification");
             final String mobileNumber = rs.getString("mobileNumber");
             final long age = rs.getLong("age");
-            final boolean isDependent = rs.getBoolean("isDependent");
+            final boolean isMaritalPartnership = rs.getBoolean("isMaritalPartnership");
             final String relationship = rs.getString("relationship");
             final long relationshipId = rs.getLong("relationshipId");
             final String maritalStatus = rs.getString("maritalStatus");
@@ -82,11 +84,18 @@ public class ClientFamilyMembersReadPlatformServiceImpl implements ClientFamilyM
             final LocalDate dateOfBirth = JdbcSupport.getLocalDate(rs, "dateOfBirth");
             final String profession = rs.getString("profession");
             final long professionId = rs.getLong("professionId");
+            final String email = rs.getString("email");
+            final String documentType = rs.getString("documentType");
+            final long documentTypeId = rs.getLong("documentTypeId");
+            final String documentNumber = rs.getString("documentNumber");
+            final String address = rs.getString("address");
+            final LocalDate expirationDate = JdbcSupport.getLocalDate(rs, "expirationDate");
 
             return ClientFamilyMembersData.builder().id(id).clientId(clientId).firstName(firstName).middleName(middleName)
-                    .lastName(lastName).qualification(qualification).mobileNumber(mobileNumber).age(age).isDependent(isDependent)
+                    .lastName(lastName).qualification(qualification).mobileNumber(mobileNumber).age(age).isMaritalPartnership(isMaritalPartnership)
                     .relationship(relationship).relationshipId(relationshipId).maritalStatus(maritalStatus).maritalStatusId(maritalStatusId)
-                    .gender(gender).genderId(genderId).dateOfBirth(dateOfBirth).profession(profession).professionId(professionId).build();
+                    .gender(gender).genderId(genderId).dateOfBirth(dateOfBirth).profession(profession).professionId(professionId).documentTypeId(documentTypeId)
+                    .documentType(documentType).documentNumber(documentNumber).email(email).address(address).expirationDate(expirationDate).build();
         }
     }
 
@@ -126,8 +135,13 @@ public class ClientFamilyMembersReadPlatformServiceImpl implements ClientFamilyM
         final List<CodeValueData> professionOptions = new ArrayList<>(
                 this.codeValueReadPlatformService.retrieveCodeValuesByCode("PROFESSION"));
 
+        final List<CodeValueData> documentTypeIdOptions = new ArrayList<>(
+                this.codeValueReadPlatformService.retrieveCodeValuesByCode("Customer Identifier"));
+
         return ClientFamilyMembersData.builder().relationshipIdOptions(relationshipOptions).genderIdOptions(genderOptions)
-                .maritalStatusIdOptions(maritalStatusOptions).professionIdOptions(professionOptions).build();
+                .maritalStatusIdOptions(maritalStatusOptions).professionIdOptions(professionOptions).documentTypeIdOptions(documentTypeIdOptions)
+                .build();
+
     }
 
 }
