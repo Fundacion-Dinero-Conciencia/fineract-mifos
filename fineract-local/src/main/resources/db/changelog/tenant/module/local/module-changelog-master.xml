@@ -81,4 +81,5 @@
   <include relativeToChangelogFile="true" file="parts/9057_fix_add_missing_uruguay_bank_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9058_add_payment_document_and_client_type_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9059_change_column_type_for_bank_details_data_table.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9060_add_family_members_extra_columns.xml"/>
 </databaseChangeLog>

@@ -64,12 +64,25 @@ public final class ClientFamilyMembersData implements Serializable {
 
     private final Long age;
 
-    private final Boolean isDependent;
+    private final String email;
+
+    private final Boolean isMaritalPartnership;
+
+    private final Long documentTypeId;
+
+    private final String documentType;
+
+    private final String documentNumber;
+
+    private final String address;
+
+    private final LocalDate expirationDate;
 
     // template holder
     private final Collection<CodeValueData> relationshipIdOptions;
     private final Collection<CodeValueData> genderIdOptions;
     private final Collection<CodeValueData> maritalStatusIdOptions;
     private final Collection<CodeValueData> professionIdOptions;
+    private final Collection<CodeValueData> documentTypeIdOptions;
 
 }

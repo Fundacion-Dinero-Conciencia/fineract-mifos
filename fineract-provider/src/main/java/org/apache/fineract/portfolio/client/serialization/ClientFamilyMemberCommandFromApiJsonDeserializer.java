@@ -50,18 +50,24 @@ public final class ClientFamilyMemberCommandFromApiJsonDeserializer {
     public static final String QUALIFICATION = "qualification";
     public static final String MOBILE_NUMBER = "mobileNumber";
     public static final String AGE = "age";
-    public static final String IS_DEPENDENT = "isDependent";
+    public static final String IS_MARITAL_PARTNERSHIP = "isMaritalPartnership";
     public static final String RELATIONSHIP_ID = "relationshipId";
     public static final String MARITAL_STATUS_ID = "maritalStatusId";
     public static final String GENDER_ID = "genderId";
     public static final String DATE_OF_BIRTH = "dateOfBirth";
     public static final String PROFESSION_ID = "professionId";
+    public static final String EMAIL = "email";
     public static final String LOCALE = "locale";
     public static final String DATE_FORMAT = "dateFormat";
     public static final String FAMILY_MEMBERS = "familyMembers";
+    public static final String DOCUMENT_TYPE_ID = "documentTypeId";
+    public static final String DOCUMENT_NUMBER = "documentNumber";
+    public static final String ADDRESS = "address";
+    public static final String EXPIRATION_DATE = "expirationDate";
     private static final Set<String> SUPPORTED_PARAMETERS = new HashSet<>(
-            Arrays.asList(ID, CLIENT_ID, FIRST_NAME, MIDDLE_NAME, LAST_NAME, QUALIFICATION, MOBILE_NUMBER, AGE, IS_DEPENDENT,
-                    RELATIONSHIP_ID, MARITAL_STATUS_ID, GENDER_ID, DATE_OF_BIRTH, PROFESSION_ID, LOCALE, DATE_FORMAT, FAMILY_MEMBERS));
+            Arrays.asList(ID, CLIENT_ID, FIRST_NAME, MIDDLE_NAME, LAST_NAME, QUALIFICATION, MOBILE_NUMBER, EMAIL, IS_MARITAL_PARTNERSHIP,
+                    RELATIONSHIP_ID, MARITAL_STATUS_ID, GENDER_ID, PROFESSION_ID, LOCALE, DATE_FORMAT, FAMILY_MEMBERS,
+                    DOCUMENT_TYPE_ID, DOCUMENT_NUMBER, ADDRESS, EXPIRATION_DATE));
     public static final String FAMILY_MEMBERS1 = "FamilyMembers";
     public static final String RELATION_SHIP_ID = "relationShipId";
     private final FromJsonHelper fromApiJsonHelper;
@@ -143,9 +149,12 @@ public final class ClientFamilyMemberCommandFromApiJsonDeserializer {
             baseDataValidator.reset().parameter(MOBILE_NUMBER).value(mobileNumber).notNull().notBlank().notExceedingLengthOf(100);
         }
 
-        if (this.fromApiJsonHelper.extractBooleanNamed(IS_DEPENDENT, element) != null) {
-            final Boolean isDependent = this.fromApiJsonHelper.extractBooleanNamed(IS_DEPENDENT, element);
-            baseDataValidator.reset().parameter(IS_DEPENDENT).value(isDependent).notNull().notBlank().notExceedingLengthOf(100);
+        final String email = this.fromApiJsonHelper.extractStringNamed(EMAIL, element);
+        baseDataValidator.reset().parameter(EMAIL).value(email).notNull().notBlank();
+
+        if (this.fromApiJsonHelper.extractBooleanNamed(IS_MARITAL_PARTNERSHIP, element) != null) {
+            final Boolean isMaritalPartnership = this.fromApiJsonHelper.extractBooleanNamed(IS_MARITAL_PARTNERSHIP, element);
+            baseDataValidator.reset().parameter(IS_MARITAL_PARTNERSHIP).value(isMaritalPartnership).notNull().notBlank().notExceedingLengthOf(100);
         }
 
         if (this.fromApiJsonHelper.extractLongNamed(RELATION_SHIP_ID, element) != null) {
@@ -160,33 +169,45 @@ public final class ClientFamilyMemberCommandFromApiJsonDeserializer {
         if (this.fromApiJsonHelper.extractLongNamed(MARITAL_STATUS_ID, element) != null) {
             final long maritalStatusId = this.fromApiJsonHelper.extractLongNamed(MARITAL_STATUS_ID, element);
             baseDataValidator.reset().parameter(MARITAL_STATUS_ID).value(maritalStatusId).notBlank().longGreaterThanZero();
-
         }
 
         if (this.fromApiJsonHelper.extractLongNamed(GENDER_ID, element) != null) {
             final long genderId = this.fromApiJsonHelper.extractLongNamed(GENDER_ID, element);
             baseDataValidator.reset().parameter(GENDER_ID).value(genderId).notBlank().longGreaterThanZero();
-
         }
 
         if (this.fromApiJsonHelper.extractLongNamed(AGE, element) != null) {
             final long age = this.fromApiJsonHelper.extractLongNamed(AGE, element);
             baseDataValidator.reset().parameter(AGE).value(age).notBlank().longGreaterThanZero();
-
         }
 
         if (this.fromApiJsonHelper.extractLongNamed(PROFESSION_ID, element) != null) {
             final long professionId = this.fromApiJsonHelper.extractLongNamed(PROFESSION_ID, element);
             baseDataValidator.reset().parameter(PROFESSION_ID).value(professionId).notBlank().longGreaterThanZero();
-
         }
 
         if (this.fromApiJsonHelper.extractLocalDateNamed(DATE_OF_BIRTH, element) != null) {
             final LocalDate dateOfBirth = this.fromApiJsonHelper.extractLocalDateNamed(DATE_OF_BIRTH, element);
             baseDataValidator.reset().parameter(DATE_OF_BIRTH).value(dateOfBirth).value(dateOfBirth).notNull()
                     .validateDateBefore(DateUtils.getBusinessLocalDate());
-
         }
+
+        if (this.fromApiJsonHelper.extractLocalDateNamed(EXPIRATION_DATE, element) != null) {
+            final LocalDate expirationDate = this.fromApiJsonHelper.extractLocalDateNamed(EXPIRATION_DATE, element);
+            baseDataValidator.reset().parameter(EXPIRATION_DATE).value(expirationDate).value(expirationDate).notNull()
+                    .validateDateBefore(DateUtils.getBusinessLocalDate());
+        }
+
+        if (this.fromApiJsonHelper.extractStringNamed(ADDRESS, element) != null) {
+            final String address = this.fromApiJsonHelper.extractStringNamed(ADDRESS, element);
+            baseDataValidator.reset().parameter(ADDRESS).value(address).notNull().notBlank().notExceedingLengthOf(100);
+        }
+
+        final long documentTypeId = this.fromApiJsonHelper.extractLongNamed(DOCUMENT_TYPE_ID, element);
+        baseDataValidator.reset().parameter(DOCUMENT_TYPE_ID).value(documentTypeId).notBlank().longGreaterThanZero();
+
+        final String documentNumber = this.fromApiJsonHelper.extractStringNamed(DOCUMENT_NUMBER, element);
+        baseDataValidator.reset().parameter(DOCUMENT_NUMBER).value(documentNumber).notNull().notBlank();
 
     }
 
@@ -256,6 +277,36 @@ public final class ClientFamilyMemberCommandFromApiJsonDeserializer {
             final LocalDate dateOfBirth = this.fromApiJsonHelper.extractLocalDateNamed(DATE_OF_BIRTH, element);
             baseDataValidator.reset().parameter(DATE_OF_BIRTH).value(dateOfBirth).validateDateBefore(DateUtils.getBusinessLocalDate());
 
+        }
+
+        if (this.fromApiJsonHelper.extractStringNamed(MOBILE_NUMBER, element) != null) {
+            final String mobileNumber = this.fromApiJsonHelper.extractStringNamed(MOBILE_NUMBER, element);
+            baseDataValidator.reset().parameter(MOBILE_NUMBER).value(mobileNumber).notNull().notBlank().notExceedingLengthOf(100);
+        }
+
+        if (this.fromApiJsonHelper.extractStringNamed(EMAIL, element) != null) {
+            final String email = this.fromApiJsonHelper.extractStringNamed(EMAIL, element);
+            baseDataValidator.reset().parameter(EMAIL).value(email).notNull().notBlank();
+        }
+
+        if (this.fromApiJsonHelper.extractLongNamed(DOCUMENT_TYPE_ID, element) != null) {
+            final long documentTypeId = this.fromApiJsonHelper.extractLongNamed(DOCUMENT_TYPE_ID, element);
+            baseDataValidator.reset().parameter(DOCUMENT_TYPE_ID).value(documentTypeId).notBlank().longGreaterThanZero();
+        }
+
+        if (this.fromApiJsonHelper.extractStringNamed(DOCUMENT_NUMBER, element) != null) {
+            final String documentNumber = this.fromApiJsonHelper.extractStringNamed(DOCUMENT_NUMBER, element);
+            baseDataValidator.reset().parameter(DOCUMENT_NUMBER).value(documentNumber).notNull().notBlank();
+        }
+
+        if (this.fromApiJsonHelper.extractStringNamed(ADDRESS, element) != null) {
+            final String address = this.fromApiJsonHelper.extractStringNamed(ADDRESS, element);
+            baseDataValidator.reset().parameter(ADDRESS).value(address).notNull().notBlank();
+        }
+
+        if (this.fromApiJsonHelper.extractBooleanNamed(IS_MARITAL_PARTNERSHIP, element) != null) {
+            final Boolean isMaritalPartnership = this.fromApiJsonHelper.extractBooleanNamed(IS_MARITAL_PARTNERSHIP, element);
+            baseDataValidator.reset().parameter(IS_MARITAL_PARTNERSHIP).value(isMaritalPartnership).notNull().notBlank().notExceedingLengthOf(100);
         }
 
     }

@@ -22,10 +22,6 @@ package org.apache.fineract.portfolio.client.service;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepository;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -41,6 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 
 @Service
 public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamilyMembersWritePlatformService {
@@ -80,9 +81,15 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
         String lastName = "";
         String qualification = "";
         String mobileNumber = "";
+        String email = "";
         Long age = null;
-        Boolean isDependent = false;
+        Boolean isMaritalPartnership = false;
         LocalDate dateOfBirth = null;
+        Long documentTypeId = null;
+        CodeValue documentType = null;
+        String documentNumber = "";
+        String address = "";
+        LocalDate expirationDate = null;
 
         this.context.authenticatedUser();
         apiJsonDeserializer.validateForCreate(clientId, command.json());
@@ -93,8 +100,11 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
         lastName = command.stringValueOfParameterNamed("lastName");
         qualification = command.stringValueOfParameterNamed("qualification");
         mobileNumber = command.stringValueOfParameterNamed("mobileNumber");
+        email = command.stringValueOfParameterNamed("email");
         age = command.longValueOfParameterNamed("age");
-        isDependent = command.booleanObjectValueOfParameterNamed("isDependent");
+        isMaritalPartnership = command.booleanObjectValueOfParameterNamed("isMaritalPartnership");
+        documentNumber = command.stringValueOfParameterNamed("documentNumber");
+        address = command.stringValueOfParameterNamed("address");
 
         if (command.longValueOfParameterNamed("relationshipId") != null) {
             relationshipId = command.longValueOfParameterNamed("relationshipId");
@@ -116,10 +126,20 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
             profession = this.codeValueRepository.getReferenceById(professionId);
         }
 
+        if (command.longValueOfParameterNamed("documentTypeId") != null) {
+            documentTypeId = command.longValueOfParameterNamed("documentTypeId");
+            documentType = this.codeValueRepository.getReferenceById(documentTypeId);
+        }
+
+        if (command.localDateValueOfParameterNamed("expirationDate") != null) {
+            expirationDate = command.localDateValueOfParameterNamed("expirationDate");
+        }
+
         dateOfBirth = command.localDateValueOfParameterNamed("dateOfBirth");
 
         ClientFamilyMembers clientFamilyMembers = ClientFamilyMembers.fromJson(client, firstName, middleName, lastName, qualification,
-                mobileNumber, age, isDependent, relationship, maritalStatus, gender, dateOfBirth, profession);
+                mobileNumber, email, age, isMaritalPartnership, relationship, maritalStatus, gender, dateOfBirth, profession, documentType,
+                documentNumber, address, expirationDate);
 
         this.clientFamilyRepository.saveAndFlush(clientFamilyMembers);
 
@@ -144,8 +164,14 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
         String qualification = "";
         LocalDate dateOfBirth = null;
         String mobileNumber = "";
+        String email = "";
         Long age = null;
-        Boolean isDependent = false;
+        Boolean isMaritalPartnership = false;
+        Long documentTypeId = null;
+        CodeValue documentType = null;
+        String documentNumber = "";
+        String address = "";
+        LocalDate expirationDate = null;
 
         this.context.authenticatedUser();
 
@@ -184,12 +210,16 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
                 mobileNumber = member.get("mobileNumber").getAsString();
             }
 
+            if (member.get("email") != null) {
+                email = member.get("email").getAsString();
+            }
+
             if (member.get("age") != null) {
                 age = member.get("age").getAsLong();
             }
 
-            if (member.get("isDependent") != null) {
-                isDependent = member.get("isDependent").getAsBoolean();
+            if (member.get("isMaritalPartnership") != null) {
+                isMaritalPartnership = member.get("isMaritalPartnership").getAsBoolean();
             }
 
             if (member.get("relationshipId") != null) {
@@ -212,6 +242,34 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
                 profession = this.codeValueRepository.getReferenceById(professionId);
             }
 
+            if (member.get("documentTypeId") != null) {
+                documentTypeId = member.get("documentTypeId").getAsLong();
+                documentType = this.codeValueRepository.getReferenceById(documentTypeId);
+            }
+
+            if (member.get("documentNumber") != null) {
+                documentNumber = member.get("documentNumber").getAsString();
+            }
+
+            if (member.get("expirationDate") != null) {
+
+                DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(member.get("dateFormat").getAsString())
+                        .toFormatter();
+                LocalDate date;
+                try {
+                    date = LocalDate.parse(member.get("expirationDate").getAsString(), formatter);
+                    expirationDate = date;
+                } catch (DateTimeParseException e) {
+                    // TODO Auto-generated catch block
+                    LOG.error("Problem occurred in addClientFamilyMember function", e);
+                }
+
+                /*
+                 * this.fromApiJsonHelper.extractDateFormatParameter(member.get( "dateOfBirth").getAsJsonObject());
+                 */
+
+            }
+
             if (member.get("dateOfBirth") != null) {
 
                 DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(member.get("dateFormat").getAsString())
@@ -231,8 +289,9 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
 
             }
 
-            familyMember = ClientFamilyMembers.fromJson(client, firstName, middleName, lastName, qualification, mobileNumber, age,
-                    isDependent, relationship, maritalStatus, gender, dateOfBirth, profession);
+            familyMember = ClientFamilyMembers.fromJson(client, firstName, middleName, lastName, qualification, mobileNumber,
+                    email, age, isMaritalPartnership, relationship, maritalStatus, gender, dateOfBirth, profession, documentType,
+                    documentNumber, address, expirationDate);
 
             this.clientFamilyRepository.saveAndFlush(familyMember);
 
@@ -259,8 +318,13 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
         String qualification = "";
         LocalDate dateOfBirth = null;
         String mobileNumber = "";
+        String email = "";
         Long age = null;
-        Boolean isDependent = false;
+        Boolean isMaritalPartnership = false;
+        Long documentTypeId = null;
+        CodeValue documentType = null;
+        String documentNumber = "";
+        String address = "";
         // long clientFamilyMemberId=0;
 
         this.context.authenticatedUser();
@@ -302,14 +366,19 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
             clientFamilyMember.setMobileNumber(mobileNumber);
         }
 
+        if (command.stringValueOfParameterNamed("email") != null) {
+            email = command.stringValueOfParameterNamed("email");
+            clientFamilyMember.setEmail(email);
+        }
+
         if (command.longValueOfParameterNamed("age") != null) {
             age = command.longValueOfParameterNamed("age");
             clientFamilyMember.setAge(age);
         }
 
-        if (command.booleanObjectValueOfParameterNamed("isDependent") != null) {
-            isDependent = command.booleanObjectValueOfParameterNamed("isDependent");
-            clientFamilyMember.setIsDependent(isDependent);
+        if (command.booleanObjectValueOfParameterNamed("isMaritalPartnership") != null) {
+            isMaritalPartnership = command.booleanObjectValueOfParameterNamed("isMaritalPartnership");
+            clientFamilyMember.setIsMaritalPartnership(isMaritalPartnership);
         }
 
         if (command.longValueOfParameterNamed("relationShipId") != null) {
@@ -339,7 +408,22 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
         if (command.localDateValueOfParameterNamed("dateOfBirth") != null) {
             dateOfBirth = command.localDateValueOfParameterNamed("dateOfBirth");
             clientFamilyMember.setDateOfBirth(dateOfBirth);
+        }
 
+        if (command.longValueOfParameterNamed("documentTypeId") != null) {
+            documentTypeId = command.longValueOfParameterNamed("documentTypeId");
+            documentType = this.codeValueRepository.getReferenceById(documentTypeId);
+            clientFamilyMember.setDocumentType(documentType);
+        }
+
+        if (command.stringValueOfParameterNamed("documentNumber") != null) {
+            documentNumber = command.stringValueOfParameterNamed("documentNumber");
+            clientFamilyMember.setDocumentNumber(documentNumber);
+        }
+
+        if (command.stringValueOfParameterNamed("address") != null) {
+            address = command.stringValueOfParameterNamed("address");
+            clientFamilyMember.setAddress(address);
         }
 
         // ClientFamilyMembers
