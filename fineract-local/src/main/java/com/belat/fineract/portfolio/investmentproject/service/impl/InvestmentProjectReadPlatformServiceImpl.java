@@ -187,6 +187,19 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         return investmentProjectRepository.retrieveOneByProjectId(id);
     }
 
+    @Override
+    public List<InvestmentProjectData> retrieveFiltered() {
+        List<InvestmentProject> projects = investmentProjectRepository.retrieveByPositionActiveAndStatus();
+        List<InvestmentProjectData> projectsData = new ArrayList<>();
+        projects.forEach(project -> {
+            if (project != null) {
+                InvestmentProjectData projectData = investmentProjectMapper.map(project);
+                factoryData(projectData, project, projectsData);
+            }
+        });
+        return projectsData;
+    }
+
 
     private void factoryData(InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
         projectData.setOwnerId(project.getOwner().getId());

@@ -25,4 +25,19 @@ public interface InvestmentProjectRepository extends JpaRepository<InvestmentPro
     @Query("SELECT ip FROM InvestmentProject ip WHERE LOWER(ip.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<InvestmentProject> retrieveByName(@Param("name") String name);
 
+    @Query(value = "SELECT ip.* FROM e_investment_project ip " +
+            "JOIN ( " +
+            "  SELECT DISTINCT ON (investment_project_id) investment_project_id, status_value_id " +
+            "  FROM e_project_status_history " +
+            "  ORDER BY investment_project_id, created_on_utc DESC " +
+            ") ps ON ps.investment_project_id = ip.id " +
+            "JOIN m_code_value cv ON cv.id = ps.status_value_id " +
+            "WHERE ip.is_active = true " +
+            "ORDER BY " +
+            "  CASE WHEN LOWER(cv.code_value) = LOWER('En Financiamiento') THEN 0 ELSE 1 END, " +
+            "  ip.position",
+            nativeQuery = true)
+    List<InvestmentProject> retrieveByPositionActiveAndStatus();
+
+
 }

@@ -144,6 +144,17 @@ public class InvestmentProjectApiResource {
         }
     }
 
+    @GET
+    @Path("/filtered")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = InvestmentProjectApiResourceSwagger.GetInvestmentProjectResponse.class))) })
+    public String getFilteredInvestmentProjects() {
+        platformUserRightsContext.isAuthenticated();
+        final List<InvestmentProjectData> projects = investmentProjectReadPlatformService.retrieveFiltered();
+        return apiJsonSerializerService.serialize(projects);
+    }
+
     @PUT
     @Path("{projectId}")
     @Consumes({ MediaType.APPLICATION_JSON })
