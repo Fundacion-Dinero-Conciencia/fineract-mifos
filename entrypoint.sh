@@ -7,7 +7,8 @@ java --version
 
 SPRING_PROFILES_ACTIVE=basicauth
 
-JVM_OPTS="-Djava.awt.headless=true -Duser.country=US -Duser.language=en"
+JVM_OPTS="-Djava.awt.headless=true -Duser.country=US -Duser.language=en -Xms1024m -Xmx4096m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ParallelRefProcEnabled -XX:+UnlockDiagnosticVMOptions -XX:+PrintCodeCache -XX:ReservedCodeCacheSize=256M"
+
 
 echo .
 echo .
