@@ -3184,38 +3184,40 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             //Iterate between installments
             for (int i = 0; i < createdInstallments.size() - 1; i ++) {
                 LoanRepaymentScheduleInstallment createdInstallment = createdInstallments.get(i);
-                LoanRepaymentScheduleInstallment simulationInstallment = simulationInstallments.get(i);
+                // validation grace on interest amount
+                if (createdInstallment.getPrincipal() != null && createdInstallment.getPrincipal().doubleValue() > 0) {
+                    LoanRepaymentScheduleInstallment simulationInstallment = simulationInstallments.get(i);
 
-                BigDecimal outstandingWithPercentage = createdInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().multiply(representativeValue);
+                    BigDecimal outstandingWithPercentage = createdInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().multiply(representativeValue);
 
-                BigDecimal roundedSimulationInstallment = simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().setScale(1, RoundingMode.HALF_EVEN);
+                    BigDecimal roundedSimulationInstallment = simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().setScale(1, RoundingMode.HALF_EVEN);
 
-                BigDecimal roundedCreatedInstallment = outstandingWithPercentage.setScale(1, RoundingMode.HALF_EVEN);
+                    BigDecimal roundedCreatedInstallment = outstandingWithPercentage.setScale(1, RoundingMode.HALF_EVEN);
 
-                //Validate installment amounts
-                if (roundedCreatedInstallment.compareTo(roundedSimulationInstallment) != 0) {
-
-                    Map<String, String> installment = new HashMap<>();
-                    LocalDate dueDate = createdInstallment.getDueDate();
-                    installment.put("dueDate", dueDate.format(formatter));
-                    installment.put("installmentAmount", String.valueOf(simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().divide(representativeValue, 8, RoundingMode.HALF_UP)));
-
-                    modifiedInstallments.add(installment);
+                    //Validate installment amounts
+                    if (roundedCreatedInstallment.compareTo(roundedSimulationInstallment) != 0) {
+                        Map<String, String> installment = new HashMap<>();
+                        LocalDate dueDate = createdInstallment.getDueDate();
+                        installment.put("dueDate", dueDate.format(formatter));
+                        installment.put("installmentAmount", String.valueOf(simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().divide(representativeValue, 8, RoundingMode.HALF_UP)));
+                        modifiedInstallments.add(installment);
+                    }
                 }
+
             }
 
-            if (!modifiedInstallments.isEmpty() && modifiedInstallments.size() != 0) {
+            if (!modifiedInstallments.isEmpty()) {
                 Map<String, Object> exceptions = new HashMap<>();
                 exceptions.put("modifiedinstallments", modifiedInstallments);
 
                 Map<String, Object> root = new HashMap<>();
                 root.put("exceptions", exceptions);
-                root.put("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
+                root.put("dateFormat", format);
                 root.put("locale", locale);
 
                 //Make Command
-                JsonElement element = this.fromApiJsonHelper.parse(root.toString());
-                JsonCommand commandVariations = JsonCommand.from(root.toString(), element, this.fromApiJsonHelper);
+                JsonElement element = this.fromApiJsonHelper.parse(this.fromApiJsonHelper.toJson(root));
+                JsonCommand commandVariations = JsonCommand.from(element.toString(), element, this.fromApiJsonHelper);
 
                 loanScheduleWritePlatformService.addLoanScheduleVariations(createdLoan.getId(), commandVariations);
             }

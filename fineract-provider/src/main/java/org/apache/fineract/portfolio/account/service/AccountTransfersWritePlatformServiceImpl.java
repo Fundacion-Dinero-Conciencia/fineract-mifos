@@ -98,6 +98,7 @@ import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromA
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.amountProjectParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 
@@ -138,7 +139,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             JsonCommand jsonCommand = JsonCommand.from(json, jsonElement, this.fromJsonHelper);
             // TODO -> it´s possible relation to investment transaction with project using projectId getting name
             Long projectId = jsonCommand.longValueOfParameterNamed(AccountTransfersApiConstants.projectIdParamName);
-            BigDecimal amount = jsonCommand.bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.amountProjectParamName);
+            BigDecimal amount = jsonCommand.bigDecimalValueOfParameterNamed(amountProjectParamName);
             changes.put("transaction".concat(String.valueOf((i + 1))), create(jsonCommand).getSavingsId().toString());
             updateStatusProject(projectId, amount);
         }
@@ -201,7 +202,17 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     BigDecimal baseAmount = transactionAmount.divide(
                             BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period > 10 ? 10 : period))),
                             MoneyHelper.getMathContext());
-                    BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage);
+                    final BigDecimal amount = command.bigDecimalValueOfParameterNamed(amountProjectParamName);
+
+                    if (baseAmount.compareTo(amount) != 0) {
+                        final List<ApiParameterError> dataValidationErrors = new ArrayList<>(1);
+                        final String message = "The amount sent for investment does not match the amount registered in the share, please create a new share with the appropriate amount.";
+                        dataValidationErrors.add(ApiParameterError.parameterError("error.msg.transaction.not.equals.amount",
+                                message, "Transfer amount", percentageInvestmentAgent, "Should be: " + amount.doubleValue() + " plus commission"));
+                        throw new PlatformApiDataValidationException(dataValidationErrors);
+                    }
+                    BigDecimal percentageParticipation = promissoryNoteWritePlatformService.calculateParticipationPercentage(loanData.getApprovedPrincipal(), baseAmount).divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
+                    BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage, percentageParticipation);
                     validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
 
                     SavingsAccount belatAccount = this.savingsAccountAssembler
@@ -227,7 +238,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
 
             if (isInvestment) {
 
-                final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
+                final List<ApiParameterError> dataValidationErrors = new ArrayList<>(1);
 
                 if (investmentAgentId == null && percentageInvestmentAgent != null) {
                     final String message = "If an investment agent is provided, the percentage must also be provided.";

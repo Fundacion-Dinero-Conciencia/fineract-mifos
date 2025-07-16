@@ -23,6 +23,8 @@ import com.google.gson.JsonElement;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 
+import java.math.BigDecimal;
+
 public interface PromissoryNoteWritePlatformService {
 
     PromissoryNote createPromissoryNote(JsonElement element);
@@ -30,4 +32,6 @@ public interface PromissoryNoteWritePlatformService {
     void validatePromissoryNoteRequestBody(final JsonCommand command);
 
     CommandProcessingResult addPromissoryNote(JsonCommand command);
+
+    BigDecimal calculateParticipationPercentage(BigDecimal totalBase, BigDecimal totalInvestment);
 }
