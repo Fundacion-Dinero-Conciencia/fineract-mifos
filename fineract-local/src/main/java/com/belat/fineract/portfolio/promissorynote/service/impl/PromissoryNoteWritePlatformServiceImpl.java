@@ -203,7 +203,8 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
         return consecutive;
     }
 
-    private BigDecimal calculateParticipationPercentage(BigDecimal totalFund, BigDecimal totalInvestment) {
+    @Override
+    public BigDecimal calculateParticipationPercentage(BigDecimal totalFund, BigDecimal totalInvestment) {
         if (totalInvestment == null || totalInvestment.compareTo(BigDecimal.ZERO) <= 0) {
             throw new PlatformApiDataValidationException("error.msg.resource.amount",
                     "The amount of the investment should be greater than 0", null);

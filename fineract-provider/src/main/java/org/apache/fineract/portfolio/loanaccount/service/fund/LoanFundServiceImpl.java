@@ -95,11 +95,12 @@ public class LoanFundServiceImpl {
     }
 
     public JsonObject createSavingAccountData(final BigDecimal amount, final Long clientId, final String accountNo,
-            final String currencyCode, final DateTimeFormatter formatter) {
+            final String currencyCode, DateTimeFormatter formatter) {
         JsonObject accountJson = new JsonObject();
         if (amount != null) {
             accountJson.addProperty("maxAllowedDepositLimit", amount);
         }
+        formatter = DateTimeFormatter.ofPattern(DateUtils.DEFAULT_DATE_FORMAT, Locale.ENGLISH);
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
         accountJson.addProperty("locale", Locale.ENGLISH.toString());
         accountJson.addProperty("submittedOnDate", DateUtils.getBusinessLocalDate().format(formatter));
