@@ -38,6 +38,7 @@ dependencies {
     implementation(project(path: ':fineract-report'))
     implementation(project(path: ':fineract-tax'))
     implementation(project(path: ':fineract-local'))
+    implementation 'com.sendgrid:sendgrid-java:4.10.1'
 
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 

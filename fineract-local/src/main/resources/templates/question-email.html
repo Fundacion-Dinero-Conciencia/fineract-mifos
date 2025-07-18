@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>[Chile] Consulta desde plataforma</title>
+</head>
+<body>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff;">
+    <tr>
+        <td align="center" style="padding: 40px 20px;">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px; background-color: #ffffff; padding: 20px; font-family: sans-serif; color: #032A5A;">
+                <tr>
+                    <td align="center">
+                        <img src="https://bancaeticalat.com/wp-content/uploads/bannerEmail.png" alt="Banner" style="width: 100%; max-width: 600px; display: block; border: none; margin-bottom: 20px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: #032A5A;">
+                        <p style="font-size: 16px"><strong>Hola equipo de Inversiones,</strong></p>
+
+                        <p style="font-size: 14px">Un usuario ha enviado una consulta desde la sección de Ayuda de la Plataforma. A continuación, los detalles:</p>
+
+                        <blockquote style="border-left: 4px solid #236195; padding-left: 10px; margin: 40px 0; font-size: 14px" th:text="${question}">
+                            {{question}}
+                        </blockquote>
+
+                        <p style="font-size: 14px">Datos del usuario:</p>
+                        <ul style="font-size: 14px; padding-left: 20px;">
+                            <li><strong>Nombre:</strong> <span th:text="${firstName}">{{firstName}}</span></li>
+                            <li><strong>Apellido:</strong> <span th:text="${lastName}">{{lastName}}</span></li>
+                            <li><strong>Correo electrónico:</strong> <span th:text="${email}">{{email}}</span></li>
+                            <li><strong>Teléfono:</strong> <span th:text="${phone}">{{phone}}</span></li>
+                        </ul>
+
+                        <p style="font-size: 14px; margin-top: 30px">Atentamente,<br><strong>Plataforma BELAT</strong></p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

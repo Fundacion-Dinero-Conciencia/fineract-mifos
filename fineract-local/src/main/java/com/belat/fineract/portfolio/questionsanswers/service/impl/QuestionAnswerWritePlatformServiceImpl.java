@@ -1,5 +1,7 @@
 package com.belat.fineract.portfolio.questionsanswers.service.impl;
 
+import com.belat.fineract.email.service.EmailProperties;
+import com.belat.fineract.email.service.EmailService;
 import com.belat.fineract.portfolio.questionsanswers.api.QuestionAnswerConstants;
 import com.belat.fineract.portfolio.questionsanswers.domain.answer.BelatAnswer;
 import com.belat.fineract.portfolio.questionsanswers.domain.answer.BelatAnswerRepository;
@@ -10,6 +12,8 @@ import com.belat.fineract.portfolio.questionsanswers.service.QuestionAnswerWrite
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
+
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +45,8 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
     private final BelatQuestionRepository belatQuestionRepository;
     private final BelatAnswerRepository belatAnswerRepository;
     private final ClientRepository clientRepository;
+    private final EmailService emailService;
+    private final EmailProperties emailProperties;
 
     @Override
     public CommandProcessingResult createQuestion(JsonCommand command) {
@@ -59,6 +65,11 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
         question.setUser(user);
 
         belatQuestionRepository.saveAndFlush(question);
+        try {
+            emailService.sendEmailWithTemplateThymeleaf(emailProperties.getTo(), question.getTitle(), "question-email.html", Map.of("question", question.getQuestion(), "firstName", user.getFirstname(), "lastName", user.getLastname(), "email", user.getEmailAddress(), "phone", user.getMobileNo()));
+        } catch (IOException e) {
+            log.error("Error al enviar el correo", e);
+        }
 
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(question.getId()).build();
     }
