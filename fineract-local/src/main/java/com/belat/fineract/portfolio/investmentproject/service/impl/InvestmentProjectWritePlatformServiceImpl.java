@@ -216,6 +216,13 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         }
 
         final Long statusCodeId = command.longValueOfParameterNamed(InvestmentProjectConstants.statusIdParamName);
+        final Long creditTypeId = command.longValueOfParameterNamed(InvestmentProjectConstants.creditTypeIdParamName);
+
+        if (creditTypeId != null) {
+            CodeValue creditTypeCodeValue = codeValueRepositoryWrapper.findOneWithNotFoundDetection(creditTypeId);
+            investmentProject.setCreditType(creditTypeCodeValue);
+            investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
+        }
         if (statusCodeId != null) {
 
             final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
@@ -322,7 +329,15 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final Long statusCodeId = command.longValueOfParameterNamed(InvestmentProjectConstants.statusIdParamName);
         final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
+        final Long creditTypeId = command.longValueOfParameterNamed(InvestmentProjectConstants.creditTypeIdParamName);
+        final CodeValue newCreditType = codeValueRepositoryWrapper.findOneWithNotFoundDetection(creditTypeId);
+
         if (!changes.isEmpty() || newStatus != null) {
+
+            if (newCreditType != null) {
+                investmentProject.setCreditType(newCreditType);
+                changes.put(InvestmentProjectConstants.creditTypeIdParamName, newCreditType.getLabel());
+            }
             investmentProject = this.investmentProjectRepository.saveAndFlush(investmentProject);
 
             StatusHistoryProject historyProject = statusHistoryProjectRepository.getLastStatusByInvestmentProjectId(investmentProject.getId());
@@ -335,6 +350,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
             }
         }
+
 
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
