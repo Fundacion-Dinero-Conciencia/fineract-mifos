@@ -1,7 +1,6 @@
 package com.belat.fineract.portfolio.investmentproject.service.impl;
 
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
-import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData.DataCode;
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData.ImageDocument;
 import com.belat.fineract.portfolio.investmentproject.data.StatusHistoryProjectData;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
@@ -16,7 +15,6 @@ import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectR
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
 import com.belat.fineract.useradministration.domain.AppUserRepositoryV2;
 import lombok.RequiredArgsConstructor;
-import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformService;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
@@ -59,7 +57,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     }
 
     @Transactional
-    private List<ImageDocument> retrieveList(Long id) {
+    protected List<ImageDocument> retrieveList(Long id) {
         List<ImageDocument> images = new ArrayList<>();
         List<DocumentData> documents = documentReadPlatformService.retrieveAllDocuments("projects", id);
         documents.forEach(document -> {
@@ -82,14 +80,6 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         InvestmentProjectData projectData = investmentProjectMapper.map(project);
         if (project != null) {
             factoryData(projectData, project, new ArrayList<>());
-            projectData.setImpactDescription(project.getDescription().getImpactDescription());
-            projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
-            projectData.setTeamDescription(project.getDescription().getTeamDescription());
-            projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
-            if (project.getDescription().getSocioEnvironmentalDescription() != null) {
-                projectData.setLittleSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getLittleDescription());
-                projectData.setDetailedSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getDetailedDescription());
-            }
         }
         return projectData;
     }
@@ -102,10 +92,6 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
             if (project != null) {
                 InvestmentProjectData projectData = investmentProjectMapper.map(project);
                 factoryData(projectData, project, projectsData);
-                projectData.setImpactDescription(project.getDescription().getImpactDescription());
-                projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
-                projectData.setTeamDescription(project.getDescription().getTeamDescription());
-                projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
             }
         });
         return projectsData;
@@ -121,10 +107,6 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
             if (project != null) {
                 InvestmentProjectData projectData = investmentProjectMapper.map(project);
                 factoryData(projectData, project, projectsData);
-                projectData.setImpactDescription(project.getDescription().getImpactDescription());
-                projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
-                projectData.setTeamDescription(project.getDescription().getTeamDescription());
-                projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
             }
         });
         return projectsData;
@@ -149,19 +131,9 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         InvestmentProjectData projectData = null;
         if (project != null) {
             projectData = investmentProjectMapper.map(project);
-            if (project != null) {
-                factoryData(projectData, project, new ArrayList<>());
-                projectData.setImpactDescription(project.getDescription().getImpactDescription());
-                projectData.setInstitutionDescription(project.getDescription().getInstitutionDescription());
-                projectData.setTeamDescription(project.getDescription().getTeamDescription());
-                projectData.setFinancingDescription(project.getDescription().getFinancingDescription());
-                if (project.getDescription().getSocioEnvironmentalDescription() != null) {
-                    projectData.setLittleSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getLittleDescription());
-                    projectData.setDetailedSocioEnvironmentalDescription(project.getDescription().getSocioEnvironmentalDescription().getDetailedDescription());
-                }
-                if (project.getAmountToBeFinanced() != null && project.getAmountToBeDelivered() != null) {
-                    projectData.setAvailableTotalAmount(project.getAmountToBeFinanced().subtract(project.getAmountToBeDelivered(), MoneyHelper.getMathContext()));
-                }
+            factoryData(projectData, project, new ArrayList<>());
+            if (project.getAmountToBeFinanced() != null && project.getAmountToBeDelivered() != null) {
+                projectData.setAvailableTotalAmount(project.getAmountToBeFinanced().subtract(project.getAmountToBeDelivered(), MoneyHelper.getMathContext()));
             }
         }
         return projectData;
@@ -202,13 +174,6 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
 
 
     private void factoryData(InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
-        projectData.setOwnerId(project.getOwner().getId());
-        projectData.setOwnerName(project.getOwner().getDisplayName());
-        projectData.setIsActive(project.isActive());
-        projectData.setPeriod(project.getPeriod());
-        DataCode country = new DataCode(project.getCountry().getId(), project.getCountry().getLabel(),
-                project.getCountry().getDescription());
-        projectData.setCountry(country);
         projectData.setImages(retrieveList(project.getId()));
         projectsData.add(projectData);
 
@@ -223,33 +188,6 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         BigDecimal remainingAmount = projectAmount.multiply(remainingPercentage).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
         projectData.setAvailableTotalAmount(remainingAmount);
 
-        List<DataCode> categories = new ArrayList<>();
-        project.getSubCategories().forEach(item -> {
-            if (item != null && item.getCategory() != null) {
-                categories
-                        .add(new DataCode(item.getCategory().getId(), item.getCategory().getLabel(), item.getCategory().getDescription()));
-            }
-        });
-        projectData.setSubCategories(categories);
-        if (project.getLoan() != null) {
-            projectData.setLoanId(project.getLoan().getId());
-        }
-        if (project.getCategory() != null) {
-            projectData.setCategory(
-                    new DataCode(project.getCategory().getId(), project.getCategory().getLabel(), project.getCategory().getDescription()));
-        }
-        if (project.getArea() != null) {
-            projectData.setArea(new DataCode(project.getArea().getId(), project.getArea().getLabel(), project.getArea().getDescription()));
-        }
-
-        List<DataCode> objectives = new ArrayList<>();
-        project.getObjectives().forEach(item -> {
-            if (item != null) {
-                objectives
-                        .add(new DataCode(item.getObjective().getId(), item.getObjective().getLabel(), item.getObjective().getDescription()));
-            }
-        });
-        projectData.setObjectives(objectives);
     }
 
 }

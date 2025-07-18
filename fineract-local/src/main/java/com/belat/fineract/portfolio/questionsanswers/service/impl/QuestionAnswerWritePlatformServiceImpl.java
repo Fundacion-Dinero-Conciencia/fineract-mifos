@@ -18,6 +18,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +35,7 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -42,6 +45,7 @@ import org.springframework.stereotype.Service;
 public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWritePlatformService {
 
     private final FromJsonHelper fromApiJsonHelper;
+    private final ApplicationContext applicationContext;
     private final BelatQuestionRepository belatQuestionRepository;
     private final BelatAnswerRepository belatAnswerRepository;
     private final ClientRepository clientRepository;
@@ -66,7 +70,11 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
 
         belatQuestionRepository.saveAndFlush(question);
         try {
-            emailService.sendEmailWithTemplateThymeleaf(emailProperties.getTo(), question.getTitle(), "question-email.html", Map.of("question", question.getQuestion(), "firstName", user.getFirstname(), "lastName", user.getLastname(), "email", user.getEmailAddress(), "phone", user.getMobileNo()));
+
+            if (emailProperties.isValid()) {
+                emailService.sendEmailWithTemplateThymeleaf(emailProperties.getTo(), question.getTitle(), "question-email.html", Map.of("question", question.getQuestion(), "firstName", user.getFirstname(), "lastName", user.getLastname(), "email", user.getEmailAddress(), "phone", user.getMobileNo()));
+            }
+
         } catch (IOException e) {
             log.error("Error al enviar el correo", e);
         }
