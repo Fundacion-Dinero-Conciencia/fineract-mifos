@@ -573,7 +573,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
         final Collection<CodeValueData> clientNonPersonMainBusinessLineOptions = null;
         final List<EnumOptionData> clientLegalFormOptions = null;
         return ClientData.template(null, null, null, null, narrations, null, null, clientTypeOptions, clientClassificationOptions,
-                clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions, clientLegalFormOptions, null, null, null, null);
+                clientNonPersonConstitutionOptions, clientNonPersonMainBusinessLineOptions, clientLegalFormOptions, null, null, null, null, null);
     }
 
     @Override
