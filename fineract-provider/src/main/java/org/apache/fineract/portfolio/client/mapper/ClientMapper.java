@@ -68,6 +68,7 @@ public interface ClientMapper {
     @Mapping(target = "clientNonPersonMainBusinessLineOptions", ignore = true)
     @Mapping(target = "clientLegalFormOptions", ignore = true)
     @Mapping(target = "familyMemberOptions", ignore = true)
+    @Mapping(target = "documentTypeIdOptions", ignore = true)
     @Mapping(target = "clientNonPersonDetails", ignore = true)
     @Mapping(target = "address", ignore = true)
     @Mapping(target = "isAddressEnabled", ignore = true)

@@ -31,11 +31,12 @@ public class ClientApiCollectionConstants extends ClientApiConstants {
                     lastnameParamName, fullnameParamName, officeIdParamName, activeParamName, activationDateParamName, staffIdParamName,
                     submittedOnDateParamName, savingsProductIdParamName, dateOfBirthParamName, genderIdParamName, clientTypeIdParamName,
                     clientClassificationIdParamName, clientNonPersonDetailsParamName, displaynameParamName, legalFormIdParamName,
-                    datatables, isStaffParamName, loanLimitBalanceParamName, mnemonicParamName));
+                    datatables, isStaffParamName, loanLimitBalanceParamName, mnemonicParamName, identifiersParamName));
 
     protected static final Set<String> CLIENT_NON_PERSON_CREATE_REQUEST_DATA_PARAMETERS = new HashSet<>(
             Arrays.asList(familyMembers, address, localeParamName, dateFormatParamName, incorpNumberParamName, remarksParamName,
-                    incorpValidityTillParamName, constitutionIdParamName, mainBusinessLineIdParamName, datatables, mnemonicParamName));
+                    incorpValidityTillParamName, constitutionIdParamName, mainBusinessLineIdParamName, datatables, mnemonicParamName,
+                    identifiersParamName));
 
     protected static final Set<String> CLIENT_UPDATE_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(localeParamName,
             dateFormatParamName, accountNoParamName, externalIdParamName, mobileNoParamName, emailAddressParamName, firstnameParamName,
