@@ -198,11 +198,15 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId)
                             .getId();
                     LoanAccountData loanData = loanReadPlatformService.retrieveOne(loanAccountId);
-                    final Double period = loanData.getTermInMonths();
-                    BigDecimal baseAmount = transactionAmount.divide(
-                            BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period > 10 ? 10 : period))),
-                            MoneyHelper.getMathContext());
+                    BigDecimal period = loanData.getTermInMonths();
+                    if (period.compareTo(BigDecimal.TEN) > 0) {
+                        period = BigDecimal.TEN;
+                    }
                     final BigDecimal amount = command.bigDecimalValueOfParameterNamed(amountProjectParamName);
+                    BigDecimal percentageParticipation = promissoryNoteWritePlatformService.calculateParticipationPercentage(loanData.getApprovedPrincipal(), amount).divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
+                    BigDecimal baseAmount = transactionAmount.divide(
+                            BigDecimal.ONE.add(percentageParticipation.multiply(feePercentage.multiply(period))),
+                            MoneyHelper.getMathContext());
 
                     if (baseAmount.compareTo(amount) != 0) {
                         final List<ApiParameterError> dataValidationErrors = new ArrayList<>(1);
@@ -211,7 +215,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                                 message, "Transfer amount", percentageInvestmentAgent, "Should be: " + amount.doubleValue() + " plus commission"));
                         throw new PlatformApiDataValidationException(dataValidationErrors);
                     }
-                    BigDecimal percentageParticipation = promissoryNoteWritePlatformService.calculateParticipationPercentage(loanData.getApprovedPrincipal(), baseAmount).divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
+
                     BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage, percentageParticipation);
                     validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
 
