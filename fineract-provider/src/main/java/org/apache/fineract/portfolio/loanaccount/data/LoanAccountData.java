@@ -29,6 +29,7 @@ import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.dataqueries.data.DatatableData;
 import org.apache.fineract.organisation.monetary.data.CurrencyData;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.organisation.staff.data.StaffData;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 import org.apache.fineract.portfolio.accountdetails.data.LoanAccountSummaryData;
@@ -52,6 +53,7 @@ import org.apache.fineract.portfolio.note.data.NoteData;
 import org.apache.fineract.portfolio.rate.data.RateData;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -667,13 +669,14 @@ public class LoanAccountData {
         return LoanStatus.fromInt(getStatus().getId().intValue()).isActive();
     }
 
-    public Double getTermInMonths() {
+    public BigDecimal getTermInMonths() {
+        MathContext mc = MoneyHelper.getMathContext();
         if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.DAYS.getValue())) {
-            return (double) (this.termFrequency / 30);
+            return BigDecimal.valueOf(this.termFrequency).divide(BigDecimal.valueOf(30), mc);
         } else if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.MONTHS.getValue())) {
-            return (double) this.termFrequency;
+            return BigDecimal.valueOf(this.termFrequency);
         } else if (this.termPeriodFrequencyType.getId().intValue() == (PeriodFrequencyType.YEARS.getValue())) {
-            return (double) (this.termFrequency / 12);
+            return BigDecimal.valueOf(this.termFrequency).divide(BigDecimal.valueOf(12), mc);
         } else {
             throw new PlatformApiDataValidationException("error.msg.period.frequency",
                     "Error obtaining the credit period frequency to calculate the commission calculation", null);

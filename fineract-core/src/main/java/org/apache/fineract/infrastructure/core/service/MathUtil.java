@@ -520,11 +520,9 @@ public final class MathUtil {
      *            amount in settings
      * @return value to CUP percentage
      */
-    public static BigDecimal calculateCUPValue(Double periodMonths, BigDecimal investmentAmount, BigDecimal percentageValue, BigDecimal percentageParticipation ) {
-        if (periodMonths > 10) {
-            periodMonths = 10d;
-        }
-        return percentageValue.multiply(BigDecimal.valueOf(periodMonths).multiply(investmentAmount), MoneyHelper.getMathContext()).multiply(percentageParticipation, MoneyHelper.getMathContext());
+    public static BigDecimal calculateCUPValue(BigDecimal periodMonths, BigDecimal investmentAmount, BigDecimal percentageValue, BigDecimal percentageParticipation ) {
+
+        return percentageValue.multiply(periodMonths.multiply(investmentAmount)).multiply(percentageParticipation, MoneyHelper.getMathContext());
     }
 
 

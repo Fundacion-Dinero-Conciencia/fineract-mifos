@@ -83,4 +83,5 @@
   <include relativeToChangelogFile="true" file="parts/9059_change_column_type_for_bank_details_data_table.xml"/>
   <include relativeToChangelogFile="true" file="parts/9060_add_family_members_extra_columns.xml"/>
   <include relativeToChangelogFile="true" file="parts/9061_add_colum_credit_type_investment_project.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9062_configure_payment_types.xml"/>
 </databaseChangeLog>
