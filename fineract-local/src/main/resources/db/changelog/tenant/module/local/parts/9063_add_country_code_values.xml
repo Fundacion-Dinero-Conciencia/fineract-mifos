@@ -1,0 +1,3224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="1" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Argentina')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Argentina"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="1"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bolivia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bolivia"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="2"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Brasil')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Brasil"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Chile')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Chile"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="4"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Colombia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Colombia"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="5"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Costa Rica')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Costa Rica"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="6"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="7" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Ecuador')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Ecuador"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="7"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="8" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('El Salvador')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="El Salvador"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="8"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="9" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Guatemala')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Guatemala"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="9"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="10" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Honduras')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Honduras"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="10"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="11" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('México')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="México"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="11"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="12" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Nicaragua')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Nicaragua"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="12"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="13" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Panamá')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Panamá"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="13"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="14" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Paraguay')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Paraguay"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="14"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="15" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Perú')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Perú"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="15"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="16" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Uruguay')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Uruguay"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="16"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="17" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Venezuela')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Venezuela"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="17"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="18" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Afganistán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Afganistán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="101"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="19" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Albania')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Albania"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="102"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Alemania')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Alemania"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="103"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="21" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Andorra')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Andorra"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="104"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="22" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Angola')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Angola"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="105"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="23" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Antigua y Barbuda')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Antigua y Barbuda"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="106"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="24" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Arabia Saudita')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Arabia Saudita"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="107"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="25" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Argelia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Argelia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="108"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="26" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Armenia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Armenia"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="109"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="27" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Australia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Australia"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="110"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="28" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Austria')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Austria"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="111"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="29" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Azerbaiyán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Azerbaiyán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="112"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="30" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bahamas')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bahamas"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="114"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="31" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bangladés')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bangladés"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="115"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="32" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Barbados')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Barbados"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="116"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="33" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Baréin')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Baréin"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="117"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="34" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bélgica')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bélgica"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="118"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="35" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Belice')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Belice"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="119"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="36" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Benín')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Benín"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="120"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="37" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bielorrusia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bielorrusia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="121"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="38" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Birmania(Myanmar)')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Birmania(Myanmar)"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="122"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="39" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bosniay Herzegovina')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bosniay Herzegovina"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="123"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="40" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Botsuana')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Botsuana"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="124"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="41" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Brunéi')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Brunéi"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="125"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="42" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bulgaria')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bulgaria"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="126"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="43" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Burkina Faso')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Burkina Faso"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="127"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="44" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Burundi')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Burundi"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="128"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="45" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Bután')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Bután"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="129"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="46" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Cabo Verde')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Cabo Verde"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="130"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="47" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Camboya')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Camboya"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="131"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="48" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Camerún')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Camerún"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="132"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="49" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Canadá')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Canadá"/>
+            <column name="code_description" value="Norteamérica"/>
+            <column name="order_position" value="133"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="50" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Chad')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Chad"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="134"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="51" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('China')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="China"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="135"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="52" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Chipre')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Chipre"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="137"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="53" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Ciudad del Vaticano')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Ciudad del Vaticano"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="138"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="54" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Comoras')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Comoras"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="139"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="55" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Corea del Norte')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Corea del Norte"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="140"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="56" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Corea del Sur')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Corea del Sur"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="141"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="57" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Costa de Marfil')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Costa de Marfil"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="142"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="58" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Croacia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Croacia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="143"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="59" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Cuba')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Cuba"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="144"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="60" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Dinamarca')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Dinamarca"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="145"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="61" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Dominica')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Dominica"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="146"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="62" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Egipto')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Egipto"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="147"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="63" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Emiratos Árabes Unidos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Emiratos Árabes Unidos"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="148"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="64" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Eritrea')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Eritrea"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="149"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="65" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Eslovaquia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Eslovaquia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="150"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="66" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Eslovenia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Eslovenia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="151"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="67" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('España')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="España"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="152"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="68" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Estados Federados de Micronesia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Estados Federados de Micronesia"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="153"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="69" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Estados Unidos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Estados Unidos"/>
+            <column name="code_description" value="Norteamérica"/>
+            <column name="order_position" value="154"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="70" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Estonia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Estonia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="155"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="71" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Etiopía')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Etiopía"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="156"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="72" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Filipinas')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Filipinas"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="157"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="73" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Finlandia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Finlandia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="158"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="74" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Fiyi')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Fiyi"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="159"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="75" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Francia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Francia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="160"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="76" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Gabón')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Gabón"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="161"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="77" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Gambia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Gambia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="162"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="78" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Georgia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Georgia"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="163"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="79" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Ghana')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Ghana"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="165"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="80" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Granada')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Granada"/>
+            <column name="code_description" value="Centroamérica"/>
+            <column name="order_position" value="166"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="81" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Grecia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Grecia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="167"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="82" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Guinea')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Guinea"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="168"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="83" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Guinea Ecuatorial')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Guinea Ecuatorial"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="169"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="84" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Guinea-Bisáu')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Guinea-Bisáu"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="170"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="85" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Guyana')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Guyana"/>
+            <column name="code_description" value="Centroamérica"/>
+            <column name="order_position" value="171"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="86" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Haití')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Haití"/>
+            <column name="code_description" value="Centroamérica"/>
+            <column name="order_position" value="172"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="87" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Hungría')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Hungría"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="173"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="88" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('India')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="India"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="174"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="89" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Indonesia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Indonesia"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="175"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="90" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Irak')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Irak"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="176"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="91" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Irán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Irán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="177"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="92" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Irlanda')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Irlanda"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="178"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="93" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Islandia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Islandia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="179"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="94" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Islas Marshall')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Islas Marshall"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="180"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="95" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Islas Salomón')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Islas Salomón"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="181"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="96" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Israel')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Israel"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="182"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="97" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Italia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Italia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="183"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="98" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Jamaica')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Jamaica"/>
+            <column name="code_description" value="Centroamérica"/>
+            <column name="order_position" value="184"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="99" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Japón')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Japón"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="185"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="100" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Jordania')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Jordania"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="186"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="101" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Kazajistán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Kazajistán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="187"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="102" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Kenia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Kenia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="189"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="103" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Kirguistán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Kirguistán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="190"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="104" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Kiribati')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Kiribati"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="191"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="105" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Kuwait')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Kuwait"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="192"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="106" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Laos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Laos"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="193"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="107" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Lesoto')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Lesoto"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="194"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="108" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Letonia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Letonia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="195"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="109" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Líbano')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Líbano"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="196"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="110" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Liberia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Liberia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="197"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="111" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Libia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Libia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="198"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="112" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Liechtenstein')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Liechtenstein"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="199"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="113" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Lituania')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Lituania"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="200"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="114" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Luxemburgo')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Luxemburgo"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="201"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="115" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Macedonia del Norte')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Macedonia del Norte"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="202"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="116" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Madagascar')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Madagascar"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="203"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="117" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Malasia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Malasia"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="204"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="118" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Malawi')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Malawi"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="205"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="119" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Maldivas')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Maldivas"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="206"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="120" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Malí')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Malí"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="207"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="121" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Malta')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Malta"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="208"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="122" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Marruecos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Marruecos"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="209"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="123" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Mauricio')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Mauricio"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="210"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="124" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Mauritania')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Mauritania"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="211"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="125" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Moldavia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Moldavia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="212"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="126" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Mónaco')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Mónaco"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="213"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="127" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Mongolia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Mongolia"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="214"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="128" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Montenegro')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Montenegro"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="215"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="129" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Mozambique')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Mozambique"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="216"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="130" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Namibia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Namibia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="217"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="131" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Nauru')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Nauru"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="218"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="132" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Nepal')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Nepal"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="219"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="133" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Níger')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Níger"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="220"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="134" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Nigeria')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Nigeria"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="221"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="135" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Noruega')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Noruega"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="222"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="136" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Nueva Zelanda')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Nueva Zelanda"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="223"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="137" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Omán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Omán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="224"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="138" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Países Bajos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Países Bajos"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="225"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="139" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Pakistán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Pakistán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="226"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="140" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Palaos')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Palaos"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="227"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="141" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Palestina')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Palestina"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="228"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="142" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Papúa Nueva Guinea')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Papúa Nueva Guinea"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="229"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="143" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Polonia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Polonia"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="230"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="144" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Portugal')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Portugal"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="231"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="145" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Qatar')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Qatar"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="232"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="146" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Reino Unido')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Reino Unido"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="233"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="147" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('República Centroafricana')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="República Centroafricana"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="234"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="148" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('República Checa')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="República Checa"/>
+            <column name="code_description" value="Europa"/>
+            <column name="order_position" value="235"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="149" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('República del Congo')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="República del Congo"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="236"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="150" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('República Democrática del Congo')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="República Democrática del Congo"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="237"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="151" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('República Dominicana')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="República Dominicana"/>
+            <column name="code_description" value="Latinoamérica"/>
+            <column name="order_position" value="238"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="152" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Ruanda')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Ruanda"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="239"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="153" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Rusia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Rusia"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="240"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="154" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Samoa')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Samoa"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="241"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="155" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('San Cristóbal y Nieves')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="San Cristóbal y Nieves"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="242"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="156" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('San Vicente y las Granadinas')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="San Vicente y las Granadinas"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="243"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="157" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Santa Lucía')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Santa Lucía"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="244"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="158" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Santo Tomé y Príncipe')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Santo Tomé y Príncipe"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="245"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="159" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Senegal')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Senegal"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="246"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="160" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Seychelles')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Seychelles"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="247"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="161" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Sierra Leona')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Sierra Leona"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="248"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="162" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Singapur')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Singapur"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="249"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="163" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Siria')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Siria"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="250"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="164" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Somalia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Somalia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="251"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="165" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Sri Lanka')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Sri Lanka"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="252"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="166" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Suazilandia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Suazilandia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="253"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="167" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Sudáfrica')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Sudáfrica"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="254"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="168" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Sudán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Sudán"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="255"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="169" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Sudán del Sur')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Sudán del Sur"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="256"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="170" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Surinam')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Surinam"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="257"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="171" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Tailandia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Tailandia"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="258"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="172" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Tanzania')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Tanzania"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="259"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="173" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Tayikistán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Tayikistán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="260"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="174" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Timor Oriental')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Timor Oriental"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="261"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="175" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Togo')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Togo"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="262"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="176" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Tonga')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Tonga"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="263"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="177" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Trinidad y Tobago')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Trinidad y Tobago"/>
+            <column name="code_description" value="Centroámerica"/>
+            <column name="order_position" value="264"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="178" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Túnez')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Túnez"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="265"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="179" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Turkmenistán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Turkmenistán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="266"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="180" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Turquía')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Turquía"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="267"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="181" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Tuvalu y Vanuatu')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Tuvalu y Vanuatu"/>
+            <column name="code_description" value="Oceanía"/>
+            <column name="order_position" value="268"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="182" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Uganda')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Uganda"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="269"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="183" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Uzbekistán')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Uzbekistán"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="270"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="184" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Vietnam')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Vietnam"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="271"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="185" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Yemen')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Yemen"/>
+            <column name="code_description" value="Asia"/>
+            <column name="order_position" value="272"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="186" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Yibuti')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Yibuti"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="273"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="187" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Zambia')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Zambia"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="274"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="188" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'COUNTRY')
+                AND lower(code_value) = lower('Zimbabue')
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'COUNTRY')"/>
+            <column name="code_value" value="Zimbabue"/>
+            <column name="code_description" value="Africa"/>
+            <column name="order_position" value="275"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
+
+

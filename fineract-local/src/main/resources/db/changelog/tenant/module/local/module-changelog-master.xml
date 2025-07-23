@@ -84,4 +84,6 @@
   <include relativeToChangelogFile="true" file="parts/9060_add_family_members_extra_columns.xml"/>
   <include relativeToChangelogFile="true" file="parts/9061_add_colum_credit_type_investment_project.xml"/>
   <include relativeToChangelogFile="true" file="parts/9062_configure_payment_types.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9063_add_country_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9064_update_for_new_code_values_usages.xml"/>
 </databaseChangeLog>
