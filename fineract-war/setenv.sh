@@ -23,7 +23,7 @@ export FINERACT_NODE_ID="1"
 export FINERACT_HIKARI_DRIVER_SOURCE_CLASS_NAME="org.postgresql.Driver"
 export FINERACT_HIKARI_JDBC_URL="jdbc:postgresql://localhost:5432/fineract_tenants"
 export FINERACT_HIKARI_USERNAME="root"
-export FINERACT_HIKARI_PASSWORD="skdcnwauicn2ucnaecasdsajdnizucawencascdca"
+export FINERACT_HIKARI_PASSWORD="root"
 # ... following variables are optional; "application.properties" contains reasonable defaults (same as here)
 export FINERACT_HIKARI_MINIMUM_IDLE="3"
 export FINERACT_HIKARI_MAXIMUM_POOL_SIZE="10"

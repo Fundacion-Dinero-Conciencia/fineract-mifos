@@ -26,6 +26,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "littleSocioEnvironmentalDescription", source = "description.socioEnvironmentalDescription.littleDescription")
     @Mapping(target = "detailedSocioEnvironmentalDescription", source = "description.socioEnvironmentalDescription.detailedDescription")
     @Mapping(target = "images", ignore = true)
+    @Mapping(target = "cover", ignore = true)
     @Mapping(target = "logo", ignore = true)
     @Mapping(target = "availableTotalAmount", ignore = true)
     @Mapping(target = "occupancyPercentage", ignore = true)

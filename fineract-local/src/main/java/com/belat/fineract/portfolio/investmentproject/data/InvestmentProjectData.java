@@ -26,6 +26,7 @@ public class InvestmentProjectData {
     private BigDecimal rate;
     private BigDecimal occupancyPercentage;
     private CodeValueData country;
+    private ImageDocument cover;
     private List<ImageDocument> images;
     private String logo;
     private List<InvestmentProjectCategoryData> subCategories;
@@ -50,5 +51,6 @@ public class InvestmentProjectData {
 
         private String name;
         private String url;
+        private String order;
     }
 }
