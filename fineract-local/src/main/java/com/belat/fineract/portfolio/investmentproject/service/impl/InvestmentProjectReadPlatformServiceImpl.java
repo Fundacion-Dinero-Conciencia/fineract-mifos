@@ -16,6 +16,7 @@ import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipa
 import com.belat.fineract.useradministration.domain.AppUserRepositoryV2;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
+import org.apache.fineract.infrastructure.documentmanagement.data.ImageData;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.useradministration.domain.AppUser;
@@ -27,6 +28,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,13 +59,33 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     }
 
     @Transactional
-    protected List<ImageDocument> retrieveList(Long id) {
+    protected void setImageData(InvestmentProjectData projectData) {
+        List<ImageDocument> images = new ArrayList<>();
+        List<DocumentData> documents = documentReadPlatformService.retrieveAllDocuments("projects", projectData.getId());
+        documents.forEach(document -> {
+            if (document != null) {
+                ImageDocument imageDocument = new ImageDocument(document.getFileName(),
+                        applicationContext.getEnvironment().getProperty("fineract.s3.images.url").concat(document.getLocation()),
+                        document.getDescription());
+                if ("Cover".equals(document.getDescription())) {
+                    projectData.setCover(imageDocument);
+                } else {
+                    images.add(imageDocument);
+                }
+            }
+        });
+        projectData.setImages(images);
+    }
+
+    @Transactional
+    protected List<ImageDocument> retrieveImageList(Long id) {
         List<ImageDocument> images = new ArrayList<>();
         List<DocumentData> documents = documentReadPlatformService.retrieveAllDocuments("projects", id);
         documents.forEach(document -> {
             if (document != null) {
                 images.add(new ImageDocument(document.getFileName(),
-                        applicationContext.getEnvironment().getProperty("fineract.s3.images.url").concat(document.getLocation())));
+                        applicationContext.getEnvironment().getProperty("fineract.s3.images.url").concat(document.getLocation()),
+                        document.getDescription()));
             }
         });
         return images;
@@ -174,7 +196,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
 
 
     private void factoryData(InvestmentProjectData projectData, InvestmentProject project, List<InvestmentProjectData> projectsData) {
-        projectData.setImages(retrieveList(project.getId()));
+        setImageData(projectData);
         projectsData.add(projectData);
 
         BigDecimal projectParticipation = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(project.getId());
