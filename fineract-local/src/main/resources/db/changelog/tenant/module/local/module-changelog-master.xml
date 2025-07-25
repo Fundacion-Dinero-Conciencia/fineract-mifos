@@ -86,4 +86,5 @@
   <include relativeToChangelogFile="true" file="parts/9062_configure_payment_types.xml"/>
   <include relativeToChangelogFile="true" file="parts/9063_add_country_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9064_update_for_new_code_values_usages.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9065_add_transactions_freeze_reason_values.xml"/>
 </databaseChangeLog>
