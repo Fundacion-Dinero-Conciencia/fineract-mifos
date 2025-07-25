@@ -59,6 +59,19 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
         return this.jdbcTemplate.query(sql, mapper, new Object[] { entityType, entityId }); // NOSONAR
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+    @Override
+    public List<DocumentData> retrieveAllDocumentsByDescriptionOrder(String entityType, Long entityId) {
+        this.context.authenticatedUser();
+
+        // TODO verify if the entities are valid and a user
+        // has data
+        // scope for the particular entities
+        final DocumentMapper mapper = new DocumentMapper(false, true);
+        final String sql = "select " + mapper.schema() + " order by d.description asc";
+        return this.jdbcTemplate.query(sql, mapper, new Object[] { entityType, entityId }); // NOSONAR
+    }
+
     @Override
     public FileData retrieveFileData(final String entityType, final Long entityId, final Long documentId) {
         try {

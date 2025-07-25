@@ -61,7 +61,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     @Transactional
     protected void setImageData(InvestmentProjectData projectData) {
         List<ImageDocument> images = new ArrayList<>();
-        List<DocumentData> documents = documentReadPlatformService.retrieveAllDocuments("projects", projectData.getId());
+        List<DocumentData> documents = documentReadPlatformService.retrieveAllDocumentsByDescriptionOrder("projects", projectData.getId());
         documents.forEach(document -> {
             if (document != null) {
                 ImageDocument imageDocument = new ImageDocument(document.getFileName(),
@@ -80,7 +80,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     @Transactional
     protected List<ImageDocument> retrieveImageList(Long id) {
         List<ImageDocument> images = new ArrayList<>();
-        List<DocumentData> documents = documentReadPlatformService.retrieveAllDocuments("projects", id);
+        List<DocumentData> documents = documentReadPlatformService.retrieveAllDocumentsByDescriptionOrder("projects", id);
         documents.forEach(document -> {
             if (document != null) {
                 images.add(new ImageDocument(document.getFileName(),
