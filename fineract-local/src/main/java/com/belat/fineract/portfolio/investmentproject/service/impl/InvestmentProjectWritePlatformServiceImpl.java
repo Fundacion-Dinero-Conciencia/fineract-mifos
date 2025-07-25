@@ -54,7 +54,6 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.service.LoanApplicationWritePlatformService;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -233,9 +232,11 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         }
         Long basedInLoanProductId = command.longValueOfParameterNamed(InvestmentProjectConstants.basedInLoanProductIdParamName);
 
+        final Long loanPurposeId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanPurposeIdParamName);
+
         // Build loan data
         JsonObject loanJson = createLoanAccountData(investmentProject.getOwner().getId(), basedInLoanProductId, investmentProject.getAmount(),
-                investmentProject.getRate(), investmentProject.getPeriod(), mnemonic);
+                investmentProject.getRate(), investmentProject.getPeriod(), mnemonic, loanPurposeId);
 
         JsonCommand loanCommand = JsonCommand.from(String.valueOf(loanJson), JsonParser.parseString(loanJson.toString()),
                 command.getFromApiJsonHelper());
@@ -568,7 +569,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
     }
 
     private JsonObject createLoanAccountData(final Long clientId, final Long loanProductId, final BigDecimal amount,
-                                             final BigDecimal interest, final Integer periods, final String mnemonic) {
+                                             final BigDecimal interest, final Integer periods, final String mnemonic,
+                                             final Long loanPurposeId) {
         JsonObject accountJson = new JsonObject();
         // To format date in specific format
         DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
@@ -617,6 +619,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         accountJson.addProperty("principal", amount);
         accountJson.addProperty("allowPartialPeriodInterestCalcualtion", loanProductData.getAllowPartialPeriodInterestCalculation());
         accountJson.addProperty("accountNo", mnemonic);
+        accountJson.addProperty("loanPurposeId", loanPurposeId);
         return accountJson;
     }
 }
