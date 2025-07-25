@@ -26,6 +26,8 @@ public interface DocumentReadPlatformService {
 
     List<DocumentData> retrieveAllDocuments(String entityType, Long entityId);
 
+    List<DocumentData> retrieveAllDocumentsByDescriptionOrder(String entityType, Long entityId);
+
     FileData retrieveFileData(String entityType, Long entityId, Long documentId);
 
     DocumentData retrieveDocument(String entityType, Long entityId, Long documentId);
