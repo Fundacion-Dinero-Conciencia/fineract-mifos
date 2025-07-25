@@ -179,19 +179,19 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
                                 principalEarned = principalEarned.add(item.getTransferAmount());
                             }
                         }
-                        PortfolioAccountData accountData = savingsAccountReadPlatformService.retriveSavingsLinkedAssociation(promissoryNote.getFundSavingsAccount().getId());
-                        if (accountData != null) {
-                            Optional <Loan> loan = loanRepository.findById(accountData.getId()).stream().findFirst();
-                            if (loan.isPresent()) {
-                                BigDecimal totalOutstanding = loanReadPlatformServiceCommon.getLoanTotalExpectedRepaymentDerived(loan.get().getId());
+                    }
+                    PortfolioAccountData accountData = savingsAccountReadPlatformService.retriveSavingsLinkedAssociation(promissoryNote.getFundSavingsAccount().getId());
+                    if (accountData != null) {
+                        Optional <Loan> loan = loanRepository.findById(accountData.getId()).stream().findFirst();
+                        if (loan.isPresent()) {
+                            BigDecimal totalOutstanding = loanReadPlatformServiceCommon.getLoanTotalExpectedRepaymentDerived(loan.get().getId());
 
-                                BigDecimal participationValue = totalOutstanding
-                                        .multiply(promissoryNote.getPercentageShare())
-                                        .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+                            BigDecimal participationValue = totalOutstanding
+                                    .multiply(promissoryNote.getPercentageShare())
+                                    .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
 
-                                pendingAmount = pendingAmount.add(participationValue);
+                            pendingAmount = pendingAmount.add(participationValue);
 
-                            }
                         }
                     }
                 }
