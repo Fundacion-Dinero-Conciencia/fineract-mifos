@@ -202,14 +202,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
         InvestmentProject finalInvestmentProject = investmentProject;
         if (subcategories != null && !subcategories.isEmpty()) {
-            List<CodeValue> codeSubCategories = getInvestmentProjectCategoryData(subcategories);
+            List<CodeValue> codeSubCategories = getCodevaluesDataFromArray(subcategories);
             codeSubCategories
                     .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         }
         final String objectives = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
         if (objectives != null && !objectives.isEmpty()) {
-            List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectives);
+            List<CodeValue> codeObjectives = getCodevaluesDataFromArray(objectives);
             codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject)));
 
         }
@@ -317,14 +317,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         List<InvestmentProjectCategory> subCategoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
         subCategoriesList.forEach(investmentProjectCategoryRepository::delete);
         final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
-        List<CodeValue> codeCategories = getInvestmentProjectCategoryData(subCategoriesString);
+        List<CodeValue> codeCategories = getCodevaluesDataFromArray(subCategoriesString);
         InvestmentProject finalInvestmentProject = investmentProject;
         codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         List<InvestmentProjectObjective> objectivesList = investmentProjectObjectiveRepository.retrieveByProjectId(investmentProject.getId());
         objectivesList.forEach(investmentProjectObjectiveRepository::delete);
         final String objectivesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
-        List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectivesString);
+        List<CodeValue> codeObjectives = getCodevaluesDataFromArray(objectivesString);
         InvestmentProject finalInvestmentProject1 = investmentProject;
         codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject1)));
 
@@ -548,13 +548,20 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         }
     }
 
-    private List<CodeValue> getInvestmentProjectCategoryData(String categories) {
-        List<CodeValue> codeCategories = new ArrayList<>();
-        List<Long> categoriesId = getIdsFromJsonString(categories);
-        if (!categoriesId.isEmpty()) {
-            categoriesId.forEach(item -> codeCategories.add(codeValueRepositoryWrapper.findOneWithNotFoundDetection(item)));
+    private List<CodeValue> getCodevaluesDataFromArray(String array) {
+        List<CodeValue> codeValues = new ArrayList<>();
+        List<Long> categoriesId = new ArrayList<>();
+        if (array != null && !array.isEmpty()) {
+            categoriesId = getIdsFromJsonString(array);
         }
-        return codeCategories;
+        if (!categoriesId.isEmpty()) {
+            categoriesId.forEach(item -> {
+                if (item != null) {
+                    codeValues.add(codeValueRepositoryWrapper.findOneWithNotFoundDetection(item));
+                }
+            });
+        }
+        return codeValues;
     }
 
     private List<Long> getIdsFromJsonString(String list) {
