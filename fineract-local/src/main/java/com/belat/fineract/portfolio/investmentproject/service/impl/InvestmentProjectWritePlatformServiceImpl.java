@@ -15,6 +15,7 @@ import com.belat.fineract.portfolio.investmentproject.domain.statushistory.Statu
 import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjectNotFoundException;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
@@ -202,14 +203,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
         InvestmentProject finalInvestmentProject = investmentProject;
         if (subcategories != null && !subcategories.isEmpty()) {
-            List<CodeValue> codeSubCategories = getCodevaluesDataFromArray(subcategories);
+            List<CodeValue> codeSubCategories = getCodeValuesDataFromArray(subcategories);
             codeSubCategories
                     .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         }
         final String objectives = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
         if (objectives != null && !objectives.isEmpty()) {
-            List<CodeValue> codeObjectives = getCodevaluesDataFromArray(objectives);
+            List<CodeValue> codeObjectives = getCodeValuesDataFromArray(objectives);
             codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject)));
 
         }
@@ -317,14 +318,14 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         List<InvestmentProjectCategory> subCategoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
         subCategoriesList.forEach(investmentProjectCategoryRepository::delete);
         final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
-        List<CodeValue> codeCategories = getCodevaluesDataFromArray(subCategoriesString);
+        List<CodeValue> codeCategories = getCodeValuesDataFromArray(subCategoriesString);
         InvestmentProject finalInvestmentProject = investmentProject;
         codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         List<InvestmentProjectObjective> objectivesList = investmentProjectObjectiveRepository.retrieveByProjectId(investmentProject.getId());
         objectivesList.forEach(investmentProjectObjectiveRepository::delete);
         final String objectivesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
-        List<CodeValue> codeObjectives = getCodevaluesDataFromArray(objectivesString);
+        List<CodeValue> codeObjectives = getCodeValuesDataFromArray(objectivesString);
         InvestmentProject finalInvestmentProject1 = investmentProject;
         codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject1)));
 
@@ -548,31 +549,23 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         }
     }
 
-    private List<CodeValue> getCodevaluesDataFromArray(String array) {
+    private List<CodeValue> getCodeValuesDataFromArray(String array) {
         List<CodeValue> codeValues = new ArrayList<>();
-        List<Long> categoriesId = new ArrayList<>();
-        if (array != null && !array.isEmpty()) {
-            categoriesId = getIdsFromJsonString(array);
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> categoriesId;
+        try {
+            categoriesId = objectMapper.readValue(array == null || array.isBlank() || array.matches("\\[,*\\]") ? "[]" : array, new TypeReference<List<String>>() {});
+        } catch (JsonProcessingException e) {
+            throw new GeneralPlatformDomainRuleException("err.msg.obtain.list.from.string", "Error when get list from string");
         }
         if (!categoriesId.isEmpty()) {
             categoriesId.forEach(item -> {
                 if (item != null) {
-                    codeValues.add(codeValueRepositoryWrapper.findOneWithNotFoundDetection(item));
+                    codeValues.add(codeValueRepositoryWrapper.findOneWithNotFoundDetection(Long.valueOf(item)));
                 }
             });
         }
         return codeValues;
-    }
-
-    private List<Long> getIdsFromJsonString(String list) {
-        List<Long> categoriesId = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            categoriesId = objectMapper.readValue(list, new TypeReference<List<Long>>() {});
-        } catch (IOException e) {
-            throw new GeneralPlatformDomainRuleException("err.msg.obtain.long.list.from.string", "Error when get long list from string");
-        }
-        return categoriesId;
     }
 
     private JsonObject createLoanAccountData(final Long clientId, final Long loanProductId, final BigDecimal amount,
