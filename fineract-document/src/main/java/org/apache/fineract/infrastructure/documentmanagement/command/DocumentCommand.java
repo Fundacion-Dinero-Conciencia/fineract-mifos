@@ -38,11 +38,14 @@ public class DocumentCommand {
     private String location;
     private Integer storageType;
     private LocalDate expirationDate;
+    private Long documentClassId;
+    private Long documentTypeId;
 
     private final Set<String> modifiedParameters;
 
     public DocumentCommand(final Set<String> modifiedParameters, final Long id, final String parentEntityType, final Long parentEntityId,
-            final String name, final String fileName, final Long size, final String type, final String description, final String location) {
+            final String name, final String fileName, final Long size, final String type, final String description, final String location,
+            final Long documentClassId, final Long documentTypeId) {
         this.modifiedParameters = modifiedParameters;
         this.id = id;
         this.parentEntityType = parentEntityType;
@@ -53,6 +56,8 @@ public class DocumentCommand {
         this.type = type;
         this.description = description;
         this.location = location;
+        this.documentClassId = documentClassId;
+        this.documentTypeId = documentTypeId;
     }
 
     public Long getId() {
@@ -127,6 +132,22 @@ public class DocumentCommand {
         return this.expirationDate;
     }
 
+    public void setDocumentClassId(final Long documentClassId) {
+        this.documentClassId = documentClassId;
+    }
+
+    public Long getDocumentClassId() {
+        return this.documentClassId;
+    }
+
+    public void setDocumentTypeId(final Long documentTypeId) {
+        this.documentTypeId = documentTypeId;
+    }
+
+    public Long getDocumentTypeId() {
+        return this.documentTypeId;
+    }
+
     public boolean isNameChanged() {
         return this.modifiedParameters.contains("name");
     }
@@ -149,6 +170,14 @@ public class DocumentCommand {
 
     public boolean isLocationChanged() {
         return this.modifiedParameters.contains("location");
+    }
+
+    public boolean isDocumentClassChanged() {
+        return this.modifiedParameters.contains("documentClassId");
+    }
+
+    public boolean isDocumentTypeChanged() {
+        return this.modifiedParameters.contains("documentTypeId");
     }
 
 }

@@ -44,6 +44,8 @@ public class DocumentData implements Serializable {
     private final String location;
     private final String description;
     private final Integer storageType;
+    private final String documentClass;
+    private final String documentType;
 
     public StorageType storageType() {
         return StorageType.fromInt(this.storageType);
