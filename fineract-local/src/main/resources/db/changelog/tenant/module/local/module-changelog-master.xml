@@ -88,4 +88,5 @@
   <include relativeToChangelogFile="true" file="parts/9064_update_for_new_code_values_usages.xml"/>
   <include relativeToChangelogFile="true" file="parts/9065_add_transactions_freeze_reason_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9066_add_loan_purpose_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9067_add_document_class_and_type_relation.xml"/>
 </databaseChangeLog>

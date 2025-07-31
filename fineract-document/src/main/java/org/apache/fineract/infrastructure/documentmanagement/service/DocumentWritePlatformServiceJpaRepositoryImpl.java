@@ -18,6 +18,8 @@
  */
 package org.apache.fineract.infrastructure.documentmanagement.service;
 
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
+import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.exception.ErrorHandler;
 import org.apache.fineract.infrastructure.documentmanagement.command.DocumentCommand;
@@ -31,6 +33,7 @@ import org.apache.fineract.infrastructure.documentmanagement.exception.ContentMa
 import org.apache.fineract.infrastructure.documentmanagement.exception.DocumentNotFoundException;
 import org.apache.fineract.infrastructure.documentmanagement.exception.InvalidEntityTypeForDocumentManagementException;
 import org.apache.fineract.infrastructure.security.service.PlatformSecurityContext;
+import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +52,15 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
     private final PlatformSecurityContext context;
     private final DocumentRepository documentRepository;
     private final ContentRepositoryFactory contentRepositoryFactory;
+    private final CodeValueRepositoryWrapper codeValueRepository;
 
     @Autowired
     public DocumentWritePlatformServiceJpaRepositoryImpl(final PlatformSecurityContext context, final DocumentRepository documentRepository,
-            final ContentRepositoryFactory documentStoreFactory) {
+            final ContentRepositoryFactory documentStoreFactory, final CodeValueRepositoryWrapper codeValueRepository) {
         this.context = context;
         this.documentRepository = documentRepository;
         this.contentRepositoryFactory = documentStoreFactory;
+        this.codeValueRepository = codeValueRepository;
     }
 
     @Transactional
@@ -74,10 +79,24 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
 
             final String fileLocation = contentRepository.saveFile(inputStream, documentCommand);
 
+            CodeValue documentClass = null;
+            final Long documentClassId = documentCommand.getDocumentClassId();
+            if (documentClassId != null) {
+                documentClass = this.codeValueRepository
+                        .findOneByCodeNameAndIdWithNotFoundDetection("Customer Documents", documentClassId);
+            }
+
+            CodeValue documentType = null;
+            final Long documentTypeId = documentCommand.getDocumentTypeId();
+            if (documentTypeId != null) {
+                documentType = this.codeValueRepository
+                        .findOneByCodeNameAndIdWithNotFoundDetection("DocumentTypes", documentTypeId);
+            }
+
             final Document document = Document.createNew(documentCommand.getParentEntityType(), documentCommand.getParentEntityId(),
                     documentCommand.getName(), documentCommand.getFileName(), documentCommand.getSize(), documentCommand.getType(),
                     documentCommand.getDescription(), fileLocation, contentRepository.getStorageType(),
-                    documentCommand.getExpirationDate());
+                    documentCommand.getExpirationDate(), documentClass, documentType);
 
             this.documentRepository.saveAndFlush(document);
 
@@ -95,7 +114,7 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
             final String mimeType, final String name, final String description, final String fileName) {
 
         final DocumentCommand documentCommand = new DocumentCommand(null, null, entityType, entityId, name, fileName, fileSize, mimeType,
-                description, null);
+                description, null, null, null);
 
         final Long documentId = createDocument(documentCommand, inputStream);
 
@@ -127,6 +146,18 @@ public class DocumentWritePlatformServiceJpaRepositoryImpl implements DocumentWr
             }
 
             documentForUpdate.update(documentCommand);
+
+            if (documentCommand.isDocumentClassChanged()) {
+                CodeValue documentClass = this.codeValueRepository
+                        .findOneByCodeNameAndIdWithNotFoundDetection("Customer Documents", documentCommand.getDocumentClassId());
+                documentForUpdate.setDocumentClass(documentClass);
+            }
+
+            if (documentCommand.isDocumentTypeChanged()) {
+                CodeValue documentType = this.codeValueRepository
+                        .findOneByCodeNameAndIdWithNotFoundDetection("DocumentTypes", documentCommand.getDocumentTypeId());
+                documentForUpdate.setDocumentType(documentType);
+            }
 
             if (inputStream != null && documentCommand.isFileNameChanged()) {
                 final ContentRepository contentRepository = this.contentRepositoryFactory.getRepository(documentStoreType);
