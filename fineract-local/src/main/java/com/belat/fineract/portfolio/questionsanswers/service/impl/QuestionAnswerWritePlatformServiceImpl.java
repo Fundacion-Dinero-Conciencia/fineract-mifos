@@ -1,7 +1,5 @@
 package com.belat.fineract.portfolio.questionsanswers.service.impl;
 
-import com.belat.fineract.email.service.EmailProperties;
-import com.belat.fineract.email.service.EmailService;
 import com.belat.fineract.portfolio.questionsanswers.api.QuestionAnswerConstants;
 import com.belat.fineract.portfolio.questionsanswers.domain.answer.BelatAnswer;
 import com.belat.fineract.portfolio.questionsanswers.domain.answer.BelatAnswerRepository;
@@ -13,12 +11,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +31,6 @@ import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientRepository;
 import org.apache.fineract.portfolio.client.exception.ClientNotActiveException;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -45,12 +40,9 @@ import org.springframework.stereotype.Service;
 public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWritePlatformService {
 
     private final FromJsonHelper fromApiJsonHelper;
-    private final ApplicationContext applicationContext;
     private final BelatQuestionRepository belatQuestionRepository;
     private final BelatAnswerRepository belatAnswerRepository;
     private final ClientRepository clientRepository;
-    private final EmailService emailService;
-    private final EmailProperties emailProperties;
 
     @Override
     public CommandProcessingResult createQuestion(JsonCommand command) {
@@ -69,16 +61,6 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
         question.setUser(user);
 
         belatQuestionRepository.saveAndFlush(question);
-        try {
-
-            if (emailProperties.isValid()) {
-                emailService.sendEmailWithTemplateThymeleaf(emailProperties.getTo(), question.getTitle(), "question-email.html", Map.of("question", question.getQuestion(), "firstName", user.getFirstname(), "lastName", user.getLastname(), "email", user.getEmailAddress(), "phone", user.getMobileNo()));
-            }
-
-        } catch (IOException e) {
-            log.error("Error al enviar el correo", e);
-        }
-
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(question.getId()).build();
     }
 
