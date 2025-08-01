@@ -307,39 +307,48 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
             investmentProject.setMnemonic(StringUtils.defaultIfEmpty(newValue, null));
         }
 
-        final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
-        investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
-        changes.put(InvestmentProjectConstants.categoryParamName, categoryId);
+        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.categoryParamName, investmentProject.getCategory().getId() )) {
+            final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
+            investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
+            changes.put(InvestmentProjectConstants.categoryParamName, categoryId);
+        }
 
-        final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
-        investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
-        changes.put(InvestmentProjectConstants.areaParamName, areaId);
+        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.areaParamName, investmentProject.getArea().getId())) {
+            final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
+            investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
+            changes.put(InvestmentProjectConstants.areaParamName, areaId);
+        }
 
-        List<InvestmentProjectCategory> subCategoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
-        subCategoriesList.forEach(investmentProjectCategoryRepository::delete);
-        final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
-        List<CodeValue> codeCategories = getCodeValuesDataFromArray(subCategoriesString);
-        InvestmentProject finalInvestmentProject = investmentProject;
-        codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
+        if (command.parameterExists(InvestmentProjectConstants.subCategoriesParamName)) {
+            List<InvestmentProjectCategory> subCategoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
+            investmentProjectCategoryRepository.deleteAll(subCategoriesList);
+            final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
+            List<CodeValue> codeCategories = getCodeValuesDataFromArray(subCategoriesString);
+            InvestmentProject finalInvestmentProject = investmentProject;
+            codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
-        List<InvestmentProjectObjective> objectivesList = investmentProjectObjectiveRepository.retrieveByProjectId(investmentProject.getId());
-        objectivesList.forEach(investmentProjectObjectiveRepository::delete);
-        final String objectivesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
-        List<CodeValue> codeObjectives = getCodeValuesDataFromArray(objectivesString);
-        InvestmentProject finalInvestmentProject1 = investmentProject;
-        codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject1)));
+        }
+
+        if (command.parameterExists(InvestmentProjectConstants.objectivesParamName)) {
+            List<InvestmentProjectObjective> objectivesList = investmentProjectObjectiveRepository.retrieveByProjectId(investmentProject.getId());
+            investmentProjectObjectiveRepository.deleteAll(objectivesList);
+            final String objectivesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
+            List<CodeValue> codeObjectives = getCodeValuesDataFromArray(objectivesString);
+            InvestmentProject finalInvestmentProject1 = investmentProject;
+            codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject1)));
+        }
 
         final Long statusCodeId = command.longValueOfParameterNamed(InvestmentProjectConstants.statusIdParamName);
-        final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
+        final CodeValue newStatus = statusCodeId != null ? codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId) : null;
         final Long creditTypeId = command.longValueOfParameterNamed(InvestmentProjectConstants.creditTypeIdParamName);
-        final CodeValue newCreditType = codeValueRepositoryWrapper.findOneWithNotFoundDetection(creditTypeId);
 
         if (!changes.isEmpty() || newStatus != null) {
-
+            final CodeValue newCreditType = creditTypeId != null ? codeValueRepositoryWrapper.findOneWithNotFoundDetection(creditTypeId) : null;
             if (newCreditType != null) {
                 investmentProject.setCreditType(newCreditType);
                 changes.put(InvestmentProjectConstants.creditTypeIdParamName, newCreditType.getLabel());
             }
+
             investmentProject = this.investmentProjectRepository.saveAndFlush(investmentProject);
 
             StatusHistoryProject historyProject = statusHistoryProjectRepository.getLastStatusByInvestmentProjectId(investmentProject.getId());
