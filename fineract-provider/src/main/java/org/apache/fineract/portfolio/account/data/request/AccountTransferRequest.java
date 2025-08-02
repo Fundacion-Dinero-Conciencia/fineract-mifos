@@ -18,11 +18,12 @@
  */
 package org.apache.fineract.portfolio.account.data.request;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -50,4 +51,5 @@ public class AccountTransferRequest implements Serializable {
 
     private BigDecimal amount;
     private Long projectId;
+    private BigDecimal commission;
 }
