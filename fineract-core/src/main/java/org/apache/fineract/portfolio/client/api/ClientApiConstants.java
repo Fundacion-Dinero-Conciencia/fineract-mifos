@@ -99,6 +99,7 @@ public class ClientApiConstants {
     public static final String closureReasonIdParamName = "closureReasonId";
     public static final String reopenedDateParamName = "reopenedDate";
     public static final String mnemonicParamName = "mnemonic";
+    public static final String fancyNameParamName = "fancyName";
 
     public static final String rejectionDateParamName = "rejectionDate";
     public static final String rejectionReasonIdParamName = "rejectionReasonId";

@@ -292,6 +292,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
             sqlBuilder.append(
                     "c.id as id, c.account_no as accountNo, c.mnemonic as mnemonic, c.external_id as externalId, c.status_enum as statusEnum,c.sub_status as subStatus, ");
+            sqlBuilder.append("c.fancy_name as fancyName, ");
             sqlBuilder.append(
                     "cvSubStatus.code_value as subStatusValue,cvSubStatus.code_description as subStatusDesc,c.office_id as officeId, o.name as officeName, ");
             sqlBuilder.append("c.transfer_to_office_id as transferToOfficeId, transferToOffice.name as transferToOfficeName, ");
@@ -365,6 +366,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
             final String accountNo = rs.getString("accountNo");
             final String mnemonic = rs.getString("mnemonic");
+            final String fancyName = rs.getString("fancyName");
 
             final Integer statusEnum = JdbcSupport.getInteger(rs, "statusEnum");
             final EnumOptionData status = ClientEnumerations.status(statusEnum);
@@ -454,7 +456,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
                     firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender,
                     activationDate, imageId, staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId,
-                    clienttype, classification, legalForm, clientNonPerson, isStaff, mnemonic);
+                    clienttype, classification, legalForm, clientNonPerson, isStaff, mnemonic, fancyName);
 
         }
     }
@@ -606,6 +608,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
             builder.append(
                     "c.id as id, c.account_no as accountNo, c.mnemonic as mnemonic, c.external_id as externalId, c.status_enum as statusEnum,c.sub_status as subStatus, ");
+            builder.append("c.fancy_name as fancyName, ");
             builder.append(
                     "cvSubStatus.code_value as subStatusValue,cvSubStatus.code_description as subStatusDesc,c.office_id as officeId, o.name as officeName, ");
             builder.append("c.transfer_to_office_id as transferToOfficeId, transferToOffice.name as transferToOfficeName, ");
@@ -678,6 +681,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
 
             final String accountNo = rs.getString("accountNo");
             final String mnemonic = rs.getString("mnemonic");
+            final String fancyName = rs.getString("fancyName");
 
             final Integer statusEnum = JdbcSupport.getInteger(rs, "statusEnum");
             final EnumOptionData status = ClientEnumerations.status(statusEnum);
@@ -766,7 +770,7 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             return ClientData.instance(accountNo, status, subStatus, officeId, officeName, transferToOfficeId, transferToOfficeName, id,
                     firstname, middlename, lastname, fullname, displayName, externalId, mobileNo, emailAddress, dateOfBirth, gender,
                     activationDate, imageId, staffId, staffName, timeline, savingsProductId, savingsProductName, savingsAccountId,
-                    clienttype, classification, legalForm, clientNonPerson, isStaff, mnemonic);
+                    clienttype, classification, legalForm, clientNonPerson, isStaff, mnemonic, fancyName);
 
         }
     }
