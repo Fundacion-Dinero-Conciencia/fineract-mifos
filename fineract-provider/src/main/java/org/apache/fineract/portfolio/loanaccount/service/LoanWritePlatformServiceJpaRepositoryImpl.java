@@ -3173,7 +3173,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
             Loan createdLoan = loanRepositoryWrapper.findOneWithNotFoundDetection(result.getLoanId());
 
-            BigDecimal representativeValue = loan.getProposedPrincipal().divide(createdLoan.getProposedPrincipal(), 8, RoundingMode.HALF_UP);
+            BigDecimal representativeValue = loan.getProposedPrincipal().divide(createdLoan.getProposedPrincipal(), 6, RoundingMode.HALF_UP);
 
             List<LoanRepaymentScheduleInstallment> createdInstallments = loanRepositoryWrapper.getLoanRepaymentScheduleInstallments(result.getLoanId());
 
@@ -3199,7 +3199,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                         Map<String, String> installment = new HashMap<>();
                         LocalDate dueDate = createdInstallment.getDueDate();
                         installment.put("dueDate", dueDate.format(formatter));
-                        installment.put("installmentAmount", String.valueOf(simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().divide(representativeValue, 8, RoundingMode.HALF_UP)));
+                        installment.put("installmentAmount", String.valueOf(simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().divide(representativeValue, 6, RoundingMode.HALF_UP)));
                         modifiedInstallments.add(installment);
                     }
                 }
