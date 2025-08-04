@@ -219,6 +219,9 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
     @Column(name = "mnemonic")
     private String mnemonic;
 
+    @Column(name = "fancy_name")
+    private String fancyName;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "client", orphanRemoval = true, fetch = FetchType.LAZY)
     protected Set<ClientIdentifier> identifiers = new HashSet<>();
 
@@ -227,10 +230,10 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
             final LocalDate activationDate, final LocalDate officeJoiningDate, final ExternalId externalId, final String mobileNo,
             final String emailAddress, final Staff staff, final LocalDate submittedOnDate, final Long savingsProductId,
             final Long savingsAccountId, final LocalDate dateOfBirth, final CodeValue gender, final CodeValue clientType,
-            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff, final BigDecimal loanLimitBalance, String mnemonic) {
+            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff, final BigDecimal loanLimitBalance, String mnemonic, String fancyName) {
         return new Client(currentUser, status, office, clientParentGroup, accountNo, firstname, middlename, lastname, fullname,
                 activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate, savingsProductId,
-                savingsAccountId, dateOfBirth, gender, clientType, clientClassification, legalForm, isStaff, loanLimitBalance, mnemonic);
+                savingsAccountId, dateOfBirth, gender, clientType, clientClassification, legalForm, isStaff, loanLimitBalance, mnemonic, fancyName);
     }
 
     protected Client() {}
@@ -240,7 +243,7 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
             final LocalDate activationDate, final LocalDate officeJoiningDate, final ExternalId externalId, final String mobileNo,
             final String emailAddress, final Staff staff, final LocalDate submittedOnDate, final Long savingsProductId,
             final Long savingsAccountId, final LocalDate dateOfBirth, final CodeValue gender, final CodeValue clientType,
-            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff, BigDecimal loanLimitBalance, String mnemonic) {
+            final CodeValue clientClassification, final Integer legalForm, final Boolean isStaff, BigDecimal loanLimitBalance, String mnemonic, String fancyName) {
 
         if (StringUtils.isBlank(accountNo)) {
             this.accountNumber = new RandomPasswordGenerator(19).generate();
@@ -308,6 +311,7 @@ public class Client extends AbstractAuditableWithUTCDateTimeCustom<Long> {
         this.loanLimitBalance = loanLimitBalance;
 
         this.mnemonic = mnemonic;
+        this.fancyName = fancyName;
 
         deriveDisplayName();
         validate();

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!-- Update name in customer identifier-->
+    <changeSet id="1" author="fineract">
+        <update tableName="m_code_value">
+            <column name="code_value" value="RUT"/>
+            <where>code_value='Identificador Tributario'</where>
+        </update>
+    </changeSet>
+
+    <!-- Update datatable profiling -->
+    <changeSet id="2" author="fineract">
+
+        <sql>
+            ALTER TABLE "PROFILING"
+                ADD COLUMN description VARCHAR(150);
+            ALTER TABLE "PROFILING"
+                ADD COLUMN inv_impact BOOLEAN;
+            ALTER TABLE "PROFILING"
+                ADD COLUMN "RiskProfile_cd_RiskProfile" INTEGER;
+        </sql>
+
+
+    </changeSet>
+
+    <!-- Update interest sector multi-raw -->
+    <changeSet id="3" author="fineract">
+
+        <!-- 1. Create new table-->
+        <sql>
+            CREATE TABLE "INTEREST_SECTOR_NEW"
+            (
+                id                                            BIGSERIAL PRIMARY KEY,
+                client_id                                     BIGINT NOT NULL,
+                "INVESTMENT_PROJECT_CATEGORY_cd_SECTOR"       INTEGER,
+                "INVESTMENT_PROJECT_AREA_cd_AREA"             INTEGER,
+                "INVESTMENT_PROJECT_SUBCATEGORY_cd_SUBSECTOR" INTEGER,
+                created_at                                    TIMESTAMP,
+                updated_at                                    TIMESTAMP
+            );
+        </sql>
+
+        <!-- 2. Create constraint of foreign key -->
+        <sql>
+            ALTER TABLE "INTEREST_SECTOR_NEW"
+                ADD CONSTRAINT "INTEREST_SECTOR_client_id_fkey"
+                    FOREIGN KEY (client_id) REFERENCES m_client (id);
+        </sql>
+
+        <!-- 3. Copy data -->
+        <sql>
+            INSERT INTO "INTEREST_SECTOR_NEW" (client_id,
+                                               "INVESTMENT_PROJECT_CATEGORY_cd_SECTOR",
+                                               "INVESTMENT_PROJECT_AREA_cd_AREA",
+                                               "INVESTMENT_PROJECT_SUBCATEGORY_cd_SUBSECTOR",
+                                               created_at,
+                                               updated_at)
+            SELECT client_id,
+                   "INVESTMENT_PROJECT_CATEGORY_cd_SECTOR",
+                   "INVESTMENT_PROJECT_AREA_cd_AREA",
+                   "INVESTMENT_PROJECT_SUBCATEGORY_cd_SUBSECTOR",
+                   created_at,
+                   updated_at
+            FROM "INTEREST_SECTOR";
+        </sql>
+
+
+        <!-- 4. Delete original table -->
+        <sql>
+            DROP TABLE IF EXISTS "INTEREST_SECTOR";
+        </sql>
+
+        <!-- 5. Rename new table -->
+        <sql>
+            ALTER TABLE "INTEREST_SECTOR_NEW" RENAME TO "INTEREST_SECTOR";
+        </sql>
+
+    </changeSet>
+
+
+
+    <!-- Add column to m_client for save fancy name-->
+    <changeSet id="4" author="fineract">
+        <addColumn tableName="m_client">
+            <column name="fancy_name" type="character varying(100)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

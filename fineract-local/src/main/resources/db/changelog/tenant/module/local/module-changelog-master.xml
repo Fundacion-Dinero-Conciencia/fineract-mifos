@@ -89,4 +89,5 @@
   <include relativeToChangelogFile="true" file="parts/9065_add_transactions_freeze_reason_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9066_add_loan_purpose_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9067_add_document_class_and_type_relation.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9068_edit_customer_identifier_values_and_add_column_fantasy.xml"/>
 </databaseChangeLog>

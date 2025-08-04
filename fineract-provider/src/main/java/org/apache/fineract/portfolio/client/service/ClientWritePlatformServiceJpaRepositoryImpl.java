@@ -265,7 +265,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final LocalDate dataOfBirth = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
             final BigDecimal loanLimitBalance = command.bigDecimalValueOfParameterNamed(ClientApiConstants.loanLimitBalanceParamName);
             final String mnemonic = command.stringValueOfParameterNamed(ClientApiConstants.mnemonicParamName);
-
+            final String fancyName = command.stringValueOfParameterNamed(ClientApiConstants.fancyNameParamName);
             ClientStatus status = ClientStatus.PENDING;
             boolean active = false;
             if (command.hasParameter("active")) {
@@ -294,7 +294,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final Client newClient = Client.instance(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename,
                     lastname, fullname, activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate,
                     savingsProductId, savingsAccountId, dataOfBirth, gender, clientType, clientClassification, legalForm.getValue(),
-                    isStaff, loanLimitBalance, mnemonic);
+                    isStaff, loanLimitBalance, mnemonic, fancyName);
 
             this.clientRepository.saveAndFlush(newClient);
             boolean rollbackTransaction = false;
