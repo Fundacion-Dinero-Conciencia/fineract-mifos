@@ -170,6 +170,12 @@ public class FromJsonHelper {
         return this.helperDelegator.extractStringNamed(parameterName, element, new HashSet<String>());
     }
 
+    public boolean isJsonArray(final String parameterName, final JsonElement jsonElement) {
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        JsonElement data = jsonObject.get(parameterName);
+        return data != null && data.isJsonArray();
+    }
+
     public String extractStringNamed(final String parameterName, final JsonElement element, final Set<String> parametersPassedInRequest) {
         return this.helperDelegator.extractStringNamed(parameterName, element, parametersPassedInRequest);
     }
