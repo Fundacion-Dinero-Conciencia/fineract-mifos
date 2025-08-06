@@ -1,6 +1,5 @@
 package com.belat.fineract.portfolio.investmentproject.mapper;
 
-import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectCategoryData;
 import com.belat.fineract.portfolio.investmentproject.data.InvestmentProjectData;
 import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import java.util.List;
@@ -18,6 +17,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "ownerId", source = "owner.id")
     @Mapping(target = "ownerName", source = "owner.fullname")
     @Mapping(target = "loanId", source = "loan.id")
+    @Mapping(target = "loanApprovedPrincipalAmount", source = "loan.approvedPrincipal")
     @Mapping(target = "isActive", source = "active")
     @Mapping(target = "impactDescription", source = "description.impactDescription")
     @Mapping(target = "institutionDescription", source = "description.institutionDescription")

@@ -32,6 +32,7 @@ public class InvestmentProjectData {
     private List<InvestmentProjectCategoryData> subCategories;
     private List<InvestmentProjectObjectiveData> objectives;
     private Long loanId;
+    private BigDecimal loanApprovedPrincipalAmount;
     private BigDecimal availableTotalAmount;
     private CodeValueData category;
     private CodeValueData area;
