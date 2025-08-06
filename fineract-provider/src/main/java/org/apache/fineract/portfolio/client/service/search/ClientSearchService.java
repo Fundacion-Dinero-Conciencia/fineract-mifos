@@ -42,7 +42,7 @@ public class ClientSearchService {
     private final ClientRepository clientRepository;
     private final ClientSearchDataMapper clientSearchDataMapper;
 
-    public Page<ClientSearchData> searchByText(PagedRequest<ClientTextSearch> searchRequest) {
+    public Page<ClientSearchData> searchByTextAndClientType(PagedRequest<ClientTextSearch> searchRequest) {
         validateTextSearchRequest(searchRequest);
         return executeTextSearch(searchRequest);
     }
@@ -59,9 +59,10 @@ public class ClientSearchService {
         Optional<ClientTextSearch> request = searchRequest.getRequest();
         String requestSearchText = request.map(ClientTextSearch::getText).orElse(null);
         String searchText = StringUtils.defaultString(requestSearchText, "");
+        Long requestSearchClientTypeId = request.map(ClientTextSearch::getClientTypeId).orElse(null);
 
         Pageable pageable = searchRequest.toPageable();
 
-        return clientRepository.searchByText(searchText, pageable, hierarchy).map(clientSearchDataMapper::map);
+        return clientRepository.searchByTextAndClientType(searchText, requestSearchClientTypeId, pageable, hierarchy).map(clientSearchDataMapper::map);
     }
 }
