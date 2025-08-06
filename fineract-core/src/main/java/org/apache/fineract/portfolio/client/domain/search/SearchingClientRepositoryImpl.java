@@ -48,7 +48,7 @@ public class SearchingClientRepositoryImpl implements SearchingClientRepository 
     private final CriteriaQueryFactory criteriaQueryFactory;
 
     @Override
-    public Page<SearchedClient> searchByText(String searchText, Pageable pageable, String officeHierarchy) {
+    public Page<SearchedClient> searchByTextAndClientType(String searchText, Long clientTypeId, Pageable pageable, String officeHierarchy) {
         /*
          * this whole thing can be replaced with Spring Data JPA 3+ with a findBy(Specification, Pageable) call but at
          * this point the upgrade is too costly
@@ -74,6 +74,10 @@ public class SearchingClientRepositoryImpl implements SearchingClientRepository 
             predicates.add(cb.or(cb.like(r.get("accountNumber"), searchLikeValue), cb.like(r.get("displayName"), searchLikeValue),
                     cb.like(r.get("externalId"), searchLikeValue), cb.like(r.get("mobileNo"), searchLikeValue),
                     cb.like(identity.get("documentKey"), searchLikeValue), cb.like(r.get("mnemonic"), searchLikeValue)));
+
+            if (clientTypeId != null) {
+                predicates.add(builder.equal(r.get("clientType").get("id"), clientTypeId));
+            }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
