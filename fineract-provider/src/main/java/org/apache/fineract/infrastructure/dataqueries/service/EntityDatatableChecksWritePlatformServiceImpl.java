@@ -202,31 +202,41 @@ public class EntityDatatableChecksWritePlatformServiceImpl implements EntityData
             final JsonArray datatableDatas) {
         final AppUser user = this.context.authenticatedUser();
         boolean isMakerCheckerEnabled = false;
-        if (datatableDatas != null && datatableDatas.size() > 0) {
+        if (datatableDatas != null && !datatableDatas.isEmpty()) {
             for (JsonElement element : datatableDatas) {
                 final String datatableName = this.fromApiJsonHelper.extractStringNamed("registeredTableName", element);
-                final JsonObject datatableData = this.fromApiJsonHelper.extractJsonObjectNamed("data", element);
-
-                if (datatableName == null || datatableData == null) {
-                    final ApiParameterError error = ApiParameterError.generalError(
-                            "registeredTableName.and.data.parameters.must.be.present.in.each.list.items.in.datatables",
-                            "registeredTableName and data parameters must be present in each list items in datatables");
-                    List<ApiParameterError> errors = new ArrayList<>();
-                    errors.add(error);
-                    throw new PlatformApiDataValidationException(errors);
+                JsonArray data = null;
+                if (this.fromApiJsonHelper.isJsonArray("data", element)) {
+                    JsonObject jsonObject = element.getAsJsonObject();
+                    JsonElement item = jsonObject.get("data");
+                    data = item.getAsJsonArray();
+                } else {
+                    data = new JsonArray();
+                    data.add(this.fromApiJsonHelper.extractJsonObjectNamed("data", element));
                 }
-                final String taskPermissionName = "CREATE_" + datatableName;
-                user.validateHasPermissionTo(taskPermissionName);
-                if (this.configurationDomainService.isMakerCheckerEnabledForTask(taskPermissionName)) {
-                    isMakerCheckerEnabled = true;
-                }
-                try {
-                    datatableWriteService.createNewDatatableEntry(datatableName, entityId, datatableData.toString());
-                } catch (PlatformApiDataValidationException e) {
-                    for (ApiParameterError error : e.getErrors()) {
-                        error.setParameterName("datatables." + datatableName + "." + error.getParameterName());
+                for (JsonElement i: data) {
+                    final JsonObject datatableData = i.getAsJsonObject();
+                    if (datatableName == null || datatableData == null) {
+                        final ApiParameterError error = ApiParameterError.generalError(
+                                "registeredTableName.and.data.parameters.must.be.present.in.each.list.items.in.datatables",
+                                "registeredTableName and data parameters must be present in each list items in datatables");
+                        List<ApiParameterError> errors = new ArrayList<>();
+                        errors.add(error);
+                        throw new PlatformApiDataValidationException(errors);
                     }
-                    throw e;
+                    final String taskPermissionName = "CREATE_" + datatableName;
+                    user.validateHasPermissionTo(taskPermissionName);
+                    if (this.configurationDomainService.isMakerCheckerEnabledForTask(taskPermissionName)) {
+                        isMakerCheckerEnabled = true;
+                    }
+                    try {
+                        datatableWriteService.createNewDatatableEntry(datatableName, entityId, datatableData.toString());
+                    } catch (PlatformApiDataValidationException e) {
+                        for (ApiParameterError error : e.getErrors()) {
+                            error.setParameterName("datatables." + datatableName + "." + error.getParameterName());
+                        }
+                        throw e;
+                    }
                 }
             }
         }
