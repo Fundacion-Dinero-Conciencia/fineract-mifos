@@ -146,21 +146,24 @@ public class AdditionalExpensesWritePlatformServiceImpl implements AdditionalExp
         if  (jsonCommand.parameterExists(AdditionalExpensesConstants.flagAllDeleteParamName) && jsonCommand.booleanPrimitiveValueOfParameterNamed(AdditionalExpensesConstants.flagAllDeleteParamName)) {
             additionalExpensesRepository.deleteAllByInvestmentProjectId(jsonCommand.getSubresourceId());
         } else {
-            AdditionalExpenses additionalExpenses = additionalExpensesRepository.findById(jsonCommand.getSubresourceId()).orElseThrow( () -> new AdditionalExpensesNotFoundException(jsonCommand.entityId()));
+            AdditionalExpenses additionalExpenses = additionalExpensesRepository.findByIdWithProject(jsonCommand.getSubresourceId()).orElseThrow( () -> new AdditionalExpensesNotFoundException(jsonCommand.entityId()));
             final Long projectId = additionalExpenses.getProject().getId();
             validateStatusInvestmentProject(projectId);
             CodeValue codeValue = codeValueRepositoryWrapper.findOneByCodeNameAndLabelWithNotFoundDetection(AdditionalExpensesConstants.CONFIG_COMMISSION_TAXES_CODE_NAME, AdditionalExpensesConstants.IVA_AEF_COMMISSION);
-            boolean isAEF = AdditionalExpensesConstants.AEF_COMMISSION.equals(additionalExpenses.getCommissionType().getLabel());
-
-            if (isAEF) {
-                securityContext.authenticatedUser().validateHasUpdatePermission(AdditionalExpensesConstants.UPDATE_ADDITIONAL_EXPENSES);
-            }
+            //boolean isAEF = AdditionalExpensesConstants.AEF_COMMISSION.equals(additionalExpenses.getCommissionType().getLabel());
+            boolean isInvoice = AdditionalExpensesConstants.INVOICE_AMOUNT_COMMISSION.equals(additionalExpenses.getCommissionType().getLabel());
+//            if (isAEF) {
+//                securityContext.authenticatedUser().validateHasUpdatePermission(AdditionalExpensesConstants.UPDATE_ADDITIONAL_EXPENSES);
+//            }
             additionalExpensesRepository.delete(additionalExpenses);
 
-            if (isAEF) {
-                AdditionalExpenses additionalExpensesIvaAEF = additionalExpensesRepository.findByInvestmentProjectIdAndCommissionTypeId(projectId, codeValue.getId());
-                additionalExpensesRepository.delete(additionalExpensesIvaAEF);
-            }
+//            if (isAEF) {
+//                AdditionalExpenses additionalExpensesIvaAEF = additionalExpensesRepository.findByInvestmentProjectIdAndCommissionTypeId(projectId, codeValue.getId());
+//                additionalExpensesRepository.delete(additionalExpensesIvaAEF);
+//            }
+//            if (isInvoice) {
+//                additionalExpensesRepository.deleteAllByInvestmentProjectId(jsonCommand.getSubresourceId());
+//            }
         }
 
         return new CommandProcessingResultBuilder() //
