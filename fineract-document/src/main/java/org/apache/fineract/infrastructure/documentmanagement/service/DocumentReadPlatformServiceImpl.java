@@ -115,8 +115,8 @@ public class DocumentReadPlatformServiceImpl implements DocumentReadPlatformServ
                     + " d.file_name as fileName, d.size as fileSize, d.type as fileType, "
                     + " d.description as description, d.location as location," + " d.storage_type_enum as storageType,"
                     + " cv1.code_value as documentClass, cv2.code_value as documentType"
-                    + " from m_document d join m_code_value cv1 on d.document_class_id = cv1.id"
-                    + " join m_code_value cv2 on d.document_type_id = cv2.id where d.parent_entity_type=? and d.parent_entity_id=?";
+                    + " from m_document d left join m_code_value cv1 on d.document_class_id = cv1.id"
+                    + " left join m_code_value cv2 on d.document_type_id = cv2.id where d.parent_entity_type=? and d.parent_entity_id=?";
         }
 
         @Override
