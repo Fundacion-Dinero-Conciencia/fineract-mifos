@@ -223,4 +223,21 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
 
     }
 
+    public Long getCategoryId() {
+        if (this.category != null) {
+            return this.category.getId();
+        } else {
+            return null;
+        }
+    }
+
+    public Long getAreaId() {
+        if (this.area != null) {
+            return this.area.getId();
+        } else {
+            return null;
+        }
+    }
+
+
 }

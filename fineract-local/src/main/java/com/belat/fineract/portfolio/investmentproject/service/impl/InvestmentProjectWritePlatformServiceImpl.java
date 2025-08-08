@@ -307,13 +307,13 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
             investmentProject.setMnemonic(StringUtils.defaultIfEmpty(newValue, null));
         }
 
-        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.categoryParamName, investmentProject.getCategory().getId() )) {
+        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.categoryParamName, investmentProject.getCategoryId())) {
             final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
             investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
             changes.put(InvestmentProjectConstants.categoryParamName, categoryId);
         }
 
-        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.areaParamName, investmentProject.getArea().getId())) {
+        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.areaParamName, investmentProject.getAreaId())) {
             final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
             investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
             changes.put(InvestmentProjectConstants.areaParamName, areaId);
