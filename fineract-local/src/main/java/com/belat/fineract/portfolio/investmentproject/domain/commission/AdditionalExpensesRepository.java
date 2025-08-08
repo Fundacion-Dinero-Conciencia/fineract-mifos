@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AdditionalExpensesRepository extends JpaRepository<AdditionalExpenses, Long> {
@@ -21,4 +22,8 @@ public interface AdditionalExpensesRepository extends JpaRepository<AdditionalEx
     @Modifying
     @Query(value = "DELETE FROM e_additional_expenses WHERE project_id = ?1", nativeQuery = true)
     void deleteAllByInvestmentProjectId(final Long investmentProjectId);
+
+    @Query("SELECT ae FROM AdditionalExpenses ae JOIN FETCH ae.project WHERE ae.id = :id")
+    Optional<AdditionalExpenses> findByIdWithProject(@Param("id") Long id);
+
 }
