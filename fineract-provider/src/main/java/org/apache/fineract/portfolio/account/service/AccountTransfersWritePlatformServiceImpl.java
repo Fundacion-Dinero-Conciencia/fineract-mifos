@@ -208,30 +208,30 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     }
                     final BigDecimal amount = command.bigDecimalValueOfParameterNamed(amountProjectParamName);
                     BigDecimal percentageParticipation = promissoryNoteWritePlatformService.calculateParticipationPercentage(simulationData.getApprovedPrincipal(), amount).divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
-                    BigDecimal baseAmount = transactionAmount.divide(
-                            BigDecimal.ONE.add(percentageParticipation.multiply(feePercentage.multiply(period))),
-                            MoneyHelper.getMathContext());
+//                    BigDecimal baseAmount = transactionAmount.divide(
+//                            BigDecimal.ONE.add(percentageParticipation.multiply(feePercentage.multiply(period))),
+//                            MoneyHelper.getMathContext());
 
-                    BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage, percentageParticipation);
+//                    BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage, percentageParticipation);
                     BigDecimal commissionAmount = command.bigDecimalValueOfParameterNamed(commissionParamName);
-                    if (baseAmount.compareTo(amount) != 0 || feeAmount.compareTo(commissionAmount) != 0) {
-                        log.info("Correct capital expected: {}", amount);
-                        log.info("Correct commission expected: {}", commissionAmount );
-                        log.info("Erroneous capital amount received (calculated): {}", baseAmount);
-                        log.info("Erroneous commission amount received (calculated): {}", feeAmount);
-                        final List<ApiParameterError> dataValidationErrors = new ArrayList<>(1);
-                        final String message = "The amount sent for investment does not match the amount registered in the share, please create a new share with the appropriate amount.";
-                        dataValidationErrors.add(ApiParameterError.parameterError("error.msg.transaction.not.equals.amount",
-                                message, "Transfer amount", percentageInvestmentAgent, "Should be: " + amount.doubleValue() + " plus commission" + commissionAmount.doubleValue()));
-                        throw new PlatformApiDataValidationException(dataValidationErrors);
-                    }
+//                    if (baseAmount.compareTo(amount) != 0 || feeAmount.compareTo(commissionAmount) != 0) {
+//                        log.info("Correct capital expected: {}", amount);
+//                        log.info("Correct commission expected: {}", commissionAmount );
+//                        log.info("Erroneous capital amount received (calculated): {}", baseAmount);
+//                        log.info("Erroneous commission amount received (calculated): {}", feeAmount);
+//                        final List<ApiParameterError> dataValidationErrors = new ArrayList<>(1);
+//                        final String message = "The amount sent for investment does not match the amount registered in the share, please create a new share with the appropriate amount.";
+//                        dataValidationErrors.add(ApiParameterError.parameterError("error.msg.transaction.not.equals.amount",
+//                                message, "Transfer amount", percentageInvestmentAgent, "Should be: " + amount.doubleValue() + " plus commission" + commissionAmount.doubleValue()));
+//                        throw new PlatformApiDataValidationException(dataValidationErrors);
+//                    }
 
-                    validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
+                    validateLimitAmountToInvestment(toSavingsAccount, amount);
                     SavingsAccount belatAccount = this.savingsAccountAssembler
                             .assembleFrom(configurationDomainService.getDefaultAccountId(), false);
                     sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount,
-                            Money.of(belatAccount.getCurrency(), feeAmount).getAmount(), transactionDate, false);
-                    transactionAmount = Money.of(belatAccount.getCurrency(), baseAmount).getAmount();
+                            Money.of(belatAccount.getCurrency(), commissionAmount).getAmount(), transactionDate, false);
+                    transactionAmount = Money.of(belatAccount.getCurrency(), amount).getAmount();
                 } else {
                     validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
                 }
