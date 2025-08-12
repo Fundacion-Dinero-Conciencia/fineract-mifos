@@ -2,6 +2,9 @@ package com.belat.fineract.portfolio.projectparticipation.domain;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,10 +12,10 @@ import org.springframework.data.repository.query.Param;
 public interface ProjectParticipationRepository extends JpaRepository<ProjectParticipation, Long> {
 
     @Query("SELECT pp FROM ProjectParticipation pp WHERE pp.client.id = :clientId")
-    List<ProjectParticipation> retrieveByClientId(@Param("clientId") Long clientId);
+    Page<ProjectParticipation> retrieveByClientId(@Param("clientId") Long clientId, Pageable pageable);
 
     @Query("SELECT pp FROM ProjectParticipation pp WHERE pp.investmentProject.id = :projectId")
-    List<ProjectParticipation> retrieveByProjectId(@Param("projectId") Long projectId);
+    Page<ProjectParticipation> retrieveByProjectId(@Param("projectId") Long projectId, Pageable pageable);
 
     @Query(value = "SELECT * FROM e_project_participation WHERE id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     ProjectParticipation retrieveOneById(Long id);

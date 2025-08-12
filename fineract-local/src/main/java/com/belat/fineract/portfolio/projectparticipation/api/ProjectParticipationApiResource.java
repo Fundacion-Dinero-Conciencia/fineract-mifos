@@ -8,14 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +62,13 @@ public class ProjectParticipationApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
-    public String getProjectParticipation(@QueryParam("id") final Long id, @QueryParam("participantId") final Long participantId,
-            @QueryParam("projectId") final Long projectId) {
+    public String getProjectParticipation(
+            @QueryParam("id") final Long id,
+            @QueryParam("participantId") final Long participantId,
+            @QueryParam("projectId") final Long projectId,
+            @QueryParam("page") final int page,
+            @QueryParam("size") final int size) {
+
         platformUserRightsContext.isAuthenticated();
 
         if (id != null) {
@@ -78,11 +76,11 @@ public class ProjectParticipationApiResource {
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (participantId != null) {
             final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
-                    .retrieveByClientId(participantId);
+                    .retrieveByClientId(participantId, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (projectId != null) {
             final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
-                    .retrieveByProjectId(projectId);
+                    .retrieveByProjectId(projectId, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else {
             throw new IllegalArgumentException("Not supported parameter");
