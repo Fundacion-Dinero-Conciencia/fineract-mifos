@@ -74,6 +74,7 @@ public class ProjectParticipationApiResource {
             @QueryParam("id") final Long id,
             @QueryParam("participantId") final Long participantId,
             @QueryParam("projectId") final Long projectId,
+            @QueryParam("statusCode") final Integer statusCode,
             @QueryParam("page") final int page,
             @QueryParam("size") final int size) {
 
@@ -84,11 +85,11 @@ public class ProjectParticipationApiResource {
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (participantId != null) {
             final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
-                    .retrieveByClientId(participantId, page, size);
+                    .retrieveByClientId(participantId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (projectId != null) {
             final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
-                    .retrieveByProjectId(projectId, page, size);
+                    .retrieveByProjectId(projectId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else {
             throw new IllegalArgumentException("Not supported parameter");
