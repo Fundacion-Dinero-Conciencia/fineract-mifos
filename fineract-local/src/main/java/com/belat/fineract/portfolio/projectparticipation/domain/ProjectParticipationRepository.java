@@ -11,11 +11,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProjectParticipationRepository extends JpaRepository<ProjectParticipation, Long> {
 
-    @Query("SELECT pp FROM ProjectParticipation pp WHERE pp.client.id = :clientId")
-    Page<ProjectParticipation> retrieveByClientId(@Param("clientId") Long clientId, Pageable pageable);
+    @Query("SELECT pp FROM ProjectParticipation pp WHERE pp.client.id = :clientId AND pp.statusEnum = COALESCE(:statusCode, pp.statusEnum)")
+    Page<ProjectParticipation> retrieveByClientId(@Param("clientId") Long clientId, @Param("statusCode") Integer statusCode, Pageable pageable);
 
-    @Query("SELECT pp FROM ProjectParticipation pp WHERE pp.investmentProject.id = :projectId")
-    Page<ProjectParticipation> retrieveByProjectId(@Param("projectId") Long projectId, Pageable pageable);
+    @Query("SELECT pp FROM ProjectParticipation pp WHERE pp.investmentProject.id = :projectId AND pp.statusEnum = COALESCE(:statusCode, pp.statusEnum)")
+    Page<ProjectParticipation> retrieveByProjectId(@Param("projectId") Long projectId, @Param("statusCode") Integer statusCode, Pageable pageable);
 
     @Query(value = "SELECT * FROM e_project_participation WHERE id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     ProjectParticipation retrieveOneById(Long id);

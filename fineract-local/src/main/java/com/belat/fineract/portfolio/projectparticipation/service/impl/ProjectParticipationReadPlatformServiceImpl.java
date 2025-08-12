@@ -78,9 +78,9 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     }
 
     @Override
-    public List<ProjectParticipationData> retrieveByClientId(Long clientId, int page, int size) {
+    public List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, pageable);
+        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, statusCode, pageable);
         List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
         projectsParticipation.forEach(projectParticipation -> {
             if (projectParticipation != null) {
@@ -92,9 +92,9 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     }
 
     @Override
-    public List<ProjectParticipationData> retrieveByProjectId(Long projectId, int page, int size) {
+    public List<ProjectParticipationData> retrieveByProjectId(Long projectId, Integer statusCode, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, pageable);
+        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
         List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
         projectsParticipation.forEach(projectParticipation -> {
             if (projectParticipation != null) {
