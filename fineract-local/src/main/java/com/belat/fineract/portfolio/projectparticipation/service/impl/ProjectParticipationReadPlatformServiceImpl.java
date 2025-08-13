@@ -79,7 +79,7 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
 
     @Override
     public List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size) {
-        Pageable pageable = (page != null && size != null)
+        Pageable pageable = (size != null)
                 ? PageRequest.of(page, size)
                 : Pageable.unpaged();
         Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, statusCode, pageable);
@@ -95,7 +95,7 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
 
     @Override
     public List<ProjectParticipationData> retrieveByProjectId(Long projectId, Integer statusCode, Integer page, Integer size) {
-        Pageable pageable = (page != null && size != null)
+        Pageable pageable = (size != null)
                 ? PageRequest.of(page, size)
                 : Pageable.unpaged();
         Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
