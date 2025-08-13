@@ -3105,6 +3105,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             jsonMap.put("graceOnPrincipalPayment", loan.repaymentScheduleDetail().getGraceOnPrincipalPayment());
             jsonMap.put("graceOnArrearsAgeing", loan.repaymentScheduleDetail().getGraceOnArrearsAgeing());
             jsonMap.put("numberOfRepayments", loan.repaymentScheduleDetail().getNumberOfRepayments());
+            jsonMap.put("loanTermFrequency", loan.getTermFrequency());
             jsonMap.put("repaymentFrequencyType", loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType().getValue());
 
 
