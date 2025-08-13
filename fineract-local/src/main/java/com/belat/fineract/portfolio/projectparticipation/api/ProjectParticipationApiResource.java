@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.core.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.domain.CommandWrapper;
@@ -75,8 +76,8 @@ public class ProjectParticipationApiResource {
             @QueryParam("participantId") final Long participantId,
             @QueryParam("projectId") final Long projectId,
             @QueryParam("statusCode") final Integer statusCode,
-            @QueryParam("page") final int page,
-            @QueryParam("size") final int size) {
+            @QueryParam("page") @DefaultValue("0") final Integer page,
+            @QueryParam("size") final Integer size) {
 
         platformUserRightsContext.isAuthenticated();
 
