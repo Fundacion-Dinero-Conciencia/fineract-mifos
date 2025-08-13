@@ -67,8 +67,8 @@ public class ProjectParticipationApiResource {
             @QueryParam("participantId") final Long participantId,
             @QueryParam("projectId") final Long projectId,
             @QueryParam("statusCode") final Integer statusCode,
-            @QueryParam("page") final int page,
-            @QueryParam("size") final int size) {
+            @QueryParam("page") final Integer page,
+            @QueryParam("size") final Integer size) {
 
         platformUserRightsContext.isAuthenticated();
 

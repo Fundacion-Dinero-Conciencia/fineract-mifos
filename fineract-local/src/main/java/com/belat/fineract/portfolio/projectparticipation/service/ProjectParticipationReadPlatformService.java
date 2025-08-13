@@ -9,8 +9,8 @@ public interface ProjectParticipationReadPlatformService {
 
     ProjectParticipationData retrieveById(Long id);
 
-    List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, int page, int size);
+    List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size);
 
-    List<ProjectParticipationData> retrieveByProjectId(Long categoryId, Integer statusCode, int page, int size);
+    List<ProjectParticipationData> retrieveByProjectId(Long categoryId, Integer statusCode, Integer page, Integer size);
 
 }
