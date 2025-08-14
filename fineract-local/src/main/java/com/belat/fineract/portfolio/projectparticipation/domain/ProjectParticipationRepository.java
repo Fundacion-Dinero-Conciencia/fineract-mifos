@@ -17,6 +17,9 @@ public interface ProjectParticipationRepository extends JpaRepository<ProjectPar
     @Query("SELECT pp FROM ProjectParticipation pp WHERE pp.investmentProject.id = :projectId AND pp.statusEnum = COALESCE(:statusCode, pp.statusEnum)")
     Page<ProjectParticipation> retrieveByProjectId(@Param("projectId") Long projectId, @Param("statusCode") Integer statusCode, Pageable pageable);
 
+    @Query("SELECT DISTINCT pp FROM ProjectParticipation pp JOIN FETCH pp.investmentProject p LEFT JOIN FETCH p.subCategories LEFT JOIN FETCH p.objectives WHERE pp.client.id = :clientId AND pp.statusEnum = COALESCE(:statusCode, pp.statusEnum)")
+    List<ProjectParticipation> retrieveWithDetailsByClientId(@Param("clientId") Long clientId, @Param("statusCode") Integer statusCode);
+
     @Query(value = "SELECT * FROM e_project_participation WHERE id = ?1 ORDER BY id DESC LIMIT 1", nativeQuery = true)
     ProjectParticipation retrieveOneById(Long id);
 

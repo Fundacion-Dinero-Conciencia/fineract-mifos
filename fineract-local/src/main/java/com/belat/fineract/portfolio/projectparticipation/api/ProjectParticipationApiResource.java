@@ -1,6 +1,7 @@
 package com.belat.fineract.portfolio.projectparticipation.api;
 
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationOdsAreaData;
 import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticipationReadPlatformService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -95,6 +96,22 @@ public class ProjectParticipationApiResource {
         } else {
             throw new IllegalArgumentException("Not supported parameter");
         }
+    }
+
+    @GET
+    @Path("/participant/{participantId}/ods-areas")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
+    public String getProjectParticipationOdsAndAreasByParticipantId(
+            @PathParam("participantId") final Long participantId,
+            @QueryParam("statusCode") final Integer statusCode) {
+
+        platformUserRightsContext.isAuthenticated();
+
+        final List<ProjectParticipationOdsAreaData> projectParticipationData = projectParticipationReadPlatformService
+                .retrieveOdsAndAreaByClientId(participantId, statusCode);
+        return apiJsonSerializerService.serialize(projectParticipationData);
     }
 
     @PUT
