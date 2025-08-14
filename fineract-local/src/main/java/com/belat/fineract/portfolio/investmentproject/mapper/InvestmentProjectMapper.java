@@ -15,7 +15,7 @@ import org.mapstruct.Mapping;
 public interface InvestmentProjectMapper {
 
     @Mapping(target = "ownerId", source = "owner.id")
-    @Mapping(target = "ownerName", source = "owner.fullname")
+    @Mapping(target = "ownerName", source = "owner.displayName")
     @Mapping(target = "loanId", source = "loan.id")
     @Mapping(target = "loanApprovedPrincipalAmount", source = "loan.approvedPrincipal")
     @Mapping(target = "isActive", source = "active")
