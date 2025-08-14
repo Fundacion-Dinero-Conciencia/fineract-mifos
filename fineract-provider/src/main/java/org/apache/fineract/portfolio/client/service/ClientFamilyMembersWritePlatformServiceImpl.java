@@ -399,7 +399,7 @@ public class ClientFamilyMembersWritePlatformServiceImpl implements ClientFamily
             clientFamilyMember.setGender(gender);
         }
 
-        if (command.longValueOfParameterNamed("professionId") != 0) {
+        if (command.longValueOfParameterNamed("professionId") != null && command.longValueOfParameterNamed("professionId") != 0) {
             professionId = command.longValueOfParameterNamed("professionId");
             profession = this.codeValueRepository.getReferenceById(professionId);
             clientFamilyMember.setProfession(profession);
