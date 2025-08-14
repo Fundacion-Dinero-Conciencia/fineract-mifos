@@ -85,4 +85,10 @@ public final class ClientFamilyMembersData implements Serializable {
     private final Collection<CodeValueData> professionIdOptions;
     private final Collection<CodeValueData> documentTypeIdOptions;
 
+    public String getFullName () {
+        return (firstName != null && !firstName.isEmpty() ? firstName + " " : "") +
+                (middleName != null && !middleName.isEmpty() ? middleName + " " : "") +
+                (lastName != null && !lastName.isEmpty() ? lastName : "");
+    }
+
 }
