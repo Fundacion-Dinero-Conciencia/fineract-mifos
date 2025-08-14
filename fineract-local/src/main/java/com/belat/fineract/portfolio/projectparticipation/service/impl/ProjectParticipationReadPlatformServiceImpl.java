@@ -2,6 +2,7 @@ package com.belat.fineract.portfolio.projectparticipation.service.impl;
 
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationOdsAreaData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipation;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
@@ -107,6 +108,35 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
             }
         });
         return projectParticipationData;
+    }
+
+    @Override
+    public List<ProjectParticipationOdsAreaData> retrieveOdsAndAreaByClientId(Long clientId, Integer statusCode) {
+        List<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveWithDetailsByClientId(clientId, statusCode);
+        return mapProjectParticipationToPPOdsAreaData(projectsParticipation);
+    }
+
+    private List<ProjectParticipationOdsAreaData> mapProjectParticipationToPPOdsAreaData(List<ProjectParticipation> projectsParticipation) {
+        return projectsParticipation.stream()
+                .map(this::mapSingleProjectParticipation)
+                .toList();
+    }
+
+    private ProjectParticipationOdsAreaData mapSingleProjectParticipation(ProjectParticipation pp) {
+        var clientId = pp.getClient() != null ? pp.getClient().getId() : null;
+
+        var projectOdsAreaData = Optional.ofNullable(pp.getInvestmentProject())
+                .map(p -> new ProjectParticipationOdsAreaData.ProjectOdsAreaData(
+                        p.getId(), p.getName(), p.getArea(), p.getCategory(), p.getSubCategories(), p.getObjectives()))
+                .orElse(null);
+
+        return new ProjectParticipationOdsAreaData(
+                pp.getId(),
+                clientId,
+                pp.getStatusEnum(),
+                pp.getType(),
+                projectOdsAreaData
+        );
     }
 
     private void factoryData(ProjectParticipationData projectData, ProjectParticipation project,
