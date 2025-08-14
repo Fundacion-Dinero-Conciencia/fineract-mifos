@@ -101,8 +101,9 @@ public class ProjectParticipationApiResource {
     @GET
     @Path("/participant/{participantId}/ods-areas")
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
+    // TODO: add swagger
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
     public String getProjectParticipationOdsAndAreasByParticipantId(
             @PathParam("participantId") final Long participantId,
             @QueryParam("statusCode") final Integer statusCode) {
