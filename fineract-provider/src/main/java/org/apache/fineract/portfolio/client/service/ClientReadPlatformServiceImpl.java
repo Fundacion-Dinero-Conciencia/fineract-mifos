@@ -25,9 +25,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import jnr.ffi.Struct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.infrastructure.codes.data.CodeValueData;
@@ -247,6 +251,43 @@ public class ClientReadPlatformServiceImpl implements ClientReadPlatformService 
             this.columnValidator.validateSqlInjection(sql, extraCriteria);
         }
         return this.jdbcTemplate.query(sql, this.lookupMapper); // NOSONAR
+    }
+
+    @Override
+    public Collection<Map<String, Object>> retrieveDataForDatatableProfilingByClientId(final Long clientId) {
+        String sql = "SELECT pr.\"OCUPACION\" AS ocupation, cvcountry.code_value AS nationality, cvmarital.code_value AS maritalstatus " +
+                "    FROM public.\"PROFILING\" pr " +
+                "    LEFT JOIN public.m_code_value cvcountry " +
+                "        ON cvcountry.id = pr.\"COUNTRY_cd_NACIONALIDAD\"" +
+                "    LEFT JOIN public.m_code_value cvmarital " +
+                "        ON cvmarital.id = pr.\"MARITAL STATUS_cd_ESTADO_CIVIL\"" +
+                "    WHERE pr.client_id = ?";
+        if (clientId != null) {
+            return this.jdbcTemplate.queryForList(sql, clientId);
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<Map<String, Object>> retrieveDataForDatatableBankByClientId(Long clientId, String datatableName) {
+        List<String> allowedTable = List.of("BANK_DETAILS", "COMP_BANK_DETAILS");
+        if (!allowedTable.contains(datatableName)) {
+            throw new PlatformApiDataValidationException("err.table.name", "table it's not allowed", "tableName");
+        }
+        if (clientId == null) {
+            return Collections.emptyList();
+        }
+
+        String sql = String.format("""
+        SELECT bd."NUMERO_CUENTA" AS noaccount ,
+               cvtipocuenta.code_value AS tipocuenta,
+               cvbanco.code_value AS banco
+        FROM public."%s" bd
+        LEFT JOIN public.m_code_value cvbanco ON cvbanco.id = bd."BANCOS_cd_BANCO"
+        LEFT JOIN public.m_code_value cvtipocuenta ON cvtipocuenta.id = bd."TIPO_CUENTA_cd_TIPO_CUENTA"
+        WHERE bd.client_id = %s""", datatableName, clientId);
+
+       return this.jdbcTemplate.queryForList(sql);
     }
 
     @Override

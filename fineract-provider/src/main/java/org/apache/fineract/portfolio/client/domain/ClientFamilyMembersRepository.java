@@ -21,8 +21,15 @@ package org.apache.fineract.portfolio.client.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface ClientFamilyMembersRepository
         extends JpaRepository<ClientFamilyMembers, Long>, JpaSpecificationExecutor<ClientFamilyMembers> {
+
+    @Query("SELECT fm FROM ClientFamilyMembers fm WHERE fm.client.id = :clientId")
+    List<ClientFamilyMembers> getClientFamilyMembersByClientId(@Param("clientId") Long clientId);
 
 }
