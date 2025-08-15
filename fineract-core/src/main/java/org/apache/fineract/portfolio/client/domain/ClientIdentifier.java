@@ -134,6 +134,10 @@ public class ClientIdentifier extends AbstractAuditableWithUTCDateTimeCustom<Lon
         return this.documentType.getId();
     }
 
+    public String documentTypeLabel() {
+        return this.documentType.getLabel();
+    }
+
     public LocalDate getExpirationDate() {
         return this.expirationDate;
     }

@@ -67,6 +67,7 @@ import org.apache.fineract.portfolio.accountdetails.data.AccountSummaryCollectio
 import org.apache.fineract.portfolio.accountdetails.service.AccountDetailsReadPlatformService;
 import org.apache.fineract.portfolio.client.data.ClientData;
 import org.apache.fineract.portfolio.client.exception.ClientNotFoundException;
+import org.apache.fineract.portfolio.client.service.ClientReadPlatformCustomizedService;
 import org.apache.fineract.portfolio.client.service.ClientReadPlatformService;
 import org.apache.fineract.portfolio.client.service.ClientTemplateReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.guarantor.data.ObligeeData;
@@ -97,6 +98,7 @@ public class ClientsApiResource {
     private final BulkImportWorkbookPopulatorService bulkImportWorkbookPopulatorService;
     private final GuarantorReadPlatformService guarantorReadPlatformService;
     private final SqlValidator sqlValidator;
+    private final ClientReadPlatformCustomizedService clientReadPlatformCustomizedService;
 
     @GET
     @Path("template")
@@ -169,6 +171,18 @@ public class ClientsApiResource {
             @Context final UriInfo uriInfo,
             @DefaultValue("false") @QueryParam("staffInSelectedOfficeOnly") @Parameter(description = "staffInSelectedOfficeOnly") final boolean staffInSelectedOfficeOnly) {
         return retrieveClient(clientId, null, staffInSelectedOfficeOnly, uriInfo);
+    }
+
+    @GET
+    @Path("customized/{clientId}")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Retrieve a Client", description = "Example Requests:\n" + "\n" + "clients/1\n" + "\n" + "\n"
+            + "clients/1?template=true\n" + "\n" + "\n" + "clients/1?fields=id,displayName,officeName")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ClientsApiResourceSwagger.GetClientsClientIdResponse.class))) })
+    public String retrieveOneCustomized(@PathParam("clientId") @Parameter(description = "clientId") final Long clientId, @Context final UriInfo uriInfo) {
+        return toApiJsonSerializer.serialize(clientReadPlatformCustomizedService.getClientByid(clientId));
     }
 
     @POST
