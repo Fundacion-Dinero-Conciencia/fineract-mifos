@@ -88,6 +88,9 @@ public final class ClientDataValidator {
         final String mnemonic = this.fromApiJsonHelper.extractStringNamed(ClientApiConstants.mnemonicParamName, element);
         baseDataValidator.reset().parameter(ClientApiConstants.mnemonicParamName).value(mnemonic).notNull();
 
+        final JsonArray identifiers = this.fromApiJsonHelper.extractJsonArrayNamed(ClientApiConstants.identifiersParamName, element);
+        baseDataValidator.reset().parameter(ClientApiConstants.identifiersParamName).value(identifiers).notNull().notBlank().jsonArrayNotEmpty();
+
         if (this.fromApiJsonHelper.parameterExists(ClientApiConstants.groupIdParamName, element)) {
             final Long groupId = this.fromApiJsonHelper.extractLongNamed(ClientApiConstants.groupIdParamName, element);
             baseDataValidator.reset().parameter(ClientApiConstants.groupIdParamName).value(groupId).notNull().integerGreaterThanZero();

@@ -15,6 +15,7 @@ import com.belat.fineract.portfolio.investmentproject.domain.statushistory.Statu
 import com.belat.fineract.portfolio.investmentproject.domain.statushistory.StatusHistoryProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.exception.InvestmentProjectNotFoundException;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
@@ -54,7 +55,6 @@ import org.apache.fineract.portfolio.loanaccount.domain.LoanRepositoryWrapper;
 import org.apache.fineract.portfolio.loanaccount.service.LoanApplicationWritePlatformService;
 import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -203,19 +203,26 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         final String subcategories = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
         InvestmentProject finalInvestmentProject = investmentProject;
         if (subcategories != null && !subcategories.isEmpty()) {
-            List<CodeValue> codeSubCategories = getInvestmentProjectCategoryData(subcategories);
+            List<CodeValue> codeSubCategories = getCodeValuesDataFromArray(subcategories);
             codeSubCategories
                     .forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
         }
         final String objectives = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
         if (objectives != null && !objectives.isEmpty()) {
-            List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectives);
+            List<CodeValue> codeObjectives = getCodeValuesDataFromArray(objectives);
             codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject)));
 
         }
 
         final Long statusCodeId = command.longValueOfParameterNamed(InvestmentProjectConstants.statusIdParamName);
+        final Long creditTypeId = command.longValueOfParameterNamed(InvestmentProjectConstants.creditTypeIdParamName);
+
+        if (creditTypeId != null) {
+            CodeValue creditTypeCodeValue = codeValueRepositoryWrapper.findOneWithNotFoundDetection(creditTypeId);
+            investmentProject.setCreditType(creditTypeCodeValue);
+            investmentProject = investmentProjectRepository.saveAndFlush(investmentProject);
+        }
         if (statusCodeId != null) {
 
             final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
@@ -226,9 +233,11 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         }
         Long basedInLoanProductId = command.longValueOfParameterNamed(InvestmentProjectConstants.basedInLoanProductIdParamName);
 
+        final Long loanPurposeId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanPurposeIdParamName);
+
         // Build loan data
         JsonObject loanJson = createLoanAccountData(investmentProject.getOwner().getId(), basedInLoanProductId, investmentProject.getAmount(),
-                investmentProject.getRate(), investmentProject.getPeriod(), mnemonic);
+                investmentProject.getRate(), investmentProject.getPeriod(), mnemonic, loanPurposeId);
 
         JsonCommand loanCommand = JsonCommand.from(String.valueOf(loanJson), JsonParser.parseString(loanJson.toString()),
                 command.getFromApiJsonHelper());
@@ -298,35 +307,52 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
             investmentProject.setMnemonic(StringUtils.defaultIfEmpty(newValue, null));
         }
 
-        final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
-        investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
-        changes.put(InvestmentProjectConstants.categoryParamName, categoryId);
+        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.categoryParamName, investmentProject.getCategoryId())) {
+            final Long categoryId = command.longValueOfParameterNamed(InvestmentProjectConstants.categoryParamName);
+            investmentProject.setCategory(codeValueRepositoryWrapper.findOneWithNotFoundDetection(categoryId));
+            changes.put(InvestmentProjectConstants.categoryParamName, categoryId);
+        }
 
-        final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
-        investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
-        changes.put(InvestmentProjectConstants.areaParamName, areaId);
+        if (command.isChangeInLongParameterNamed(InvestmentProjectConstants.areaParamName, investmentProject.getAreaId())) {
+            final Long areaId = command.longValueOfParameterNamed(InvestmentProjectConstants.areaParamName);
+            investmentProject.setArea(codeValueRepositoryWrapper.findOneWithNotFoundDetection(areaId));
+            changes.put(InvestmentProjectConstants.areaParamName, areaId);
+        }
 
-        List<InvestmentProjectCategory> subCategoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
-        subCategoriesList.forEach(investmentProjectCategoryRepository::delete);
-        final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
-        List<CodeValue> codeCategories = getInvestmentProjectCategoryData(subCategoriesString);
-        InvestmentProject finalInvestmentProject = investmentProject;
-        codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
+        if (command.parameterExists(InvestmentProjectConstants.subCategoriesParamName)) {
+            List<InvestmentProjectCategory> subCategoriesList = investmentProjectCategoryRepository.retrieveByProjectId(investmentProject.getId());
+            investmentProjectCategoryRepository.deleteAll(subCategoriesList);
+            final String subCategoriesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.subCategoriesParamName);
+            List<CodeValue> codeCategories = getCodeValuesDataFromArray(subCategoriesString);
+            InvestmentProject finalInvestmentProject = investmentProject;
+            codeCategories.forEach(item -> investmentProjectCategoryRepository.save(new InvestmentProjectCategory(item, finalInvestmentProject)));
 
-        List<InvestmentProjectObjective> objectivesList = investmentProjectObjectiveRepository.retrieveByProjectId(investmentProject.getId());
-        objectivesList.forEach(investmentProjectObjectiveRepository::delete);
-        final String objectivesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
-        List<CodeValue> codeObjectives = getInvestmentProjectCategoryData(objectivesString);
-        InvestmentProject finalInvestmentProject1 = investmentProject;
-        codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject1)));
+        }
+
+        if (command.parameterExists(InvestmentProjectConstants.objectivesParamName)) {
+            List<InvestmentProjectObjective> objectivesList = investmentProjectObjectiveRepository.retrieveByProjectId(investmentProject.getId());
+            investmentProjectObjectiveRepository.deleteAll(objectivesList);
+            final String objectivesString = command.stringValueOfParameterNamed(InvestmentProjectConstants.objectivesParamName);
+            List<CodeValue> codeObjectives = getCodeValuesDataFromArray(objectivesString);
+            InvestmentProject finalInvestmentProject1 = investmentProject;
+            codeObjectives.forEach(item -> investmentProjectObjectiveRepository.save(new InvestmentProjectObjective(item, finalInvestmentProject1)));
+        }
 
         final Long statusCodeId = command.longValueOfParameterNamed(InvestmentProjectConstants.statusIdParamName);
-        final CodeValue newStatus = codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId);
+        final CodeValue newStatus = statusCodeId != null ? codeValueRepositoryWrapper.findOneWithNotFoundDetection(statusCodeId) : null;
+        final Long creditTypeId = command.longValueOfParameterNamed(InvestmentProjectConstants.creditTypeIdParamName);
+
         if (!changes.isEmpty() || newStatus != null) {
+            final CodeValue newCreditType = creditTypeId != null ? codeValueRepositoryWrapper.findOneWithNotFoundDetection(creditTypeId) : null;
+            if (newCreditType != null) {
+                investmentProject.setCreditType(newCreditType);
+                changes.put(InvestmentProjectConstants.creditTypeIdParamName, newCreditType.getLabel());
+            }
+
             investmentProject = this.investmentProjectRepository.saveAndFlush(investmentProject);
 
             StatusHistoryProject historyProject = statusHistoryProjectRepository.getLastStatusByInvestmentProjectId(investmentProject.getId());
-            if (historyProject == null || !Objects.equals(historyProject.getStatusValue().getId(), newStatus.getId())) {
+            if (newStatus != null && (historyProject == null || !Objects.equals(historyProject.getStatusValue().getId(), newStatus.getId()))) {
                 historyProject = new StatusHistoryProject();
                 historyProject.setInvestmentProject(investmentProject);
                 historyProject.setStatusValue(newStatus);
@@ -335,6 +361,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
             }
         }
+
 
         return new CommandProcessingResultBuilder() //
                 .withCommandId(command.commandId()) //
@@ -531,28 +558,28 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         }
     }
 
-    private List<CodeValue> getInvestmentProjectCategoryData(String categories) {
-        List<CodeValue> codeCategories = new ArrayList<>();
-        List<Long> categoriesId = getIdsFromJsonString(categories);
-        if (!categoriesId.isEmpty()) {
-            categoriesId.forEach(item -> codeCategories.add(codeValueRepositoryWrapper.findOneWithNotFoundDetection(item)));
-        }
-        return codeCategories;
-    }
-
-    private List<Long> getIdsFromJsonString(String list) {
-        List<Long> categoriesId = new ArrayList<>();
+    private List<CodeValue> getCodeValuesDataFromArray(String array) {
+        List<CodeValue> codeValues = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        List<String> categoriesId;
         try {
-            categoriesId = objectMapper.readValue(list, new TypeReference<List<Long>>() {});
-        } catch (IOException e) {
-            throw new GeneralPlatformDomainRuleException("err.msg.obtain.long.list.from.string", "Error when get long list from string");
+            categoriesId = objectMapper.readValue(array == null || array.isBlank() || array.matches("\\[,*\\]") ? "[]" : array, new TypeReference<List<String>>() {});
+        } catch (JsonProcessingException e) {
+            throw new GeneralPlatformDomainRuleException("err.msg.obtain.list.from.string", "Error when get list from string");
         }
-        return categoriesId;
+        if (!categoriesId.isEmpty()) {
+            categoriesId.forEach(item -> {
+                if (item != null) {
+                    codeValues.add(codeValueRepositoryWrapper.findOneWithNotFoundDetection(Long.valueOf(item)));
+                }
+            });
+        }
+        return codeValues;
     }
 
     private JsonObject createLoanAccountData(final Long clientId, final Long loanProductId, final BigDecimal amount,
-                                             final BigDecimal interest, final Integer periods, final String mnemonic) {
+                                             final BigDecimal interest, final Integer periods, final String mnemonic,
+                                             final Long loanPurposeId) {
         JsonObject accountJson = new JsonObject();
         // To format date in specific format
         DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
@@ -601,6 +628,7 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         accountJson.addProperty("principal", amount);
         accountJson.addProperty("allowPartialPeriodInterestCalcualtion", loanProductData.getAllowPartialPeriodInterestCalculation());
         accountJson.addProperty("accountNo", mnemonic);
+        accountJson.addProperty("loanPurposeId", loanPurposeId);
         return accountJson;
     }
 }

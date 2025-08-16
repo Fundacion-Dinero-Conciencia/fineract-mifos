@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements. See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership. The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License. You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <!--For 'Customer Identifier'-->
+    <changeSet id="1" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="4">
+                SELECT COUNT(*) FROM m_code_value
+                WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Identifier')
+                AND order_position IN (1, 2, 3, 4)
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Identificador Tributario"/>
+            <column name="code_description" value="RUT"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Identifier')
+                AND order_position = 1
+            </where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Documento Nacional Identidad"/>
+            <column name="code_description" value="DNI"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Identifier')
+                AND order_position = 2
+            </where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Pasaporte"/>
+            <column name="code_description" value=""/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Identifier')
+                AND order_position = 3
+            </where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Permiso de Conducir"/>
+            <column name="code_description" value=""/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Identifier')
+                AND order_position = 4
+            </where>
+        </update>
+    </changeSet>
+
+    <!--For 'ClientType'-->
+    <changeSet id="2" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'ClientType'
+            </sqlCheck>
+        </preConditions>
+
+        <delete tableName="m_code_value">
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND code_value = 'Grupo Belat'
+            </where>
+        </delete>
+
+        <delete tableName="m_code_value">
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND code_value = 'Fondo de Inversión'
+            </where>
+        </delete>
+
+        <update tableName="m_code_value">
+            <column name="order_position" value="1"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND code_value = 'Cliente de Crédito'
+            </where>
+        </update>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ClientType')"/>
+            <column name="code_value" value="Administrador Plataforma"/>
+            <column name="order_position" value="3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <update tableName="m_code_value">
+            <column name="order_position" value="9"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientType')
+                AND code_value = 'No especificado'
+            </where>
+        </update>
+    </changeSet>
+
+    <!--For 'ClientClassification'-->
+    <changeSet id="3" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'ClientClassification'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Inversionista retail"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientClassification')
+                AND code_value = 'Inversor'
+            </where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Inversionista Calificado"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientClassification')
+                AND code_value = 'Deudor'
+            </where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Fondo De inversiones"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientClassification')
+                AND code_value = 'Mixto'
+            </where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="No especificado"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'ClientClassification')
+                AND code_value = 'Sin definir'
+            </where>
+        </update>
+    </changeSet>
+
+    <!--For 'Constitution'-->
+    <changeSet id="4" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'Constitution'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="No especificado"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'Constitution')
+                AND code_value = 'Otras Organizaciones no especificadas (*)'
+            </where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Otras organizaciones económicas"/>
+            <where>
+                code_id = (SELECT id FROM m_code WHERE code_name = 'Constitution')
+                AND code_value = 'Otras organizaciones de la economía'
+            </where>
+        </update>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Constitution')"/>
+            <column name="code_value" value="Persona Natural"/>
+            <column name="order_position" valueComputed="(SELECT MAX(order_position)+1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Constitution'))"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Constitution')"/>
+            <column name="code_value" value="EIRL"/>
+            <column name="order_position" valueComputed="(SELECT MAX(order_position)+1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Constitution'))"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Constitution')"/>
+            <column name="code_value" value="Fondo de Inversión"/>
+            <column name="order_position" valueComputed="(SELECT MAX(order_position)+1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Constitution'))"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Constitution')"/>
+            <column name="code_value" value="Fondo Mutuo"/>
+            <column name="order_position" valueComputed="(SELECT MAX(order_position)+1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Constitution'))"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Constitution')"/>
+            <column name="code_value" value="Fondo de Pensión"/>
+            <column name="order_position" valueComputed="(SELECT MAX(order_position)+1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'Constitution'))"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For 'RiskProfile'-->
+    <changeSet id="5" author="fineract">
+        <!--Create 'RiskProfile' if not exists-->
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'RiskProfile'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="m_code">
+            <column name="code_name" value="RiskProfile"/>
+            <column name="is_system_defined" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'RiskProfile')"/>
+            <column name="code_value" value="Poca"/>
+            <column name="code_description" value="Conservador"/>
+            <column name="order_position" value="1"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'RiskProfile')"/>
+            <column name="code_value" value="Moderada"/>
+            <column name="code_description" value="Moderado"/>
+            <column name="order_position" value="2"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'RiskProfile')"/>
+            <column name="code_value" value="Alta"/>
+            <column name="code_description" value="Arriesgado"/>
+            <column name="order_position" value="3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'RiskProfile')"/>
+            <column name="code_value" value="No especificado"/>
+            <column name="order_position" value="4"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For 'RELATIONSHIP'-->
+    <changeSet id="6" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'RELATIONSHIP'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'RELATIONSHIP')"/>
+            <column name="code_value" value="Conyuge"/>
+            <column name="order_position" valueComputed="(SELECT COALESCE(MAX(order_position), 0) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'RELATIONSHIP'))"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For 'Gender'-->
+    <changeSet id="7" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'Gender'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Gender')"/>
+            <column name="code_value" value="Femenino"/>
+            <column name="code_description" value="F"/>
+            <column name="order_position" value="1"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Gender')"/>
+            <column name="code_value" value="Masculino"/>
+            <column name="code_description" value="M"/>
+            <column name="order_position" value="2"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Gender')"/>
+            <column name="code_value" value="Diverso"/>
+            <column name="code_description" value="X"/>
+            <column name="order_position" value="3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Gender')"/>
+            <column name="code_value" value="No especificado"/>
+            <column name="order_position" value="4"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For 'MARITAL STATUS'-->
+    <changeSet id="8" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'MARITAL STATUS'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'MARITAL STATUS')"/>
+            <column name="code_value" value="Conviviente civil"/>
+            <column name="order_position" value="3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <update tableName="m_code_value">
+            <column name="order_position" value="4"/>
+            <where>code_value = 'Separado(a)' AND code_id = (SELECT id FROM m_code WHERE code_name = 'MARITAL STATUS')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="order_position" value="5"/>
+            <where>code_value = 'Divorciado(a)' AND code_id = (SELECT id FROM m_code WHERE code_name = 'MARITAL STATUS')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="order_position" value="6"/>
+            <where>code_value = 'Viudo(a)' AND code_id = (SELECT id FROM m_code WHERE code_name = 'MARITAL STATUS')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="order_position" value="7"/>
+            <where>code_value = 'No especificado' AND code_id = (SELECT id FROM m_code WHERE code_name = 'MARITAL STATUS')</where>
+        </update>
+    </changeSet>
+
+    <!--For 'ADDRESS_TYPE'-->
+    <changeSet id="9" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'ADDRESS_TYPE'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ADDRESS_TYPE')"/>
+            <column name="code_value" value="Domicilio Particular"/>
+            <column name="order_position" value="1"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ADDRESS_TYPE')"/>
+            <column name="code_value" value="Domicilio Legal"/>
+            <column name="order_position" value="2"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ADDRESS_TYPE')"/>
+            <column name="code_value" value="Domicilio Comercial"/>
+            <column name="order_position" value="3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ADDRESS_TYPE')"/>
+            <column name="code_value" value="Domicilio Postal"/>
+            <column name="order_position" value="4"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ADDRESS_TYPE')"/>
+            <column name="code_value" value="Domicilio Tributario"/>
+            <column name="order_position" value="5"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ADDRESS_TYPE')"/>
+            <column name="code_value" value="No Especificado"/>
+            <column name="order_position" value="6"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For 'Customer Documents'-->
+    <changeSet id="10" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'Customer Documents'
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Cedula de Identidad"/>
+            <where>code_value = 'Cédula Representantes Legales' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Carpeta Tributaria SII"/>
+            <where>code_value = 'Carpeta Tributaria SII para créditos' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Certificado F30 SII"/>
+            <where>code_value = 'Certificado F30' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Estado de situación"/>
+            <where>code_value = 'Estado de situación de avales' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Certificado de Matrimonio"/>
+            <where>code_value = 'Certificado de Matrimonio avales' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="No especificado"/>
+            <column name="order_position" value="20"/>
+            <where>code_value = 'No especificado (*)' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Balance"/>
+            <where>code_value = 'Proyección de ingresos y egresos' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Certificado Deudas TGR"/>
+            <where>code_value = 'Certificado Deudas Tesorería' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <update tableName="m_code_value">
+            <column name="code_value" value="Flujo Caja"/>
+            <where>code_value = 'Tres últimos balances' AND code_id = (SELECT id FROM m_code WHERE code_name = 'Customer Documents')</where>
+        </update>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'Customer Documents')"/>
+            <column name="code_value" value="Documentación garantías"/>
+            <column name="order_position" value="19"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For 'DocumentTypes'-->
+    <changeSet id="11" author="fineract">
+
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'DocumentTypes'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="m_code">
+            <column name="code_name" value="DocumentTypes"/>
+            <column name="is_system_defined" valueBoolean="false"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Organizacionales"/>
+            <column name="order_position" value="1"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Comerciales"/>
+            <column name="order_position" value="2"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Legales"/>
+            <column name="order_position" value="3"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Laborales"/>
+            <column name="order_position" value="4"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Impacto"/>
+            <column name="order_position" value="5"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Financieros"/>
+            <column name="order_position" value="6"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Garantías"/>
+            <column name="order_position" value="7"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Riesgo"/>
+            <column name="order_position" value="8"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Operacionales"/>
+            <column name="order_position" value="9"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="Internos"/>
+            <column name="order_position" value="10"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'DocumentTypes')"/>
+            <column name="code_value" value="No especificado"/>
+            <column name="order_position" value="11"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <!--For 'TIPO_CUENTA'-->
+    <changeSet id="12" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM m_code WHERE code_name = 'TIPO_CUENTA'
+                </sqlCheck>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM m_code_value
+                    WHERE code_value = 'Cuenta PrePago'
+                    AND code_id = (SELECT id FROM m_code WHERE code_name = 'TIPO_CUENTA')
+                </sqlCheck>
+            </and>
+        </preConditions>
+
+        <update tableName="m_code_value">
+            <column name="code_description" value="Wallet"/>
+            <where>code_value = 'Cuenta PrePago' AND code_id = (SELECT id FROM m_code WHERE code_name = 'TIPO_CUENTA')</where>
+        </update>
+    </changeSet>
+
+    <!--For 'ProjectStatus'-->
+    <changeSet id="13" author="fineract">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM m_code WHERE code_name = 'ProjectStatus'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="m_code_value">
+            <column name="code_id" valueComputed="(SELECT id FROM m_code WHERE code_name = 'ProjectStatus')"/>
+            <column name="code_value" value="Borrado"/>
+            <column name="order_position"
+                    valueComputed="(SELECT COALESCE(MAX(order_position), 0) + 1 FROM m_code_value WHERE code_id = (SELECT id FROM m_code WHERE code_name = 'ProjectStatus'))"/>
+            <column name="is_active" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+
+
+
+</databaseChangeLog>
+
+

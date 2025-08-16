@@ -30,6 +30,10 @@ import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.codes.data.CodeData;
+import org.apache.fineract.infrastructure.codes.data.CodeValueData;
+import org.apache.fineract.infrastructure.codes.service.CodeReadPlatformService;
+import org.apache.fineract.infrastructure.codes.service.CodeValueReadPlatformService;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -47,10 +51,10 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -63,6 +67,8 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
     private final StatusHistoryProjectRepository statusHistoryProjectRepository;
     private final LoanRepositoryWrapper loanRepositoryWrapper;
     private final AdditionalExpensesRepository additionalExpensesRepository;
+    private final CodeReadPlatformService codeReadPlatformService;
+    private final CodeValueReadPlatformService codeValueReadPlatformService;
 
     static class Watermark extends PdfPageEventHelper {
         private final String watermarkText;
@@ -232,8 +238,21 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
         BigDecimal total = aefCommission.add(aefCommissionIva.add(iteCommission.add(otherExpenses.add(
                 notarialExpenses.add(investmentProject.getLoan().getNetDisbursalAmount())))));
 
+        CodeData codeData = codeReadPlatformService.retriveCode("CONFIG_COMMISSION_TAXES");
+        Collection<CodeValueData> codeValues = codeValueReadPlatformService.retrieveAllCodeValues(codeData.getId());
+
+        CodeValueData ivaCodeValue = codeValues.stream().filter(item -> "IVA".equals(item.getName()))
+                .findFirst()
+                .orElseThrow(() -> new GeneralPlatformDomainRuleException("error.msg.not.iva.configured", "Not IVA configured for CONFIG_COMMISSION_TAXES code"));
+        BigDecimal notarialAndOtherExpenses = notarialExpenses.add(otherExpenses);
+        BigDecimal notarialAndOtherExpensesIva = BigDecimal.ZERO;
+
+        if (ivaCodeValue.getDescription() != null) {
+            notarialAndOtherExpensesIva = notarialAndOtherExpenses.multiply(BigDecimal.valueOf(Double.parseDouble(ivaCodeValue.getDescription())));
+        }
+
         BigDecimal totalOperation = aefCommission.add(aefCommissionIva.add(iteCommission.add(otherExpenses.add(
-                notarialExpenses))));
+                notarialExpenses.add(notarialAndOtherExpensesIva)))));
 
         // Tabla con 4 columnas
         PdfPTable table = new PdfPTable(2);
@@ -273,7 +292,8 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
                 {"Impuesto Timbres y Estampillas (3)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(iteCommission.longValue())},
                 {"Gastos Notariales (4)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(notarialExpenses.longValue())},
                 {"Otros Gastos (5)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(otherExpenses.longValue())},
-                {"Gasto Total Operación (1)+(2)+(3)+(4)+(5)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(totalOperation.longValue())},
+                {"IVA Gastos Notariales y Otros Gastos (6)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(otherExpenses.longValue())},
+                {"Gasto Total Operación (1)+(2)+(3)+(4)+(5)+(6)", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(totalOperation.longValue())},
                 {"Monto a Entregar Cliente", "$" + formatNumberWithThousandsSeparatorAndTwoDecimals(investmentProject.getLoan().getNetDisbursalAmount().longValue())},
                 {"CAE", MathUtil.calculateAnnualIRR(doubleArray) + "%"},
                 {"Tasa AEF Banca Ética (anual)", aefTax.setScale(2, RoundingMode.HALF_EVEN) + "%"},
@@ -285,7 +305,8 @@ public class SimulationPdfGeneratorServiceImpl implements SimulationPdfGenerator
 
         for (int i = 0; i < rows.length; i++) {
             BaseColor bgColor;
-            if (i == 2 || i == 9 || i == 15) {
+            // Colums with different colors
+            if (i == 3 || i == 10 || i == 16) {
                 bgColor = rowColor2;
             } else {
                 bgColor = rowColor1;

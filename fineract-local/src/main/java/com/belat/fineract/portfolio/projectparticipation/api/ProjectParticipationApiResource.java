@@ -1,6 +1,7 @@
 package com.belat.fineract.portfolio.projectparticipation.api;
 
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationOdsAreaData;
 import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticipationReadPlatformService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,8 +17,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.core.MediaType;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.commands.domain.CommandWrapper;
 import org.apache.fineract.commands.service.CommandWrapperBuilder;
@@ -26,6 +27,8 @@ import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Path("/v1/projectparticipation")
 @Component
@@ -69,8 +72,14 @@ public class ProjectParticipationApiResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
-    public String getProjectParticipation(@QueryParam("id") final Long id, @QueryParam("participantId") final Long participantId,
-            @QueryParam("projectId") final Long projectId) {
+    public String getProjectParticipation(
+            @QueryParam("id") final Long id,
+            @QueryParam("participantId") final Long participantId,
+            @QueryParam("projectId") final Long projectId,
+            @QueryParam("statusCode") final Integer statusCode,
+            @QueryParam("page") @DefaultValue("0") final Integer page,
+            @QueryParam("size") final Integer size) {
+
         platformUserRightsContext.isAuthenticated();
 
         if (id != null) {
@@ -78,15 +87,32 @@ public class ProjectParticipationApiResource {
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (participantId != null) {
             final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
-                    .retrieveByClientId(participantId);
+                    .retrieveByClientId(participantId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (projectId != null) {
             final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
-                    .retrieveByProjectId(projectId);
+                    .retrieveByProjectId(projectId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else {
             throw new IllegalArgumentException("Not supported parameter");
         }
+    }
+
+    @GET
+    @Path("/participant/{participantId}/ods-areas")
+    @Produces({ MediaType.APPLICATION_JSON })
+    // TODO: add swagger
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
+    public String getProjectParticipationOdsAndAreasByParticipantId(
+            @PathParam("participantId") final Long participantId,
+            @QueryParam("statusCode") final Integer statusCode) {
+
+        platformUserRightsContext.isAuthenticated();
+
+        final List<ProjectParticipationOdsAreaData> projectParticipationData = projectParticipationReadPlatformService
+                .retrieveOdsAndAreaByClientId(participantId, statusCode);
+        return apiJsonSerializerService.serialize(projectParticipationData);
     }
 
     @PUT

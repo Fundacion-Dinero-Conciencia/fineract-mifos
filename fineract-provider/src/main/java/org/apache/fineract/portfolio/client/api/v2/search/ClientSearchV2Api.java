@@ -25,5 +25,5 @@ import org.springframework.data.domain.Page;
 
 public interface ClientSearchV2Api {
 
-    Page<ClientSearchData> searchByText(PagedRequest<ClientTextSearch> request);
+    Page<ClientSearchData> searchByTextAndClientType(PagedRequest<ClientTextSearch> request);
 }

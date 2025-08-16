@@ -35,6 +35,7 @@ public final class AccountTransfersApiConstants {
     public static final String ACCOUNT_TRANSFER_RESOURCE_NAME = "accounttransfer";
     public static final String SAVINGS_TRANSACTION_FREEZE_REASON_CODE_NAME = "SavingsTransactionFreezeReasons" ;
     public static final String DISBURSEMENT_COMMISSION = "DISBURSEMENT_COMMISSION";
+    public static final String INVESTMENT_THROUGH_KIPHU = "Investment through kiphu";
 
     // transaction parameters
     public static final String transferDateParamName = "transferDate";
@@ -45,6 +46,7 @@ public final class AccountTransfersApiConstants {
     public static final String investmentAgentIdParamName = "investmentAgentId";
     public static final String percentageInvestmentAgentParamName = "percentageInvestmentAgent";
     public static final String amountProjectParamName = "amount";
+    public static final String commissionParamName = "commission";
     public static final String projectIdParamName = "projectId";
 
     /**

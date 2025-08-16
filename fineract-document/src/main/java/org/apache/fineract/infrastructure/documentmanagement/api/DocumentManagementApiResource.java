@@ -99,14 +99,15 @@ public class DocumentManagementApiResource {
             @HeaderParam("Content-Length") @Parameter(description = "Content-Length") final Long fileSize,
             @FormDataParam("file") final InputStream inputStream, @FormDataParam("file") final FormDataContentDisposition fileDetails,
             @FormDataParam("file") final FormDataBodyPart bodyPart, @FormDataParam("name") final String name,
-            @FormDataParam("description") final String description, @FormDataParam("expirationDate") final LocalDate expirationDate) {
+            @FormDataParam("description") final String description, @FormDataParam("expirationDate") final LocalDate expirationDate,
+            @FormDataParam("documentClassId") final Long documentClassId, @FormDataParam("documentTypeId") final Long documentTypeId) {
 
         // TODO: stop reading from stream after max size is reached to protect against malicious clients
         // TODO: need to extract the actual file type and determine if they are permissible
 
         fileUploadValidator.validate(fileSize, inputStream, fileDetails, bodyPart);
         final DocumentCommand documentCommand = new DocumentCommand(null, null, entityType, entityId, name, fileDetails.getFileName(),
-                fileSize, bodyPart.getMediaType().toString(), description, null);
+                fileSize, bodyPart.getMediaType().toString(), description, null, documentClassId, documentTypeId);
         documentCommand.setExpirationDate(expirationDate);
         final Long documentId = documentWritePlatformService.createDocument(documentCommand, inputStream);
         return CommandProcessingResult.resourceResult(documentId);
@@ -129,11 +130,14 @@ public class DocumentManagementApiResource {
             @HeaderParam("Content-Length") @Parameter(description = "Content-Length") final Long fileSize,
             @FormDataParam("file") final InputStream inputStream, @FormDataParam("file") final FormDataContentDisposition fileDetails,
             @FormDataParam("file") final FormDataBodyPart bodyPart, @FormDataParam("name") final String name,
-            @FormDataParam("description") final String description, @FormDataParam("expirationDate") final LocalDate expirationDate) {
+            @FormDataParam("description") final String description, @FormDataParam("expirationDate") final LocalDate expirationDate,
+                                                  @FormDataParam("documentClassId") final Long documentClassId, @FormDataParam("documentTypeId") final Long documentTypeId) {
 
         final Set<String> modifiedParams = new HashSet<>();
         modifiedParams.add("name");
         modifiedParams.add("description");
+        modifiedParams.add("documentClassId");
+        modifiedParams.add("documentTypeId");
 
         /***
          * Populate Document command based on whether a file has also been passed in as a part of the update
@@ -146,10 +150,10 @@ public class DocumentManagementApiResource {
             modifiedParams.add("type");
             modifiedParams.add("location");
             documentCommand = new DocumentCommand(modifiedParams, documentId, entityType, entityId, name, fileDetails.getFileName(),
-                    fileSize, bodyPart.getMediaType().toString(), description, null);
+                    fileSize, bodyPart.getMediaType().toString(), description, null, documentClassId, documentTypeId);
         } else {
             documentCommand = new DocumentCommand(modifiedParams, documentId, entityType, entityId, name, null, null, null, description,
-                    null);
+                    null, documentClassId, documentTypeId);
         }
 
         documentCommand.setExpirationDate(expirationDate);
@@ -202,7 +206,7 @@ public class DocumentManagementApiResource {
             @PathParam("documentId") @Parameter(description = "documentId") final Long documentId) {
 
         final DocumentCommand documentCommand = new DocumentCommand(null, documentId, entityType, entityId, null, null, null, null, null,
-                null);
+                null, null, null);
 
         return documentWritePlatformService.deleteDocument(documentCommand);
     }

@@ -47,6 +47,7 @@ import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidati
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
 import org.apache.fineract.infrastructure.core.service.MathUtil;
+import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
 import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
@@ -99,6 +100,7 @@ import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromA
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountIdParamName;
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.toAccountTypeParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.amountProjectParamName;
+import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.commissionParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferAmountParamName;
 import static org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants.transferDateParamName;
 
@@ -197,29 +199,39 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     feePercentage = feePercentage.divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
                     final Long loanAccountId = accountAssociationsReadPlatformService.retrieveLoanLinkedAssociationBySaving(toSavingsId)
                             .getId();
+                    LoanRelationshipsData loanRelationshipsData = this.loanRelationshipsReadPlatformService.getLoanRelationshipsDataBySubLoanId(loanAccountId);
                     LoanAccountData loanData = loanReadPlatformService.retrieveOne(loanAccountId);
-                    final Double period = loanData.getTermInMonths();
-                    BigDecimal baseAmount = transactionAmount.divide(
-                            BigDecimal.ONE.add(feePercentage.multiply(BigDecimal.valueOf(period > 10 ? 10 : period))),
-                            MoneyHelper.getMathContext());
-                    final BigDecimal amount = command.bigDecimalValueOfParameterNamed(amountProjectParamName);
-
-                    if (baseAmount.compareTo(amount) != 0) {
-                        final List<ApiParameterError> dataValidationErrors = new ArrayList<>(1);
-                        final String message = "The amount sent for investment does not match the amount registered in the share, please create a new share with the appropriate amount.";
-                        dataValidationErrors.add(ApiParameterError.parameterError("error.msg.transaction.not.equals.amount",
-                                message, "Transfer amount", percentageInvestmentAgent, "Should be: " + amount.doubleValue() + " plus commission"));
-                        throw new PlatformApiDataValidationException(dataValidationErrors);
+                    LoanAccountData simulationData = loanReadPlatformService.retrieveOne(loanRelationshipsData.getLoanSimulationId());
+                    BigDecimal period = loanData.getTermInMonths();
+                    if (period.compareTo(BigDecimal.TEN) > 0) {
+                        period = BigDecimal.TEN;
                     }
-                    BigDecimal percentageParticipation = promissoryNoteWritePlatformService.calculateParticipationPercentage(loanData.getApprovedPrincipal(), baseAmount).divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
-                    BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage, percentageParticipation);
-                    validateLimitAmountToInvestment(toSavingsAccount, baseAmount);
+                    final BigDecimal amount = command.bigDecimalValueOfParameterNamed(amountProjectParamName);
+                    BigDecimal percentageParticipation = promissoryNoteWritePlatformService.calculateParticipationPercentage(simulationData.getApprovedPrincipal(), amount).divide(BigDecimal.valueOf(100), MoneyHelper.getMathContext());
+//                    BigDecimal baseAmount = transactionAmount.divide(
+//                            BigDecimal.ONE.add(percentageParticipation.multiply(feePercentage.multiply(period))),
+//                            MoneyHelper.getMathContext());
 
+//                    BigDecimal feeAmount = MathUtil.calculateCUPValue(period, baseAmount, feePercentage, percentageParticipation);
+                    BigDecimal commissionAmount = command.bigDecimalValueOfParameterNamed(commissionParamName);
+//                    if (baseAmount.compareTo(amount) != 0 || feeAmount.compareTo(commissionAmount) != 0) {
+//                        log.info("Correct capital expected: {}", amount);
+//                        log.info("Correct commission expected: {}", commissionAmount );
+//                        log.info("Erroneous capital amount received (calculated): {}", baseAmount);
+//                        log.info("Erroneous commission amount received (calculated): {}", feeAmount);
+//                        final List<ApiParameterError> dataValidationErrors = new ArrayList<>(1);
+//                        final String message = "The amount sent for investment does not match the amount registered in the share, please create a new share with the appropriate amount.";
+//                        dataValidationErrors.add(ApiParameterError.parameterError("error.msg.transaction.not.equals.amount",
+//                                message, "Transfer amount", percentageInvestmentAgent, "Should be: " + amount.doubleValue() + " plus commission" + commissionAmount.doubleValue()));
+//                        throw new PlatformApiDataValidationException(dataValidationErrors);
+//                    }
+
+                    validateLimitAmountToInvestment(toSavingsAccount, amount);
                     SavingsAccount belatAccount = this.savingsAccountAssembler
                             .assembleFrom(configurationDomainService.getDefaultAccountId(), false);
                     sendTransactionFeeToBelatAccount(belatAccount, fromSavingsAccount,
-                            Money.of(belatAccount.getCurrency(), feeAmount).getAmount(), transactionDate, false);
-                    transactionAmount = Money.of(belatAccount.getCurrency(), baseAmount).getAmount();
+                            Money.of(belatAccount.getCurrency(), commissionAmount).getAmount(), transactionDate, false);
+                    transactionAmount = Money.of(belatAccount.getCurrency(), amount).getAmount();
                 } else {
                     validateLimitAmountToInvestment(toSavingsAccount, transactionAmount);
                 }

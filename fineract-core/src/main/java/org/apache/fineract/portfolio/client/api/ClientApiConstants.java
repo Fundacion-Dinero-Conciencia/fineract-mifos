@@ -60,6 +60,7 @@ public class ClientApiConstants {
     public static final String GENDER = "Gender";
     public static final String CLIENT_TYPE = "ClientType";
     public static final String CLIENT_CLASSIFICATION = "ClientClassification";
+    public static final String CUSTOMER_IDENTIFIER = "Customer Identifier";
 
     public static final String CLIENT_NON_PERSON_CONSTITUTION = "Constitution";
     public static final String CLIENT_NON_PERSON_MAIN_BUSINESS_LINE = "Main Business Line";
@@ -69,6 +70,7 @@ public class ClientApiConstants {
     public static final String dateFormatParamName = "dateFormat";
     public static final String address = "address";
     public static final String familyMembers = "familyMembers";
+    public static final String identifiersParamName = "identifiers";
     public static final String MARITALSTATUS = "MARITALSTATUS";
     public static final String maritalStatusIdParamName = "maritalStatusId";
 
@@ -97,6 +99,7 @@ public class ClientApiConstants {
     public static final String closureReasonIdParamName = "closureReasonId";
     public static final String reopenedDateParamName = "reopenedDate";
     public static final String mnemonicParamName = "mnemonic";
+    public static final String fancyNameParamName = "fancyName";
 
     public static final String rejectionDateParamName = "rejectionDate";
     public static final String rejectionReasonIdParamName = "rejectionReasonId";

@@ -18,15 +18,16 @@
  */
 package com.belat.fineract.portfolio.projectparticipation.mapper;
 
-import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipation;
-import java.time.LocalDate;
-import java.util.List;
 import org.apache.fineract.infrastructure.core.config.MapstructMapperConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Mapper(config = MapstructMapperConfig.class)
 public interface ProjectParticipationMapper {
@@ -42,14 +43,13 @@ public interface ProjectParticipationMapper {
     @Mapping(target = "participantName", source = "client.displayName")
     @Mapping(target = "projectName", source = "investmentProject.name")
     @Mapping(target = "currencyCode", source = "investmentProject.currencyCode")
-    @Mapping(target = "createdOnDate", source = "investmentProject", qualifiedByName = "getCreatedOnDate")
+    @Mapping(target = "createdOnDate", source = "createdDate")
     ProjectParticipationData map(ProjectParticipation source);
 
     List<ProjectParticipationData> map(List<ProjectParticipation> sources);
 
-    @Named("getCreatedOnDate")
-    default LocalDate getCreatedOnDate(final InvestmentProject investmentProject) {
-        return investmentProject.getCreatedDate().get().toLocalDate();
+    default LocalDate map(Optional<OffsetDateTime> value) {
+        return value.map(OffsetDateTime::toLocalDate).orElse(null);
     }
 
 }

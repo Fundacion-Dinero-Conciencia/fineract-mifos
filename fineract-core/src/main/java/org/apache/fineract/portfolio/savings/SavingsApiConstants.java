@@ -202,4 +202,7 @@ public class SavingsApiConstants {
     public static final String ERROR_MSG_SAVINGS_ACCOUNT_NOT_ACTIVE = "not.in.active.state";
 
     public static final String accountMappingForPaymentParamName = "accountMappingForPayment";
+
+    // Saving Accounts payment types and code values for freeze
+    public static final String PAYMENT_TYPE_KHIPU = "KIPHU";
 }

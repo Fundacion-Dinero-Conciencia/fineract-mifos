@@ -213,4 +213,11 @@ public class AddressData implements Serializable {
                 countryIdOptions, stateProvinceIdOptions, addressTypeIdOptions);
     }
 
+    public String getCustomAddress () {
+        return (this.addressLine1 != null ? this.addressLine1 + ", " : "") +
+                (this.city != null ? this.city + ", " : "") +
+                (this.stateName != null ? this.stateName + ", " : "") +
+                (this.countryName != null ? this.countryName + "." : ".");
+    }
+
 }

@@ -33,7 +33,7 @@ public class ClientSearchV2ApiDelegate implements ClientSearchV2Api {
     private final ClientSearchService searchService;
 
     @Override
-    public Page<ClientSearchData> searchByText(PagedRequest<ClientTextSearch> request) {
-        return searchService.searchByText(request);
+    public Page<ClientSearchData> searchByTextAndClientType(PagedRequest<ClientTextSearch> request) {
+        return searchService.searchByTextAndClientType(request);
     }
 }

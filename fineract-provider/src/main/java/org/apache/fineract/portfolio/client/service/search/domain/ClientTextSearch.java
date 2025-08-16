@@ -24,4 +24,6 @@ import lombok.Data;
 public class ClientTextSearch {
 
     private String text;
+    private Long clientTypeId;
+
 }

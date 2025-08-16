@@ -20,9 +20,15 @@ package org.apache.fineract.infrastructure.documentmanagement.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.codes.domain.Code;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
 import org.apache.fineract.infrastructure.documentmanagement.command.DocumentCommand;
 
@@ -60,18 +66,28 @@ public class Document extends AbstractPersistableCustom<Long> {
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
 
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "document_class_id", nullable = false, referencedColumnName = "id")
+    private CodeValue documentClass;
+
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "document_type_id", nullable = false, referencedColumnName = "id")
+    private CodeValue documentType;
+
     public Document() {}
 
     public static Document createNew(final String parentEntityType, final Long parentEntityId, final String name, final String fileName,
             final Long size, final String type, final String description, final String location, final StorageType storageType,
-            final LocalDate expirationDate) {
+            final LocalDate expirationDate, final CodeValue documentClass, final CodeValue documentType) {
         return new Document(parentEntityType, parentEntityId, name, fileName, size, type, description, location, storageType,
-                expirationDate);
+                expirationDate, documentClass, documentType);
     }
 
     private Document(final String parentEntityType, final Long parentEntityId, final String name, final String fileName, final Long size,
             final String type, final String description, final String location, final StorageType storageType,
-            final LocalDate expirationDate) {
+            final LocalDate expirationDate, final CodeValue documentClass, final CodeValue documentType) {
         this.parentEntityType = StringUtils.defaultIfEmpty(parentEntityType, null);
         this.parentEntityId = parentEntityId;
         this.name = StringUtils.defaultIfEmpty(name, null);
@@ -82,6 +98,8 @@ public class Document extends AbstractPersistableCustom<Long> {
         this.location = StringUtils.defaultIfEmpty(location, null);
         this.storageType = storageType.getValue();
         this.expirationDate = expirationDate;
+        this.documentClass = documentClass;
+        this.documentType = documentType;
     }
 
     public void update(final DocumentCommand command) {
@@ -176,4 +194,21 @@ public class Document extends AbstractPersistableCustom<Long> {
     public LocalDate getExpirationDate() {
         return this.expirationDate;
     }
+
+    public CodeValue getDocumentClass() {
+        return this.documentClass;
+    }
+
+    public void setDocumentClass(final CodeValue documentClass) {
+        this.documentClass = documentClass;
+    }
+
+    public CodeValue getDocumentType() {
+        return this.documentType;
+    }
+
+    public void setDocumentType(final CodeValue documentType) {
+        this.documentType = documentType;
+    }
+
 }

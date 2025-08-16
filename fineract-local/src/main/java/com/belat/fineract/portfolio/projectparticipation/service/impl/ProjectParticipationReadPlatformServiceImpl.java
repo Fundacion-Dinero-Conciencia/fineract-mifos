@@ -2,6 +2,7 @@ package com.belat.fineract.portfolio.projectparticipation.service.impl;
 
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationOdsAreaData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipation;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
@@ -9,27 +10,21 @@ import com.belat.fineract.portfolio.projectparticipation.mapper.ProjectParticipa
 import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticipationReadPlatformService;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote;
 import com.belat.fineract.portfolio.promissorynote.service.PromissoryNoteReadPlatformService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.fineract.organisation.monetary.data.CurrencyData;
-import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
-import org.apache.fineract.organisation.monetary.domain.Money;
-import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.data.AccountTransferData;
 import org.apache.fineract.portfolio.account.data.PortfolioAccountData;
 import org.apache.fineract.portfolio.account.service.AccountTransfersReadPlatformService;
-import org.apache.fineract.portfolio.loanaccount.data.RepaymentScheduleRelatedLoanData;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanRepository;
-import org.apache.fineract.portfolio.loanaccount.loanschedule.data.LoanScheduleData;
-import org.apache.fineract.portfolio.loanaccount.loanschedule.service.LoanScheduleHistoryReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.LoanReadPlatformServiceCommon;
 import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -84,8 +79,11 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     }
 
     @Override
-    public List<ProjectParticipationData> retrieveByClientId(Long clientId) {
-        List<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId);
+    public List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size) {
+        Pageable pageable = (size != null)
+                ? PageRequest.of(page, size)
+                : Pageable.unpaged();
+        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, statusCode, pageable);
         List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
         projectsParticipation.forEach(projectParticipation -> {
             if (projectParticipation != null) {
@@ -97,8 +95,11 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     }
 
     @Override
-    public List<ProjectParticipationData> retrieveByProjectId(Long projectId) {
-        List<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId);
+    public List<ProjectParticipationData> retrieveByProjectId(Long projectId, Integer statusCode, Integer page, Integer size) {
+        Pageable pageable = (size != null)
+                ? PageRequest.of(page, size)
+                : Pageable.unpaged();
+        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
         List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
         projectsParticipation.forEach(projectParticipation -> {
             if (projectParticipation != null) {
@@ -107,6 +108,35 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
             }
         });
         return projectParticipationData;
+    }
+
+    @Override
+    public List<ProjectParticipationOdsAreaData> retrieveOdsAndAreaByClientId(Long clientId, Integer statusCode) {
+        List<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveWithDetailsByClientId(clientId, statusCode);
+        return mapProjectParticipationToPPOdsAreaData(projectsParticipation);
+    }
+
+    private List<ProjectParticipationOdsAreaData> mapProjectParticipationToPPOdsAreaData(List<ProjectParticipation> projectsParticipation) {
+        return projectsParticipation.stream()
+                .map(this::mapSingleProjectParticipation)
+                .toList();
+    }
+
+    private ProjectParticipationOdsAreaData mapSingleProjectParticipation(ProjectParticipation pp) {
+        var clientId = pp.getClient() != null ? pp.getClient().getId() : null;
+
+        var projectOdsAreaData = Optional.ofNullable(pp.getInvestmentProject())
+                .map(p -> new ProjectParticipationOdsAreaData.ProjectOdsAreaData(
+                        p.getId(), p.getName(), p.getArea(), p.getCategory(), p.getSubCategories(), p.getObjectives()))
+                .orElse(null);
+
+        return new ProjectParticipationOdsAreaData(
+                pp.getId(),
+                clientId,
+                pp.getStatusEnum(),
+                pp.getType(),
+                projectOdsAreaData
+        );
     }
 
     private void factoryData(ProjectParticipationData projectData, ProjectParticipation project,
@@ -179,19 +209,19 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
                                 principalEarned = principalEarned.add(item.getTransferAmount());
                             }
                         }
-                        PortfolioAccountData accountData = savingsAccountReadPlatformService.retriveSavingsLinkedAssociation(promissoryNote.getFundSavingsAccount().getId());
-                        if (accountData != null) {
-                            Optional <Loan> loan = loanRepository.findById(accountData.getId()).stream().findFirst();
-                            if (loan.isPresent()) {
-                                BigDecimal totalOutstanding = loanReadPlatformServiceCommon.getLoanTotalExpectedRepaymentDerived(loan.get().getId());
+                    }
+                    PortfolioAccountData accountData = savingsAccountReadPlatformService.retriveSavingsLinkedAssociation(promissoryNote.getFundSavingsAccount().getId());
+                    if (accountData != null) {
+                        Optional <Loan> loan = loanRepository.findById(accountData.getId()).stream().findFirst();
+                        if (loan.isPresent()) {
+                            BigDecimal totalOutstanding = loanReadPlatformServiceCommon.getLoanTotalExpectedRepaymentDerived(loan.get().getId());
 
-                                BigDecimal participationValue = totalOutstanding
-                                        .multiply(promissoryNote.getPercentageShare())
-                                        .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+                            BigDecimal participationValue = totalOutstanding
+                                    .multiply(promissoryNote.getPercentageShare())
+                                    .divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
 
-                                pendingAmount = pendingAmount.add(participationValue);
+                            pendingAmount = pendingAmount.add(participationValue);
 
-                            }
                         }
                     }
                 }

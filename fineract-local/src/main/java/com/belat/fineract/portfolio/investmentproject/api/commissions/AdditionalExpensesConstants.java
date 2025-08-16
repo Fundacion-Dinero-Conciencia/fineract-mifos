@@ -25,6 +25,7 @@ public class AdditionalExpensesConstants {
     public static final String IVA_AEF_COMMISSION = "IVA-AEF";
     public static final String CONFIG_COMMISSION_TAXES_CODE_NAME = "CONFIG_COMMISSION_TAXES";
     public static final String UPDATE_ADDITIONAL_EXPENSES = "ADDITIONAL_EXPENSES";
+    public static final String INVOICE_AMOUNT_COMMISSION = "MONTO FACTURA";
 
     /**
      * These parameters will match the class level parameters of {@link AdditionalExpensesData}. Where possible, we try

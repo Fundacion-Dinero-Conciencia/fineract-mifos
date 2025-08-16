@@ -18,7 +18,10 @@
  */
 package org.apache.fineract.portfolio.client.service;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import jakarta.persistence.PersistenceException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -65,6 +68,7 @@ import org.apache.fineract.portfolio.account.service.AccountNumberGenerator;
 import org.apache.fineract.portfolio.address.service.AddressWritePlatformService;
 import org.apache.fineract.portfolio.client.api.ClientApiConstants;
 import org.apache.fineract.portfolio.client.data.ClientDataValidator;
+import org.apache.fineract.portfolio.client.data.ClientIdentifierData;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.client.domain.ClientEnumerations;
 import org.apache.fineract.portfolio.client.domain.ClientNonPerson;
@@ -125,6 +129,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
     private final BusinessEventNotifierService businessEventNotifierService;
     private final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService;
     private final ExternalIdFactory externalIdFactory;
+    private final ClientIdentifierWritePlatformService clientIdentifierWritePlatformService;
 
     @Transactional
     @Override
@@ -260,7 +265,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final LocalDate dataOfBirth = command.localDateValueOfParameterNamed(ClientApiConstants.dateOfBirthParamName);
             final BigDecimal loanLimitBalance = command.bigDecimalValueOfParameterNamed(ClientApiConstants.loanLimitBalanceParamName);
             final String mnemonic = command.stringValueOfParameterNamed(ClientApiConstants.mnemonicParamName);
-
+            final String fancyName = command.stringValueOfParameterNamed(ClientApiConstants.fancyNameParamName);
             ClientStatus status = ClientStatus.PENDING;
             boolean active = false;
             if (command.hasParameter("active")) {
@@ -289,7 +294,7 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             final Client newClient = Client.instance(currentUser, status, clientOffice, clientParentGroup, accountNo, firstname, middlename,
                     lastname, fullname, activationDate, officeJoiningDate, externalId, mobileNo, emailAddress, staff, submittedOnDate,
                     savingsProductId, savingsAccountId, dataOfBirth, gender, clientType, clientClassification, legalForm.getValue(),
-                    isStaff, loanLimitBalance, mnemonic);
+                    isStaff, loanLimitBalance, mnemonic, fancyName);
 
             this.clientRepository.saveAndFlush(newClient);
             boolean rollbackTransaction = false;
@@ -338,6 +343,19 @@ public class ClientWritePlatformServiceJpaRepositoryImpl implements ClientWriteP
             if (newClient.isActive()) {
                 businessEventNotifierService.notifyPostBusinessEvent(new ClientActivateBusinessEvent(newClient));
             }
+
+            //Create client identifiers
+            JsonArray identifiers = command.arrayOfParameterNamed(ClientApiConstants.identifiersParamName);
+
+            for (JsonElement element : identifiers) {
+                JsonObject identifierObj = element.getAsJsonObject();
+
+                JsonCommand identifierCommand = JsonCommand.from(String.valueOf(identifierObj), JsonParser.parseString(identifierObj.toString()),
+                        command.getFromApiJsonHelper());
+
+                clientIdentifierWritePlatformService.addClientIdentifier(newClient.getId(), identifierCommand);
+            }
+
 
             return new CommandProcessingResultBuilder() //
                     .withCommandId(command.commandId()) //

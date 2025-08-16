@@ -36,7 +36,9 @@ import org.apache.fineract.commands.domain.CommandSource;
 import org.apache.fineract.commands.domain.CommandSourceRepository;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.configuration.service.TemporaryConfigurationServiceContainer;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
@@ -205,6 +207,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
     private final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService;
     private final LoanFundServiceImpl loanFundService;
     private final LoanScheduleWritePlatformServiceImpl loanScheduleWritePlatformService;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
 
     @Transactional
     @Override
@@ -500,7 +503,14 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
         accountJson.addProperty("locale", Locale.ENGLISH.toString());
         accountJson.addProperty("transactionAmount", amount);
-        accountJson.addProperty("paymentTypeId", applicationContext.getEnvironment().getProperty("fineract.transaction.payment.type.id"));
+        GlobalConfigurationPropertyData configurationPropertyData = configurationReadPlatformService.retrieveGlobalConfiguration("default-internal-transfer-payment-type");
+        if (!configurationPropertyData.isEnabled()) {
+            throw new GeneralPlatformDomainRuleException("error.msg.default.internal.transfer.payment.type.is.not.enabled", "Default internal transfer payment type is not enabled");
+        }
+        if (configurationPropertyData.getValue() == null) {
+            throw new GeneralPlatformDomainRuleException("error.msg.default.internal.transfer.payment.type.is.not.configured", "Default internal transfer payment type is not configured");
+        }
+        accountJson.addProperty("paymentTypeId", configurationPropertyData.getValue());
         return accountJson;
     }
 
@@ -3095,6 +3105,8 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             jsonMap.put("graceOnPrincipalPayment", loan.repaymentScheduleDetail().getGraceOnPrincipalPayment());
             jsonMap.put("graceOnArrearsAgeing", loan.repaymentScheduleDetail().getGraceOnArrearsAgeing());
             jsonMap.put("numberOfRepayments", loan.repaymentScheduleDetail().getNumberOfRepayments());
+            jsonMap.put("loanTermFrequency", loan.getTermFrequency());
+            jsonMap.put("repaymentEvery", loan.repaymentScheduleDetail().getRepayEvery());
             jsonMap.put("repaymentFrequencyType", loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType().getValue());
 
 
@@ -3173,7 +3185,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
             Loan createdLoan = loanRepositoryWrapper.findOneWithNotFoundDetection(result.getLoanId());
 
-            BigDecimal representativeValue = loan.getProposedPrincipal().divide(createdLoan.getProposedPrincipal(), 8, RoundingMode.HALF_UP);
+            BigDecimal representativeValue = loan.getProposedPrincipal().divide(createdLoan.getProposedPrincipal(), 6, RoundingMode.HALF_EVEN);
 
             List<LoanRepaymentScheduleInstallment> createdInstallments = loanRepositoryWrapper.getLoanRepaymentScheduleInstallments(result.getLoanId());
 
@@ -3199,7 +3211,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                         Map<String, String> installment = new HashMap<>();
                         LocalDate dueDate = createdInstallment.getDueDate();
                         installment.put("dueDate", dueDate.format(formatter));
-                        installment.put("installmentAmount", String.valueOf(simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().divide(representativeValue, 8, RoundingMode.HALF_UP)));
+                        installment.put("installmentAmount", String.valueOf(simulationInstallment.getTotalOutstanding(loan.getCurrency()).getAmount().divide(representativeValue, 6, RoundingMode.HALF_EVEN)));
                         modifiedInstallments.add(installment);
                     }
                 }

@@ -10,10 +10,12 @@ import com.belat.fineract.portfolio.questionsanswers.service.QuestionAnswerWrite
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import jakarta.transaction.Transactional;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +61,6 @@ public class QuestionAnswerWritePlatformServiceImpl implements QuestionAnswerWri
         question.setUser(user);
 
         belatQuestionRepository.saveAndFlush(question);
-
         return new CommandProcessingResultBuilder().withCommandId(command.commandId()).withEntityId(question.getId()).build();
     }
 

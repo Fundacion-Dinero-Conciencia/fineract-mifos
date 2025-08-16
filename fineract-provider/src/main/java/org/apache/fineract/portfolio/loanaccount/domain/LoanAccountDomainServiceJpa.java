@@ -27,7 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
+import org.apache.fineract.infrastructure.configuration.data.GlobalConfigurationPropertyData;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResultBuilder;
 import org.apache.fineract.infrastructure.core.domain.AbstractPersistableCustom;
@@ -135,6 +137,7 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
     private final ReprocessLoanTransactionsService reprocessLoanTransactionsService;
     private final SavingsAccountWritePlatformService savingsAccountWritePlatformService;
     private final AccountAssociationsReadPlatformService accountAssociationsReadPlatformService;
+    private final ConfigurationReadPlatformService configurationReadPlatformService;
 
     @Transactional
     @Override
@@ -364,8 +367,14 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         accountJson.addProperty("locale", Locale.ENGLISH.toString());
         accountJson.addProperty("transactionDate", DateUtils.getBusinessLocalDate().format(DateUtils.DEFAULT_DATE_FORMATTER));
         accountJson.addProperty("note", note);
-        accountJson.addProperty("paymentTypeId",
-                applicationContext.getEnvironment().getProperty("fineract.loan.to.saving.fund.transaction.payment.type.id"));
+        GlobalConfigurationPropertyData configurationPropertyData = configurationReadPlatformService.retrieveGlobalConfiguration("default-internal-transfer-payment-type");
+        if (!configurationPropertyData.isEnabled()) {
+            throw new GeneralPlatformDomainRuleException("error.msg.default.internal.transfer.payment.type.is.not.enabled", "Default internal transfer payment type is not enabled");
+        }
+        if (configurationPropertyData.getValue() == null) {
+            throw new GeneralPlatformDomainRuleException("error.msg.default.internal.transfer.payment.type.is.not.configured", "Default internal transfer payment type is not configured");
+        }
+        accountJson.addProperty("paymentTypeId", configurationPropertyData.getValue());
         accountJson.addProperty("installments", installments);
         return accountJson;
     }

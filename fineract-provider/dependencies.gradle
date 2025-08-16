@@ -79,6 +79,9 @@ dependencies {
 
             'com.google.guava:guava',
             'com.google.code.gson:gson',
+            'com.sendgrid:sendgrid-java:4.10.1',
+            'com.sun.mail:jakarta.mail:2.0.1',
+
 
             'jakarta.jms:jakarta.jms-api',
             'jakarta.management.j2ee:jakarta.management.j2ee-api',

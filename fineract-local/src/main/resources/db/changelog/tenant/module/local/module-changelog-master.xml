@@ -82,4 +82,14 @@
   <include relativeToChangelogFile="true" file="parts/9058_add_payment_document_and_client_type_code_values.xml"/>
   <include relativeToChangelogFile="true" file="parts/9059_change_column_type_for_bank_details_data_table.xml"/>
   <include relativeToChangelogFile="true" file="parts/9060_add_family_members_extra_columns.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9061_add_colum_credit_type_investment_project.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9062_configure_payment_types.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9063_add_country_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9064_update_for_new_code_values_usages.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9065_add_transactions_freeze_reason_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9066_add_loan_purpose_code_values.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9067_add_document_class_and_type_relation.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9068_edit_customer_identifier_values_and_add_column_fantasy.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9069_add_configuration_migration.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9070_add_default_payment_type_configuration.xml"/>
 </databaseChangeLog>

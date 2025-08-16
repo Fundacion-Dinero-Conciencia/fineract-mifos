@@ -33,6 +33,7 @@ public class InvestmentProjectConstants {
     public static final String basedInLoanProductIdParamName = "basedInLoanProductId";
     public static final String amountToBeDeliveredParamName = "amountToBeDelivered";
     public static final String amountToBeFinancedParamName = "amountToBeFinanced";
+    public static final String loanPurposeIdParamName = "loanPurposeId";
 
     // Descriptions
     public static final String impactDescriptionParamName = "impactDescription";
@@ -41,6 +42,7 @@ public class InvestmentProjectConstants {
     public static final String financingDescriptionParamName = "financingDescription";
     public static final String littleSocioEnvironmentalDescriptionParamName = "littleSocioEnvironmentalDescription";
     public static final String detailedSocioEnvironmentalDescriptionParamName = "detailedSocioEnvironmentalDescription";
+    public static final String creditTypeIdParamName = "creditTypeId";
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -51,7 +53,8 @@ public class InvestmentProjectConstants {
             impactDescriptionParamName, institutionDescriptionParamName, teamDescriptionParamName, financingDescriptionParamName,
             isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName, maxAmountParamName,
             minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName, detailedSocioEnvironmentalDescriptionParamName,
-            positionParamName, basedInLoanProductIdParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName, loanTermFrequencyType));
+            positionParamName, basedInLoanProductIdParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName, loanTermFrequencyType, creditTypeIdParamName,
+            loanPurposeIdParamName));
 
     /**
      * These parameters will match the class level parameters of {@link InvestmentProjectData}. Where possible, we try
@@ -62,6 +65,6 @@ public class InvestmentProjectConstants {
             financingDescriptionParamName, isActiveParamName, categoryParamName, subCategoriesParamName, areaParamName, objectivesParamName,
             maxAmountParamName, minAmountParamName, statusIdParamName, mnemonicParamName, littleSocioEnvironmentalDescriptionParamName,
             detailedSocioEnvironmentalDescriptionParamName, positionParamName, amountToBeDeliveredParamName, amountToBeFinancedParamName,
-            loanTermFrequencyType, amountParamName, periodParamName, projectRateParamName));
+            loanTermFrequencyType, amountParamName, periodParamName, projectRateParamName, creditTypeIdParamName, loanPurposeIdParamName));
 
 }

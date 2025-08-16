@@ -22,13 +22,17 @@ import static org.apache.fineract.portfolio.savings.SavingsApiConstants.SAVINGS_
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.amountParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.chargeIdParamName;
+import static org.apache.fineract.portfolio.savings.SavingsApiConstants.dateFormatParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.dueAsOfDateParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.lienAllowedParamName;
+import static org.apache.fineract.portfolio.savings.SavingsApiConstants.localeParamName;
+import static org.apache.fineract.portfolio.savings.SavingsApiConstants.reasonForBlockParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.transactionAmountParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.transactionDateParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.withHoldTaxParamName;
 import static org.apache.fineract.portfolio.savings.SavingsApiConstants.withdrawBalanceParamName;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -51,6 +55,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
+import org.apache.fineract.commands.domain.CommandWrapper;
+import org.apache.fineract.commands.service.CommandWrapperBuilder;
+import org.apache.fineract.infrastructure.codes.domain.CodeValue;
+import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
@@ -62,6 +70,7 @@ import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRu
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.apache.fineract.infrastructure.core.exception.PlatformServiceUnavailableException;
+import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.infrastructure.core.service.MathUtil;
 import org.apache.fineract.infrastructure.dataqueries.data.EntityTables;
@@ -80,6 +89,7 @@ import org.apache.fineract.organisation.staff.domain.Staff;
 import org.apache.fineract.organisation.staff.domain.StaffRepositoryWrapper;
 import org.apache.fineract.organisation.workingdays.domain.WorkingDaysRepositoryWrapper;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
+import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.account.domain.AccountTransferStandingInstruction;
 import org.apache.fineract.portfolio.account.domain.StandingInstructionRepository;
 import org.apache.fineract.portfolio.account.domain.StandingInstructionStatus;
@@ -123,6 +133,7 @@ import org.apache.fineract.portfolio.savings.exception.TransactionUpdateNotAllow
 import org.apache.fineract.portfolio.transfer.api.TransferApiConstants;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.apache.fineract.useradministration.domain.AppUserRepositoryWrapper;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -160,6 +171,9 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
     private final GSIMRepositoy gsimRepository;
     private final SavingsAccountInterestPostingService savingsAccountInterestPostingService;
     private final ErrorHandler errorHandler;
+    private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
+    private FromJsonHelper fromJsonHelper = new FromJsonHelper();
+    private final ApplicationContext appContext;
 
     @Transactional
     @Override
@@ -330,6 +344,10 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         if (StringUtils.isNotBlank(noteText)) {
             final Note note = Note.savingsTransactionNote(account, deposit, noteText);
             this.noteRepository.save(note);
+        }
+
+        if (paymentDetail != null && SavingsApiConstants.PAYMENT_TYPE_KHIPU.equals(paymentDetail.getPaymentType().getCodeName())) {
+            holdAmountPaymentKiphu(account.getId(), transactionAmount, locale.getLanguage(), command.dateFormat(), transactionDate.format(fmt));
         }
 
         return new CommandProcessingResultBuilder() //
@@ -1911,5 +1929,31 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
         if (StringUtils.isBlank(reasonForBlock)) {
             throw new PlatformDataIntegrityException("Reason For Block is Mandatory", "error.msg.reason.for.block.mandatory");
         }
+    }
+
+    /**
+     * This method is an adaptation for build hold amount when payment is through kiphu
+     * @param accountId identify an account to want you make hold amount
+     * @param amount to freeze
+     * @param varArgs in order... locale, format and date
+     */
+    private void holdAmountPaymentKiphu(final Long accountId, final BigDecimal amount, String... varArgs) {
+
+        // Investment through kiphu
+        SavingsAccountWritePlatformService proxy = this.appContext.getBean(SavingsAccountWritePlatformService.class);
+        CodeValue codeValue = codeValueRepositoryWrapper.findOneByCodeNameAndLabelWithNotFoundDetection(AccountTransfersApiConstants.SAVINGS_TRANSACTION_FREEZE_REASON_CODE_NAME, AccountTransfersApiConstants.INVESTMENT_THROUGH_KIPHU);
+        // create payload
+        Map<String, Object> command = new HashMap<>(5);
+
+        command.put(transactionAmountParamName, amount);
+        command.put(localeParamName, varArgs[0]);
+        command.put(dateFormatParamName, varArgs[1]);
+        command.put(transactionDateParamName, varArgs[2]);
+        command.put(reasonForBlockParamName, codeValue.getId());
+
+        String json = new Gson().toJson(command);
+        JsonElement jsonElement = this.fromJsonHelper.parse(json);
+        JsonCommand jsonCommand = JsonCommand.from(json, jsonElement, this.fromJsonHelper);
+        proxy.holdAmount(accountId, jsonCommand);
     }
 }

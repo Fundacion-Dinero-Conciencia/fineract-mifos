@@ -139,6 +139,11 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     @Column(name = "amount_to_be_delivered", nullable = false)
     private BigDecimal amountToBeDelivered;
 
+    @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "credit_type_id", referencedColumnName = "id")
+    private CodeValue creditType;
+
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.amountParamName, getAmount())) {
             final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountParamName);
@@ -217,5 +222,22 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
         }
 
     }
+
+    public Long getCategoryId() {
+        if (this.category != null) {
+            return this.category.getId();
+        } else {
+            return null;
+        }
+    }
+
+    public Long getAreaId() {
+        if (this.area != null) {
+            return this.area.getId();
+        } else {
+            return null;
+        }
+    }
+
 
 }
