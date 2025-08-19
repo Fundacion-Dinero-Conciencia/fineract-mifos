@@ -17,7 +17,7 @@
 #
 FROM azul/zulu-openjdk-debian:17 AS builder
 
-RUN apt-get update -qq && apt-get install -y wget
+RUN apt-get update -qq && apt-get install -y wget git unzip curl
 
 COPY . fineract
 
@@ -34,7 +34,7 @@ RUN jar -xf /fineract/fineract-provider/build/libs/fineract-provider*.jar
 
 
 # =========================================
-FROM azul/zulu-openjdk-debian:17 as fineract
+FROM azul/zulu-openjdk-debian:17 AS fineract
 
 RUN mkdir -p /app/libs
 
