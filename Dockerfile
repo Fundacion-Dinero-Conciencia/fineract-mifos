@@ -17,29 +17,23 @@
 #
 FROM azul/zulu-openjdk-debian:17 AS builder
 
-RUN apt-get update -qq && apt-get install -y wget git unzip curl
+RUN apt-get update -qq && apt-get install -y wget
 
 COPY . fineract
 
 WORKDIR /fineract
 
-##
-COPY gradlew gradlew.bat gradle/ build.gradle settings.gradle ./
-RUN chmod +x gradlew
-RUN ./gradlew --no-daemon dependencies || true
-COPY . .
-RUN ./gradlew --no-daemon --stacktrace --parallel --configure-on-demand \
-    -x rat -x compileTestJava -x spotlessApply -x test bootJar
+RUN ./gradlew --no-daemon -q -x rat -x compileTestJava -x spotlessApply -x test bootJar
 
-##
-#RUN ./gradlew --no-daemon -q -x rat -x compileTestJava -x spotlessApply -x test bootJar
-#WORKDIR /fineract/target
-#RUN ls -l /fineract/fineract-provider/build/libs/*.jar
-#RUN jar -xf /fineract/fineract-provider/build/libs/fineract-provider*.jar
+WORKDIR /fineract/target
+
+RUN ls -l /fineract/fineract-provider/build/libs/*.jar
+
+RUN jar -xf /fineract/fineract-provider/build/libs/fineract-provider*.jar
 
 
 # =========================================
-FROM azul/zulu-openjdk-debian:17 AS fineract
+FROM azul/zulu-openjdk-debian:17 as fineract
 
 RUN mkdir -p /app/libs
 
