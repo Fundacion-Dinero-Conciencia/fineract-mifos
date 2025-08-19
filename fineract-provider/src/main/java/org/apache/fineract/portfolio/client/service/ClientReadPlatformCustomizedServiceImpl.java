@@ -61,9 +61,17 @@ public class ClientReadPlatformCustomizedServiceImpl implements ClientReadPlatfo
         String nationality = null;
         String maritalStatus = null;
         if (profiling.isPresent()) {
-            occupation = profiling.get().get("ocupation").toString();
-            nationality = profiling.get().get("nationality").toString();
-            maritalStatus = profiling.get().get("maritalstatus").toString();
+            if (profiling.get().containsKey("ocupation")) {
+                occupation = profiling.get().get("ocupation") == null ? null : String.valueOf(profiling.get().get("ocupation"));
+            }
+            if (profiling.get().containsKey("nationality")) {
+                nationality = profiling.get().get("nationality") == null ? null : String.valueOf(profiling.get().get("nationality"));
+            }
+            if (profiling.get().containsKey("maritalstatus")) {
+                maritalStatus = profiling.get().get("maritalstatus") == null ? null : String.valueOf(profiling.get().get("maritalstatus"));
+            }
+
+
         }
 
         if (Objects.equals(2, client.getLegalForm())) {
@@ -74,9 +82,16 @@ public class ClientReadPlatformCustomizedServiceImpl implements ClientReadPlatfo
 
 
             if (bank.isPresent()) {
-                accountNo = bank.get().get("noaccount").toString();
-                accountType = bank.get().get("tipocuenta").toString();
-                bankName = bank.get().get("banco").toString();
+                if (bank.get().containsKey("noaccount")) {
+                    accountNo = bank.get().get("noaccount") == null ? null : String.valueOf(bank.get().get("noaccount"));
+                }
+                if (bank.get().containsKey("tipocuenta")) {
+                    accountType = bank.get().get("tipocuenta") == null ? null : String.valueOf(bank.get().get("tipocuenta"));
+                }
+                if (bank.get().containsKey("banco")) {
+                    bankName = bank.get().get("banco") == null ? null : String.valueOf(bank.get().get("banco"));
+                }
+
             }
             return new ClientInfoCustomizedDTO(client.getFullname(), client.getFancyName(), client.getEmailAddress(), client.getMobileNo(),
                     rut, clientAddress != null ? clientAddress.getAddress().getAddressLine1() : null, accountNo, bankName, accountType,
@@ -88,9 +103,15 @@ public class ClientReadPlatformCustomizedServiceImpl implements ClientReadPlatfo
             String accountType = null;
             String bankName = null;
             if (bank.isPresent()) {
-                accountNo = bank.get().get("noaccount").toString();
-                accountType = bank.get().get("tipocuenta").toString();
-                bankName = bank.get().get("banco").toString();
+                if (bank.get().containsKey("noaccount")) {
+                    accountNo = bank.get().get("noaccount") == null ? null : String.valueOf(bank.get().get("noaccount"));
+                }
+                if (bank.get().containsKey("tipocuenta")) {
+                    accountType = bank.get().get("tipocuenta") == null ? null : String.valueOf(bank.get().get("tipocuenta"));
+                }
+                if (bank.get().containsKey("banco")) {
+                    bankName = bank.get().get("banco") == null ? null : String.valueOf(bank.get().get("banco"));
+                }
             }
             return new ClientInfoCustomizedDTO(client.getFirstname(), client.getMiddlename(), client.getLastname(), client.getEmailAddress(), client.getMobileNo(),
                     rut, occupation, clientAddress != null ? clientAddress.getAddress().getAddressLine1(): null, accountNo, bankName, accountType,
