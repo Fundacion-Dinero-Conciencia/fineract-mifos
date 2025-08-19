@@ -22,15 +22,20 @@ RUN apt-get update -qq && apt-get install -y wget git unzip curl
 COPY . fineract
 
 WORKDIR /fineract
-RUN chmod +x gradlew 
-#RUN ./gradlew --no-daemon --stacktrace -x rat -x compileTestJava -x spotlessApply -x test bootJar
-RUN ./gradlew --no-daemon -q -x rat -x compileTestJava -x spotlessApply -x test bootJar
 
-WORKDIR /fineract/target
+##
+COPY gradlew gradlew.bat gradle/ build.gradle settings.gradle ./
+RUN chmod +x gradlew
+RUN ./gradlew --no-daemon dependencies || true
+COPY . .
+RUN ./gradlew --no-daemon --stacktrace --parallel --configure-on-demand \
+    -x rat -x compileTestJava -x spotlessApply -x test bootJar
 
-RUN ls -l /fineract/fineract-provider/build/libs/*.jar
-
-RUN jar -xf /fineract/fineract-provider/build/libs/fineract-provider*.jar
+##
+#RUN ./gradlew --no-daemon -q -x rat -x compileTestJava -x spotlessApply -x test bootJar
+#WORKDIR /fineract/target
+#RUN ls -l /fineract/fineract-provider/build/libs/*.jar
+#RUN jar -xf /fineract/fineract-provider/build/libs/fineract-provider*.jar
 
 
 # =========================================
