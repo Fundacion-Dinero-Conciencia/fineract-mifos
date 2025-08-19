@@ -22,8 +22,9 @@ RUN apt-get update -qq && apt-get install -y wget
 COPY . fineract
 
 WORKDIR /fineract
-
-RUN ./gradlew --no-daemon -q -x rat -x compileTestJava -x spotlessApply -x test bootJar
+RUN chmod +x gradlew 
+RUN ./gradlew --no-daemon --stacktrace -x rat -x compileTestJava -x spotlessApply -x test bootJar
+#RUN ./gradlew --no-daemon -q -x rat -x compileTestJava -x spotlessApply -x test bootJar
 
 WORKDIR /fineract/target
 
