@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      options: --memory=6g --memory-swap=6g
     environment: pro
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
