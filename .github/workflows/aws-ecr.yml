@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: Runner2
+    runs-on: ubuntu-latest
     environment: pro
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
