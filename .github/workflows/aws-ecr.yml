@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, grs]
+    runs-on: [self-hosted, GRS]
     environment: pro
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
