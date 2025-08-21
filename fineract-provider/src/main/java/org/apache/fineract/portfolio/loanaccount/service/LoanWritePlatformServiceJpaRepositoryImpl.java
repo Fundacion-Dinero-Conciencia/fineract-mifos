@@ -3108,6 +3108,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             jsonMap.put("loanTermFrequency", loan.getTermFrequency());
             jsonMap.put("repaymentEvery", loan.repaymentScheduleDetail().getRepayEvery());
             jsonMap.put("repaymentFrequencyType", loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType().getValue());
+            jsonMap.put("transactionProcessingStrategyCode","mifos-standard-strategy");
 
 
         } catch (Exception e) {
