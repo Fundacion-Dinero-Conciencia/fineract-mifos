@@ -87,16 +87,36 @@ public class ProjectParticipationApiResource {
             final ProjectParticipationData projectParticipationData = projectParticipationReadPlatformService.retrieveById(id);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (participantId != null) {
-            final Page<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
                     .retrieveByClientId(participantId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (projectId != null) {
-            final Page<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
                     .retrieveByProjectId(projectId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else {
             throw new IllegalArgumentException("Not supported parameter");
         }
+    }
+
+    @GET
+    @Path("/search/pageable")
+    @Produces({ MediaType.APPLICATION_JSON })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProjectParticipationApiResourceSwagger.GetProjectParticipationResponse.class))) })
+    public String getProjectParticipationPageable(
+            @QueryParam("participantId") final Long participantId,
+            @QueryParam("projectId") final Long projectId,
+            @QueryParam("statusCode") final Integer statusCode,
+            @QueryParam("page") @DefaultValue("0") final Integer page,
+            @QueryParam("size") final Integer size) {
+
+        platformUserRightsContext.isAuthenticated();
+
+        final Page<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+                        .retrieveByFiltersPageable(participantId, projectId, statusCode, page, size);
+
+        return apiJsonSerializerService.serialize(projectParticipationData);
     }
 
     @GET

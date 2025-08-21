@@ -12,10 +12,12 @@ public interface ProjectParticipationReadPlatformService {
 
     ProjectParticipationData retrieveById(Long id);
 
-    Page<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size);
+    List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size);
+
+    Page<ProjectParticipationData> retrieveByFiltersPageable(Long clientId, Long projectId, Integer statusCode, Integer page, Integer size);
 
     List<ProjectParticipationOdsAreaData> retrieveOdsAndAreaByClientId(Long clientId, Integer statusCode);
 
-    Page<ProjectParticipationData> retrieveByProjectId(Long categoryId, Integer statusCode, Integer page, Integer size);
+    List<ProjectParticipationData> retrieveByProjectId(Long categoryId, Integer statusCode, Integer page, Integer size);
 
 }
