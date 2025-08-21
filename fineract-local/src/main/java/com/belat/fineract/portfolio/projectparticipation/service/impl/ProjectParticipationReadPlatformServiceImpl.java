@@ -78,12 +78,56 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
         return projectParticipationData;
     }
 
+
     @Override
-    public Page<ProjectParticipationData> retrieveByClientId( Long clientId, Integer statusCode, Integer page, Integer size) {
+    public List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size) {
         Pageable pageable = (size != null)
                 ? PageRequest.of(page, size)
                 : Pageable.unpaged();
         Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, statusCode, pageable);
+        List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
+        projectsParticipation.forEach(projectParticipation -> {
+            if (projectParticipation != null) {
+                ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
+                factoryData(projectsData, projectParticipation, projectParticipationData);
+            }
+        });
+        return projectParticipationData;
+    }
+
+    @Override
+    public List<ProjectParticipationData> retrieveByProjectId(Long projectId, Integer statusCode, Integer page, Integer size) {
+        Pageable pageable = (size != null)
+                ? PageRequest.of(page, size)
+                : Pageable.unpaged();
+        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
+        List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
+        projectsParticipation.forEach(projectParticipation -> {
+            if (projectParticipation != null) {
+                ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
+                factoryData(projectsData, projectParticipation, projectParticipationData);
+            }
+        });
+        return projectParticipationData;
+    }
+
+    @Override
+    public Page<ProjectParticipationData> retrieveByFiltersPageable(Long clientId, Long projectId, Integer statusCode, Integer page, Integer size) {
+        Pageable pageable = (size != null)
+                ? PageRequest.of(page, size)
+                : Pageable.unpaged();
+
+        Page<ProjectParticipation> projectsParticipation = null;
+        if (clientId != null) {
+            projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, statusCode, pageable);
+        } else if (projectId != null) {
+            projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
+        }
+
+        if (projectsParticipation == null) {
+            return Page.empty();
+        }
+
         return projectsParticipation.map(projectParticipation -> {
             ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
             factoryData(projectsData, projectParticipation, new ArrayList<>());
@@ -91,18 +135,6 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
         });
     }
 
-    @Override
-    public Page<ProjectParticipationData> retrieveByProjectId(Long projectId, Integer statusCode, Integer page, Integer size) {
-        Pageable pageable = (size != null)
-                ? PageRequest.of(page, size)
-                : Pageable.unpaged();
-        Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
-        return projectsParticipation.map(projectParticipation -> {
-                ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
-                factoryData(projectsData, projectParticipation, new ArrayList<>());
-                return projectsData;
-        });
-    }
 
     @Override
     public List<ProjectParticipationOdsAreaData> retrieveOdsAndAreaByClientId(Long clientId, Integer statusCode) {
