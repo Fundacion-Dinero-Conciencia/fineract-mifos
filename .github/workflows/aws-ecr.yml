@@ -1,4 +1,4 @@
-name: Publish Image in AWS ECR
+name: Publish Image in AWS ECR.
 
 on:
   push:
