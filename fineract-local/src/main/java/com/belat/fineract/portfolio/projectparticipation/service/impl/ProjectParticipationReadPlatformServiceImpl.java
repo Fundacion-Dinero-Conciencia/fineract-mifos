@@ -79,35 +79,29 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     }
 
     @Override
-    public List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size) {
+    public Page<ProjectParticipationData> retrieveByClientId( Long clientId, Integer statusCode, Integer page, Integer size) {
         Pageable pageable = (size != null)
                 ? PageRequest.of(page, size)
                 : Pageable.unpaged();
         Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, statusCode, pageable);
-        List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
-        projectsParticipation.forEach(projectParticipation -> {
-            if (projectParticipation != null) {
-                ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
-                factoryData(projectsData, projectParticipation, projectParticipationData);
-            }
+        return projectsParticipation.map(projectParticipation -> {
+            ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
+            factoryData(projectsData, projectParticipation, new ArrayList<>());
+            return projectsData;
         });
-        return projectParticipationData;
     }
 
     @Override
-    public List<ProjectParticipationData> retrieveByProjectId(Long projectId, Integer statusCode, Integer page, Integer size) {
+    public Page<ProjectParticipationData> retrieveByProjectId(Long projectId, Integer statusCode, Integer page, Integer size) {
         Pageable pageable = (size != null)
                 ? PageRequest.of(page, size)
                 : Pageable.unpaged();
         Page<ProjectParticipation> projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
-        List<ProjectParticipationData> projectParticipationData = new ArrayList<>();
-        projectsParticipation.forEach(projectParticipation -> {
-            if (projectParticipation != null) {
+        return projectsParticipation.map(projectParticipation -> {
                 ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
-                factoryData(projectsData, projectParticipation, projectParticipationData);
-            }
+                factoryData(projectsData, projectParticipation, new ArrayList<>());
+                return projectsData;
         });
-        return projectParticipationData;
     }
 
     @Override
