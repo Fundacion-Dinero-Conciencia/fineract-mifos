@@ -91,11 +91,10 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
             // Commission CPD (devolución)
             if (percentageInvestmentReturn.doubleValue() > 0 && tr.getTransactionType().isCurrentInterest()) {
-                BigDecimal amountEarned = transactionAmount.multiply(percentageInvestmentReturn.divide(BigDecimal.valueOf(100), mc));
+                BigDecimal amountEarned = Money.of(savingBelat.getCurrency(), transactionAmount.multiply(percentageInvestmentReturn.divide(BigDecimal.valueOf(100), mc))).getAmount();
                 transactionAmount = Money.of(savingBelat.getCurrency(), transactionAmount.subtract(amountEarned)).getAmount();
 
                 if (amountEarned.doubleValue() > 0) {
-                    amountEarned = Money.of(savingBelat.getCurrency(), amountEarned).getAmount();
                     Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned,
                             DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods), null);
                     transactionsList.add(transactionPercentage);
@@ -104,13 +103,13 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
             }
 
             for (PromissoryNote item : accountsToDistribute) {
-                BigDecimal amountToSend = transactionAmount.multiply(item.getPercentageShare().divide(BigDecimal.valueOf(100), mc));
+                BigDecimal amountToSend = Money.of(item.getInvestorSavingsAccount().getCurrency(), transactionAmount.multiply(item.getPercentageShare().divide(BigDecimal.valueOf(100), mc))).getAmount();
                 BigDecimal amountCAI = BigDecimal.ZERO;
                 // Commission CAI (agente inversiones)
                 if (item.getInvestmentAgent() != null && item.getPercentageInvestmentAgent().doubleValue() > 0
                         && tr.getTransactionType().isCurrentInterest()) {
                     log.info("Send transaction to investment agent {}", item.getInvestmentAgent().displayName());
-                    amountCAI = amountToSend.multiply(item.getPercentageInvestmentAgent().divide(BigDecimal.valueOf(100), mc));
+                    amountCAI = Money.of(item.getInvestorSavingsAccount().getCurrency(), amountToSend.multiply(item.getPercentageInvestmentAgent().divide(BigDecimal.valueOf(100), mc))).getAmount();
                     SavingsAccount savingInvestmentAgent = savingsAccountRepository.findByStaffId(item.getInvestmentAgent().getId());
                     Long transactionId = sendTransaction(savingsAccountFund, savingInvestmentAgent, amountCAI,
                             DistributeFundConstants.COMMISSION_CAI
@@ -118,13 +117,13 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                     transactionsList.add(transactionId);
 
                 }
-                amountToSend = amountToSend.subtract(amountCAI);
+                amountToSend = Money.of(item.getInvestorSavingsAccount().getCurrency(), amountToSend.subtract(amountCAI)).getAmount();
                 if (tr.getId().equals(transactions.get(transactions.size() - 1).getId())
                         && item.getId().equals(accountsToDistribute.get(accountsToDistribute.size() - 1).getId())) {
                     BigDecimal amountToCompare = savingsAccountRepository.findById(savingsAccountFund.getId())
                             .orElseThrow(() -> new SavingsAccountNotFoundException(savingBelat.getId())).getSummary().getAccountBalance();
                     if (amountToCompare.compareTo(amountToSend) < 0) {
-                        amountToSend = amountToCompare;
+                        amountToSend = Money.of(item.getInvestorSavingsAccount().getCurrency(), amountToCompare).getAmount();
                     }
                 }
                 String description = DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods);
@@ -167,12 +166,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         final CommandWrapperBuilder builder = new CommandWrapperBuilder().withJson(new Gson().toJson(transferData));
         final CommandWrapper commandRequest = builder.createAccountTransfer().build();
         CommandProcessingResult result = null;
-        try {
-            result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
-        } catch (RuntimeException e) {
-            log.info(e.getMessage());
-            throw new PlatformApiDataValidationException(e.getMessage(), "Error in transactions", null);
-        }
+        result = this.commandsSourceWritePlatformService.logCommandSource(commandRequest);
 
         return result.getResourceId();
 
