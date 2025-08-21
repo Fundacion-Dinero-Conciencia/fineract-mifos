@@ -572,4 +572,10 @@ public class ConfigurationDomainServiceJpa implements ConfigurationDomainService
                     "Could not get the account assigned by default, check that it is enabled and configured.", "belat-account");
         }
     }
+
+    @Override
+    public Boolean getDataMigrationEnabled() {
+        GlobalConfigurationPropertyData propertyData = getGlobalConfigurationPropertyData(GlobalConfigurationConstants.DATA_MIGRATION);
+        return propertyData != null && propertyData.isEnabled();
+    }
 }

@@ -3087,7 +3087,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             String dateStr = rootForDate.get(LoanApiConstants.dateOfCreationParamName).asText();
             format = root.get(LoanApiConstants.dateFormatParameterName).asText();
             locale = root.get(LoanApiConstants.localeParameterName).asText();
-            date = OffsetDateTime.parse(dateStr).toLocalDate();
+            date = LocalDate.parse(dateStr);
         } catch (Exception e) {
             date = DateUtils.getBusinessLocalDate();
         }

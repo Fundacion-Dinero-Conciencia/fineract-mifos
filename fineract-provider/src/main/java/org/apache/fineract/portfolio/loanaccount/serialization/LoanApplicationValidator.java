@@ -201,6 +201,7 @@ public final class LoanApplicationValidator {
     private final CalendarInstanceRepository calendarInstanceRepository;
     private final LoanUtilService loanUtilService;
     private final EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService;
+    private final ConfigurationDomainService configurationService;
 
     public void validateForCreate(final Loan loan) {
         final LocalDate expectedFirstRepaymentOnDate = loan.getExpectedFirstRepaymentOnDate();
@@ -1891,6 +1892,7 @@ public final class LoanApplicationValidator {
 
     private void validateSubmittedOnDate(final JsonElement element, LocalDate originalSubmittedOnDate,
             LocalDate originalExpectedDisbursementDate, LoanProduct loanProduct) {
+        final boolean isMigration = configurationService.getDataMigrationEnabled();
         final LocalDate startDate = loanProduct.getStartDate();
         final LocalDate closeDate = loanProduct.getCloseDate();
         final LocalDate submittedOnDate = this.fromApiJsonHelper.parameterExists(LoanApiConstants.submittedOnDateParameterName, element)
@@ -1922,8 +1924,7 @@ public final class LoanApplicationValidator {
             throw new InvalidLoanStateTransitionException("submittal", "cannot.be.a.future.date", errorMessage, submittedOnDate,
                     DateUtils.getBusinessLocalDate());
         }
-
-        if (clientId != null) {
+        if (clientId != null && !isMigration) {
             Client client = clientRepository.findOneWithNotFoundDetection(clientId);
             if (client != null && client.isActivatedAfter(submittedOnDate)) {
                 final String errorMessage = "The date on which a loan is submitted cannot be earlier than client's activation date.";
@@ -1998,6 +1999,7 @@ public final class LoanApplicationValidator {
     }
 
     public void validateApproval(JsonCommand command, Long loanId) {
+        final Boolean isMigration = this.configurationService.getDataMigrationEnabled();
         String json = command.json();
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
@@ -2116,7 +2118,7 @@ public final class LoanApplicationValidator {
 
             if (client != null && client.getOfficeJoiningDate() != null && approvedOnDate != null) {
                 final LocalDate clientOfficeJoiningDate = client.getOfficeJoiningDate();
-                if (DateUtils.isBefore(approvedOnDate, clientOfficeJoiningDate)) {
+                if (DateUtils.isBefore(approvedOnDate, clientOfficeJoiningDate) && !isMigration) {
                     throw new InvalidLoanStateTransitionException("approval", "cannot.be.before.client.transfer.date",
                             "The date on which a loan is approved cannot be earlier than client's transfer date to this office",
                             clientOfficeJoiningDate);

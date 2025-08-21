@@ -153,4 +153,6 @@ public interface ConfigurationDomainService {
     BigDecimal retrievePercentageInvestmentFeeReturn();
 
     Long getDefaultAccountId();
+
+    Boolean getDataMigrationEnabled();
 }
