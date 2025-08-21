@@ -57,7 +57,6 @@ import org.apache.fineract.portfolio.loanproduct.data.LoanProductData;
 import org.apache.fineract.portfolio.loanproduct.service.LoanProductReadPlatformService;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
@@ -235,14 +234,15 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
         final Long loanPurposeId = command.longValueOfParameterNamed(InvestmentProjectConstants.loanPurposeIdParamName);
 
+        final String submittedDate = command.stringValueOfParameterNamed(InvestmentProjectConstants.submittedDateParamName);
         // Build loan data
         JsonObject loanJson = createLoanAccountData(investmentProject.getOwner().getId(), basedInLoanProductId, investmentProject.getAmount(),
-                investmentProject.getRate(), investmentProject.getPeriod(), mnemonic, loanPurposeId);
+                investmentProject.getRate(), investmentProject.getPeriod(), mnemonic, loanPurposeId, submittedDate);
 
         JsonCommand loanCommand = JsonCommand.from(String.valueOf(loanJson), JsonParser.parseString(loanJson.toString()),
                 command.getFromApiJsonHelper());
 
-        // Create saving account
+        // Create loan account
         CommandProcessingResult loanResult = loanApplicationWritePlatformService.submitApplication(loanCommand);
 
         investmentProject.setLoan(loanRepositoryWrapper.findOneWithNotFoundDetection(loanResult.getResourceId()));
@@ -579,11 +579,11 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
 
     private JsonObject createLoanAccountData(final Long clientId, final Long loanProductId, final BigDecimal amount,
                                              final BigDecimal interest, final Integer periods, final String mnemonic,
-                                             final Long loanPurposeId) {
+                                             final Long loanPurposeId, String submittedOnDate) {
         JsonObject accountJson = new JsonObject();
         // To format date in specific format
         DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
-
+        final String date = submittedOnDate != null && !submittedOnDate.isEmpty() ? submittedOnDate : DateUtils.getBusinessLocalDate().format(formatter);
         LoanProductData loanProductData = loanProductReadPlatformService.retrieveLoanProduct(loanProductId);
         Integer loanTermFrequencyType = PeriodFrequencyType.MONTHS.getValue();
         if (SHORT_NAME_FACTORING.equals(loanProductData.getShortName())) {
@@ -593,8 +593,8 @@ public class InvestmentProjectWritePlatformServiceImpl implements InvestmentProj
         accountJson.addProperty("loanOfficerId", "");
         accountJson.addProperty("loanPurposeId", "");
         accountJson.addProperty("fundId", "");
-        accountJson.addProperty("submittedOnDate", DateUtils.getBusinessLocalDate().format(formatter));
-        accountJson.addProperty("expectedDisbursementDate", DateUtils.getBusinessLocalDate().format(formatter));
+        accountJson.addProperty("submittedOnDate", date);
+        accountJson.addProperty("expectedDisbursementDate", date);
         accountJson.addProperty("externalId", "");
         accountJson.addProperty("linkAccountId", "");
         accountJson.addProperty("createStandingInstructionAtDisbursement", "");

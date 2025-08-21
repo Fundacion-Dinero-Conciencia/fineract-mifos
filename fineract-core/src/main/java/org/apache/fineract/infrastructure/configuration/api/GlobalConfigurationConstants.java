@@ -79,6 +79,7 @@ public final class GlobalConfigurationConstants {
     public static final String INVESTMENT_FEE = "investment-fee";
     public static final String RETURN_INVESTMENT_FEE = "return-on-investment-fee";
     public static final String BELAT_ACCOUNT = "belat-account";
+    public static final String DATA_MIGRATION = "data-migration";
 
     private GlobalConfigurationConstants() {}
 }
