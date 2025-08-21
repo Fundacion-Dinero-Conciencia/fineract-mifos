@@ -26,6 +26,7 @@ import org.apache.fineract.commands.service.PortfolioCommandSourceWritePlatformS
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
 import org.apache.fineract.infrastructure.core.serialization.DefaultToApiJsonSerializer;
 import org.apache.fineract.infrastructure.security.service.PlatformUserRightsContext;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -86,11 +87,11 @@ public class ProjectParticipationApiResource {
             final ProjectParticipationData projectParticipationData = projectParticipationReadPlatformService.retrieveById(id);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (participantId != null) {
-            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+            final Page<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
                     .retrieveByClientId(participantId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else if (projectId != null) {
-            final List<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+            final Page<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
                     .retrieveByProjectId(projectId, statusCode, page, size);
             return apiJsonSerializerService.serialize(projectParticipationData);
         } else {
