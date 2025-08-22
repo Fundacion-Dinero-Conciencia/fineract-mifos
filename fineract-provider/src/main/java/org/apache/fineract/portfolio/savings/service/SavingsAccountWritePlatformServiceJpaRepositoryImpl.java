@@ -55,8 +55,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
-import org.apache.fineract.commands.domain.CommandWrapper;
-import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.codes.domain.CodeValueRepositoryWrapper;
 import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
@@ -203,7 +201,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
     public CommandProcessingResult activate(final Long savingsId, final JsonCommand command) {
 
         final AppUser user = this.context.authenticatedUser();
-
+        final Boolean isMigration = this.configurationDomainService.getDataMigrationEnabled();
         this.savingsAccountTransactionDataValidator.validateActivation(command);
 
         final SavingsAccount account = this.savingAccountAssembler.assembleFrom(savingsId, false);
@@ -214,7 +212,7 @@ public class SavingsAccountWritePlatformServiceJpaRepositoryImpl implements Savi
 
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
 
-        final Map<String, Object> changes = account.activate(user, command);
+        final Map<String, Object> changes = account.activate(user, command, isMigration);
 
         entityDatatableChecksWritePlatformService.runTheCheckForProduct(savingsId, EntityTables.SAVINGS.getName(),
                 StatusEnum.ACTIVATE.getValue(), EntityTables.SAVINGS.getForeignKeyColumnNameOnDatatable(), account.productId());

@@ -392,13 +392,13 @@ public class SavingsConfiguration {
             AccountNumberFormatRepositoryWrapper accountNumberFormatRepository, BusinessEventNotifierService businessEventNotifierService,
             EntityDatatableChecksWritePlatformService entityDatatableChecksWritePlatformService, GSIMRepositoy gsimRepository,
             GroupRepositoryWrapper groupRepositoryWrapper, GroupSavingsIndividualMonitoringWritePlatformService gsimWritePlatformService,
-            ApplicationCurrencyRepositoryWrapper applicationCurrencyRepositoryWrapper) {
+            ApplicationCurrencyRepositoryWrapper applicationCurrencyRepositoryWrapper, ConfigurationDomainService configurationDomainService) {
         return new SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl(context, savingAccountRepository, savingAccountAssembler,
                 savingsAccountDataValidator, accountNumberGenerator, clientRepository, groupRepository, savingsProductRepository,
                 noteRepository, staffRepository, savingsAccountApplicationTransitionApiJsonValidator, savingsAccountChargeAssembler,
                 commandProcessingService, savingsAccountDomainService, savingsAccountWritePlatformService, accountNumberFormatRepository,
                 businessEventNotifierService, entityDatatableChecksWritePlatformService, gsimRepository, groupRepositoryWrapper,
-                gsimWritePlatformService, applicationCurrencyRepositoryWrapper);
+                gsimWritePlatformService, applicationCurrencyRepositoryWrapper, configurationDomainService);
     }
 
     @Bean

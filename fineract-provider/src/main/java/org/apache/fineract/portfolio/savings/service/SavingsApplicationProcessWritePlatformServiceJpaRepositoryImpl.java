@@ -31,6 +31,7 @@ import org.apache.fineract.commands.service.CommandWrapperBuilder;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormat;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.AccountNumberFormatRepositoryWrapper;
 import org.apache.fineract.infrastructure.accountnumberformat.domain.EntityAccountType;
+import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -118,6 +119,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     private final GroupRepositoryWrapper groupRepositoryWrapper;
     private final GroupSavingsIndividualMonitoringWritePlatformService gsimWritePlatformService;
     private final ApplicationCurrencyRepositoryWrapper applicationCurrencyRepositoryWrapper;
+    private final ConfigurationDomainService configurationDomainService;
 
     @Transactional
     @Override
@@ -452,6 +454,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
     public CommandProcessingResult approveApplication(final Long savingsId, final JsonCommand command) {
 
         final AppUser currentUser = this.context.authenticatedUser();
+        final Boolean isMigration = this.configurationDomainService.getDataMigrationEnabled();
 
         this.savingsAccountApplicationTransitionApiJsonValidator.validateApproval(command.json());
 
@@ -465,7 +468,7 @@ public class SavingsApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
             throw new GeneralPlatformDomainRuleException("error.msg.fund.is.not.complete", "Fund is not completed");
         }
 
-        final Map<String, Object> changes = savingsAccount.approveApplication(currentUser, command);
+        final Map<String, Object> changes = savingsAccount.approveApplication(currentUser, command, isMigration);
         if (!changes.isEmpty()) {
             this.savingAccountRepository.save(savingsAccount);
 

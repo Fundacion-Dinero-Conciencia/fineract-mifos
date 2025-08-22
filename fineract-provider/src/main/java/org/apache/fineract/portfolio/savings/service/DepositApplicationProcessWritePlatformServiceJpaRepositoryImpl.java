@@ -600,7 +600,7 @@ public class DepositApplicationProcessWritePlatformServiceJpaRepositoryImpl impl
         final SavingsAccount savingsAccount = this.depositAccountAssembler.assembleFrom(savingsId, depositAccountType);
         checkClientOrGroupActive(savingsAccount);
 
-        final Map<String, Object> changes = savingsAccount.approveApplication(currentUser, command);
+        final Map<String, Object> changes = savingsAccount.approveApplication(currentUser, command, false);
         if (!changes.isEmpty()) {
             this.savingAccountRepository.save(savingsAccount);
 

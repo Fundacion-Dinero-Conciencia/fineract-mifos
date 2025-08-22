@@ -134,6 +134,7 @@ public class SavingsAccountAssembler {
     public SavingsAccount assembleFrom(final JsonCommand command, final AppUser submittedBy) {
 
         final JsonElement element = command.parsedJson();
+        final Boolean isMigration = this.configurationDomainService.getDataMigrationEnabled();
 
         final String accountNo = this.fromApiJsonHelper.extractStringNamed(accountNoParamName, element);
         final String externalId = this.fromApiJsonHelper.extractStringNamed(externalIdParamName, element);
@@ -338,7 +339,9 @@ public class SavingsAccountAssembler {
                 nominalAnnualInterestRateOverdraft, minOverdraftForInterestCalculation, withHoldTax);
         account.setHelpers(this.savingsAccountTransactionSummaryWrapper, this.savingsHelper);
 
-        account.validateNewApplicationState(SAVINGS_ACCOUNT_RESOURCE_NAME);
+        if (!isMigration) {
+            account.validateNewApplicationState(SAVINGS_ACCOUNT_RESOURCE_NAME);
+        }
 
         account.validateAccountValuesWithProduct();
 
