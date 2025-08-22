@@ -18,7 +18,10 @@
  */
 package org.apache.fineract.portfolio.account.service;
 
+import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProject;
+import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
+import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectWritePlatformService;
 import com.belat.fineract.portfolio.loanrelations.data.LoanRelationshipsData;
 import com.belat.fineract.portfolio.loanrelations.service.LoanRelationshipsReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
@@ -46,11 +49,8 @@ import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRu
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
 import org.apache.fineract.infrastructure.core.service.ExternalIdFactory;
-import org.apache.fineract.infrastructure.core.service.MathUtil;
-import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.organisation.monetary.domain.MonetaryCurrency;
 import org.apache.fineract.organisation.monetary.domain.Money;
-import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.account.PortfolioAccountType;
 import org.apache.fineract.portfolio.account.api.AccountTransfersApiConstants;
 import org.apache.fineract.portfolio.account.data.AccountTransferDTO;
@@ -64,7 +64,6 @@ import org.apache.fineract.portfolio.account.domain.AccountTransferTransaction;
 import org.apache.fineract.portfolio.account.domain.AccountTransferType;
 import org.apache.fineract.portfolio.account.exception.DifferentCurrenciesException;
 import org.apache.fineract.portfolio.loanaccount.data.HolidayDetailDTO;
-import org.apache.fineract.portfolio.loanaccount.data.LoanAccountData;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanAccountDomainService;
 import org.apache.fineract.portfolio.loanaccount.domain.LoanTransaction;
@@ -94,6 +93,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountIdParamName;
 import static org.apache.fineract.portfolio.account.AccountDetailConstants.fromAccountTypeParamName;
@@ -129,6 +129,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     private final InvestmentProjectReadPlatformService investmentProjectReadPlatformService;
     private final CodeValueRepositoryWrapper codeValueRepositoryWrapper;
     private final LoanRelationshipsReadPlatformService loanRelationshipsReadPlatformService;
+    private final InvestmentProjectRepository investmentProjectRepository;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -637,7 +638,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                 gsimRepository.save(gsim);
             }
 
-            createTransactionForDisbursement(fromLoanAccount.getId(), toSavingsAccount, deposit.getTransactionDate());
+            createTransactionForDisbursement(fromLoanAccount.getId(), toSavingsAccount, deposit.getTransactionDate(), accountTransferDTO.getTransactionAmount());
 
         } else {
             throw new GeneralPlatformDomainRuleException("error.msg.accounttransfer.loan.to.loan.not.supported",
@@ -821,22 +822,42 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
     /**
      * This method reflects the discount to be made to a customer for the disbursement commission.
      */
-    private void createTransactionForDisbursement(Long loanId, SavingsAccount clientAccount, LocalDate transactionDate) {
+    private void createTransactionForDisbursement(Long loanId, SavingsAccount clientAccount, LocalDate transactionDate, BigDecimal disbursementAmount) {
 
         LoanRelationshipsData loanRelationshipsData = loanRelationshipsReadPlatformService.getLoanRelationshipsDataBySubLoanId(loanId);
-        if (loanRelationshipsData != null && loanRelationshipsData.getContainsCommission()) {
-            log.info("createTransactionForDisbursement: Creating transaction for commission");
-            final Long toSavingsId = configurationDomainService.getDefaultAccountId();
-            final SavingsAccount belatAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, false);
-            final BigDecimal amount = investmentProjectReadPlatformService.retrieveByLinkedLoan(loanRelationshipsData.getLoanSimulationId()).getAvailableTotalAmount();
-            log.info("createTransactionForDisbursement: Amount to transfer for disbursement commission [{}]", amount);
-            if (amount != null && amount.compareTo(BigDecimal.ZERO) > 0) {
-                sendTransactionFeeToBelatAccount(belatAccount, clientAccount, amount, transactionDate, true);
+
+        if (loanRelationshipsData != null) {
+            InvestmentProject investmentProject = this.investmentProjectReadPlatformService.retrieveInvestmentById(loanRelationshipsData.getLoanSimulationId());
+            BigDecimal commissionAmount = Money.of(clientAccount.getCurrency(), investmentProject.getAmountToBeFinanced().subtract(investmentProject.getAmountToBeDelivered())).getAmount();
+            BigDecimal amountCommissionPaid = Optional.ofNullable(investmentProject.getAmountCommissionPaid()).orElse(BigDecimal.ZERO);
+            BigDecimal totalDue = commissionAmount.subtract(amountCommissionPaid);
+            BigDecimal chargedNow = BigDecimal.ZERO;
+
+            if (disbursementAmount.compareTo(totalDue) >= 0) {
+                chargedNow =  totalDue;
+                investmentProject.setAmountCommissionPaid(totalDue.add(amountCommissionPaid));
+            } else {
+                chargedNow = disbursementAmount;
+                amountCommissionPaid = amountCommissionPaid.add(chargedNow);
+                investmentProject.setAmountCommissionPaid(amountCommissionPaid);
+            }
+
+            this.investmentProjectRepository.save(investmentProject);
+
+            if (chargedNow.compareTo(BigDecimal.ZERO) > 0) {
+
+                log.info("createTransactionForDisbursement: Creating transaction for commission");
+                final Long toSavingsId = configurationDomainService.getDefaultAccountId();
+                final SavingsAccount belatAccount = this.savingsAccountAssembler.assembleFrom(toSavingsId, false);
+                log.info("createTransactionForDisbursement: Amount to transfer for disbursement commission [{}]", chargedNow);
+
+
+                sendTransactionFeeToBelatAccount(belatAccount, clientAccount, chargedNow, transactionDate, true);
                 CodeValue codeValue = codeValueRepositoryWrapper.findOneByCodeNameAndLabelWithNotFoundDetection(AccountTransfersApiConstants.SAVINGS_TRANSACTION_FREEZE_REASON_CODE_NAME, AccountTransfersApiConstants.DISBURSEMENT_COMMISSION);
                 Map<String, Object> payload = new HashMap<>();
                 payload.put("reasonForBlock", codeValue.getId());
                 payload.put("transactionDate", transactionDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
-                payload.put("transactionAmount", amount);
+                payload.put("transactionAmount", chargedNow);
                 payload.put("dateFormat", "dd MMMM yyyy");
                 payload.put("locale", "es");
                 createHoldTransaction(payload, belatAccount.getId());
