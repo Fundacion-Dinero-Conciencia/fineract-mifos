@@ -181,7 +181,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         context.authenticatedUser();
         account.validateForAccountBlock();
         account.validateForCreditBlock();
-
+        final Boolean isMigration = this.configurationDomainService.getDataMigrationEnabled();
         // Global configurations
         final boolean isSavingsInterestPostingAtCurrentPeriodEnd = this.configurationDomainService
                 .isSavingsInterestPostingAtCurrentPeriodEnd();
@@ -205,7 +205,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                 paymentDetail, null, accountType);
         UUID refNo = UUID.randomUUID();
         final SavingsAccountTransaction deposit = account.deposit(transactionDTO, savingsAccountTransactionType, backdatedTxnsAllowedTill,
-                relaxingDaysConfigForPivotDate, refNo.toString());
+                relaxingDaysConfigForPivotDate, refNo.toString(), isMigration);
         final LocalDate postInterestOnDate = null;
         final MathContext mc = MathContext.DECIMAL64;
 

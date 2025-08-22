@@ -1102,19 +1102,19 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
     public SavingsAccountTransaction deposit(final SavingsAccountTransactionDTO transactionDTO, final boolean backdatedTxnsAllowedTill,
             final Long relaxingDaysConfigForPivotDate, final String refNo) {
         return deposit(transactionDTO, SavingsAccountTransactionType.DEPOSIT, backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate,
-                refNo);
+                refNo, null);
     }
 
     public SavingsAccountTransaction dividendPayout(final SavingsAccountTransactionDTO transactionDTO,
             final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate) {
         String refNo = null;
         return deposit(transactionDTO, SavingsAccountTransactionType.DIVIDEND_PAYOUT, backdatedTxnsAllowedTill,
-                relaxingDaysConfigForPivotDate, refNo);
+                relaxingDaysConfigForPivotDate, refNo, null);
     }
 
     public SavingsAccountTransaction deposit(final SavingsAccountTransactionDTO transactionDTO,
-            final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill,
-            final Long relaxingDaysConfigForPivotDate, final String refNo) {
+                                             final SavingsAccountTransactionType savingsAccountTransactionType, final boolean backdatedTxnsAllowedTill,
+                                             final Long relaxingDaysConfigForPivotDate, final String refNo, Boolean isMigration) {
         final String resourceTypeName = depositAccountType().resourceName();
         if (isNotActive() && !savingsAccountTransactionType.isInvestment()) {
             final String defaultUserMessage = "Transaction is not allowed. Account is not active.";
@@ -1139,7 +1139,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
             throw new PlatformApiDataValidationException(dataValidationErrors);
         }
 
-        if (DateUtils.isBefore(transactionDTO.getTransactionDate(), getActivationDate()) && !savingsAccountTransactionType.isInvestment()) {
+        if (DateUtils.isBefore(transactionDTO.getTransactionDate(), getActivationDate()) && !savingsAccountTransactionType.isInvestment() && !isMigration) {
             final Object[] defaultUserArgs = Arrays.asList(transactionDTO.getTransactionDate().format(transactionDTO.getFormatter()),
                     getActivationDate().format(transactionDTO.getFormatter())).toArray();
             final String defaultUserMessage = "Transaction date cannot be before accounts activation date.";
@@ -1155,7 +1155,10 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         validatePivotDateTransaction(transactionDTO.getTransactionDate(), backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate,
                 resourceTypeName);
 
-        validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_DEPOSIT, transactionDTO.getTransactionDate());
+        if (!isMigration) {
+            validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_DEPOSIT, transactionDTO.getTransactionDate());
+        }
+
 
         final Money amount = Money.of(this.currency, transactionDTO.getTransactionAmount());
 
