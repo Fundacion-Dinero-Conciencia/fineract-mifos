@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.commands.domain.CommandWrapper;
@@ -53,7 +54,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
     @Override
     @Transactional
-    public Map<String, Object> distributeFunds(Long accountId) {
+    public Map<String, Object> distributeFunds(Long accountId, LocalDate transferDate) {
 
         final BigDecimal percentageInvestmentReturn = configurationService.retrievePercentageInvestmentFeeReturn();
         final SavingsAccount savingBelat = savingsAccountRepository.findById(configurationService.getDefaultAccountId()).orElseThrow();
@@ -96,7 +97,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
                 if (amountEarned.doubleValue() > 0) {
                     Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned,
-                            DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods), null);
+                            DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods), null, transferDate);
                     transactionsList.add(transactionPercentage);
                 }
 
@@ -113,7 +114,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                     SavingsAccount savingInvestmentAgent = savingsAccountRepository.findByStaffId(item.getInvestmentAgent().getId());
                     Long transactionId = sendTransaction(savingsAccountFund, savingInvestmentAgent, amountCAI,
                             DistributeFundConstants.COMMISSION_CAI
-                                    .concat("-" + item.getInvestorSavingsAccount().getClient().getDisplayName()).concat(paymentPeriods), null);
+                                    .concat("-" + item.getInvestorSavingsAccount().getClient().getDisplayName()).concat(paymentPeriods), null, transferDate);
                     transactionsList.add(transactionId);
 
                 }
@@ -127,7 +128,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                     }
                 }
                 String description = DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods);
-                Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend, description, tr.getTransactionType().getValue());
+                Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend, description, tr.getTransactionType().getValue(), transferDate);
                 transactionsList.add(transactionId);
             }
             tr.setWasDistribute(true);
@@ -141,9 +142,11 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
     @Transactional
     public Long sendTransaction(SavingsAccount accountFund, SavingsAccount accountInvestor, BigDecimal amount,
-                                String observationTransaction, Integer paymentTypeId) {
+                                String observationTransaction, Integer paymentTypeId, LocalDate transferDate) {
 
         Map<String, Object> transferData = new HashMap<>();
+        LocalDate transactionDate = transferDate != null ? transferDate : DateUtils.getBusinessLocalDate();
+        String transferDateStr = transactionDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es")));
 
         transferData.put("toAccountId", accountInvestor.getId());
         transferData.put("toClientId", accountInvestor.getClient().getId());
@@ -151,8 +154,7 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
         transferData.put("toOfficeId", accountInvestor.officeId());
 
         transferData.put("transferAmount", Money.of(accountFund.getCurrency(), amount).getAmount());
-        transferData.put("transferDate",
-                DateUtils.getBusinessLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.forLanguageTag("es"))));
+        transferData.put("transferDate", transferDateStr);
         transferData.put("transferDescription", observationTransaction);
         transferData.put("dateFormat", "dd MMMM yyyy");
         transferData.put("locale", "es");
