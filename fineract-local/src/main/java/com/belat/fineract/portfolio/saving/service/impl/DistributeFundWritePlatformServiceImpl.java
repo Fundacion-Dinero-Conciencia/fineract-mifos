@@ -84,6 +84,10 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
             throw new PlatformApiDataValidationException("error.msg.transaction", "No balance to distribute to investors", null);
         }
 
+        if (!configurationService.getDataMigrationEnabled()) {
+            transferDate = null;
+        }
+
         List<Long> transactionsList = new ArrayList<>(100);
         for (SavingsAccountTransaction tr : transactions) {
             String paymentPeriods = MessageFormat.format(", Cuotas: {0}", tr.getInstallments().replace("[\\[\\]]", ""));
