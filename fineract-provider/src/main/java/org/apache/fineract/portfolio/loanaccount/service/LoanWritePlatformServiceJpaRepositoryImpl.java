@@ -3148,7 +3148,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
             // Build saving data
             JsonObject savingJson = loanFundService.createSavingAccountData(null, loan.getClientId(),
-                    null, loan.getCurrencyCode(), formatter);
+                    null, loan.getCurrencyCode(), date.format(formatter), locale, format);
 
             JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()),
                     command.getFromApiJsonHelper());

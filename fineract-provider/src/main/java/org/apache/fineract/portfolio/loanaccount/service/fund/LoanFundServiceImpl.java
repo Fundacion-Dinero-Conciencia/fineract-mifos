@@ -20,10 +20,6 @@ package org.apache.fineract.portfolio.loanaccount.service.fund;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.CommandProcessingResult;
@@ -31,7 +27,6 @@ import org.apache.fineract.infrastructure.core.service.DateUtils;
 import org.apache.fineract.portfolio.account.domain.AccountAssociationType;
 import org.apache.fineract.portfolio.account.domain.AccountAssociations;
 import org.apache.fineract.portfolio.account.domain.AccountAssociationsRepository;
-import org.apache.fineract.portfolio.client.service.ClientWritePlatformService;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
@@ -41,6 +36,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -48,20 +48,16 @@ public class LoanFundServiceImpl {
 
     private final ApplicationContext applicationContext;
     private final AccountAssociationsRepository accountAssociationsRepository;
-    private final ClientWritePlatformService clientWritePlatformService;
     private final SavingsApplicationProcessWritePlatformService savingsApplicationProcessWritePlatformService;
     private final SavingsAccountRepository savingsAccountRepository;
 
     public void createFundAccount(final Loan loan, final JsonCommand command) {
 
-        // To format date in specific format
-        DateTimeFormatter formatter = DateUtils.DEFAULT_DATE_FORMATTER;
-
         final String savingsName = applicationContext.getEnvironment().getProperty("fineract.fund.client.name").concat(String.valueOf(loan.getAccountNumber()));
 
         // Build saving data
         JsonObject savingJson = createSavingAccountData(loan.getApprovedPrincipal(), loan.getClientId(),
-                savingsName, loan.getCurrencyCode(), formatter);
+                savingsName, loan.getCurrencyCode(), command.stringValueOfParameterNamed("approvedOnDate"), command.stringValueOfParameterNamed("locale"), command.stringValueOfParameterNamed("dateFormat"));
 
         JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()),
                 command.getFromApiJsonHelper());
@@ -95,15 +91,14 @@ public class LoanFundServiceImpl {
     }
 
     public JsonObject createSavingAccountData(final BigDecimal amount, final Long clientId, final String accountNo,
-            final String currencyCode, DateTimeFormatter formatter) {
+                                              final String currencyCode, final String creationDate, final String locale, final String dateFormat) {
         JsonObject accountJson = new JsonObject();
         if (amount != null) {
             accountJson.addProperty("maxAllowedDepositLimit", amount);
         }
-        formatter = DateTimeFormatter.ofPattern(DateUtils.DEFAULT_DATE_FORMAT, Locale.ENGLISH);
-        accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
-        accountJson.addProperty("locale", Locale.ENGLISH.toString());
-        accountJson.addProperty("submittedOnDate", DateUtils.getBusinessLocalDate().format(formatter));
+        accountJson.addProperty("dateFormat", dateFormat);
+        accountJson.addProperty("locale", locale);
+        accountJson.addProperty("submittedOnDate", creationDate);
         accountJson.addProperty("productId", applicationContext.getEnvironment().getProperty("fineract.saving.product.id"));
         accountJson.addProperty("clientId", clientId);
         accountJson.addProperty("allowOverdraft", false);
