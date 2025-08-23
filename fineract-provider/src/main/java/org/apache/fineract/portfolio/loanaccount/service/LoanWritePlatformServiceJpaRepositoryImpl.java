@@ -132,7 +132,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -262,7 +261,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         final LocalDate nextPossibleRepaymentDate = loan.getNextPossibleRepaymentDateForRescheduling();
         final LocalDate rescheduledRepaymentDate = command.localDateValueOfParameterNamed("adjustRepaymentDate");
-        final LocalDate actualDisbursementDate = command.localDateValueOfParameterNamed("actualDisbursementDate");
+        final LocalDate actualDisbursementDate = command.localDateValueOfParameterNamed(LoanApiConstants.actualDisbursementDateParameterName);
         if (!loan.isMultiDisburmentLoan()) {
             loan.setActualDisbursementDate(actualDisbursementDate);
         }
@@ -467,7 +466,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         journalEntryPoster.postJournalEntries(loan, existingTransactionIds, existingReversedTransactionIds);
 
         // Make withdraw to saving fund
-        createSavingWithdrawTransaction(loan, command.getFromApiJsonHelper());
+        createSavingWithdrawTransaction(loan, command.getFromApiJsonHelper(), actualDisbursementDate, command.bigDecimalValueOfParameterNamed(LoanApiConstants.TRANSACTION_AMOUNT_PARAMNAME));
 
         loanAccrualTransactionBusinessEventService.raiseBusinessEventForAccrualTransactions(loan, existingTransactionIds);
 
@@ -485,21 +484,21 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 .build();
     }
 
-    private void createSavingWithdrawTransaction(final Loan loan, final FromJsonHelper jsonHelper) {
+    private void createSavingWithdrawTransaction(final Loan loan, final FromJsonHelper jsonHelper, final LocalDate date, final BigDecimal amount) {
         AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loan.getId(),
                 AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue());
 
         // Build saving withdraw data
-        JsonObject savingJson = createSavingWithdrawData(loan.getDisbursedAmount());
+        JsonObject savingJson = createSavingWithdrawData(amount, date);
 
         JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()), jsonHelper);
 
         savingsAccountWritePlatformService.withdrawal(accountAssociations.linkedSavingsAccount().getId(), savingCommand);
     }
 
-    private JsonObject createSavingWithdrawData(final BigDecimal amount) {
+    private JsonObject createSavingWithdrawData(final BigDecimal amount, LocalDate date) {
         JsonObject accountJson = new JsonObject();
-        accountJson.addProperty("transactionDate", DateUtils.getBusinessLocalDate().format(DateUtils.DEFAULT_DATE_FORMATTER));
+        accountJson.addProperty("transactionDate", date.format(DateUtils.DEFAULT_DATE_FORMATTER));
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
         accountJson.addProperty("locale", Locale.ENGLISH.toString());
         accountJson.addProperty("transactionAmount", amount);
@@ -546,6 +545,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         loan.updateSummaryWithTotalFeeChargesDueAtDisbursement(loan.deriveSumTotalOfChargesDueAtDisbursement());
         loan.updateLoanRepaymentPeriodsDerivedFields(actualDisbursementDate1);
+
         loanTransactionValidator.validateActivityNotBeforeClientOrGroupTransferDate(loan, LoanEvent.LOAN_DISBURSED,
                 actualDisbursementDate1);
         loanDisbursementService.handleDisbursementTransaction(loan, actualDisbursementDate1, paymentDetail1);

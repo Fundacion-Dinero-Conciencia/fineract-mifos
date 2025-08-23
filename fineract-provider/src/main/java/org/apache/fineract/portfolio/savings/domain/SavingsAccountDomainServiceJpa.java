@@ -94,6 +94,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         if (transactionBooleanValues.isRegularTransaction() && !account.allowWithdrawal()) {
             throw new DepositAccountTransactionNotAllowedException(account.getId(), "withdraw", account.depositAccountType());
         }
+        final Boolean isMigration = this.configurationDomainService.getDataMigrationEnabled();
         final Set<Long> existingTransactionIds = new HashSet<>();
         final LocalDate postInterestOnDate = null;
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
@@ -109,7 +110,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                 paymentDetail, null, accountType);
         UUID refNo = UUID.randomUUID();
         final SavingsAccountTransaction withdrawal = account.withdraw(transactionDTO, transactionBooleanValues.isApplyWithdrawFee(),
-                backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate, refNo.toString());
+                backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate, refNo.toString(), isMigration);
         final MathContext mc = MathContext.DECIMAL64;
 
         final LocalDate today = DateUtils.getBusinessLocalDate();

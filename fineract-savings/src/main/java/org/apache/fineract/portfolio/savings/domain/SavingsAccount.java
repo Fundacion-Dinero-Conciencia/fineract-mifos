@@ -1239,7 +1239,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
     }
 
     public SavingsAccountTransaction withdraw(final SavingsAccountTransactionDTO transactionDTO, final boolean applyWithdrawFee,
-            final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo) {
+                                              final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo, Boolean isMigrationEnabled) {
         if (!isTransactionsAllowed()) {
 
             final String defaultUserMessage = "Transaction is not allowed. Account is not active.";
@@ -1291,7 +1291,9 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         }
         validatePivotDateTransaction(transactionDTO.getTransactionDate(), backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate,
                 "savingsaccount");
-        validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_WITHDRAWAL, transactionDTO.getTransactionDate());
+        if (!isMigrationEnabled) {
+            validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_WITHDRAWAL, transactionDTO.getTransactionDate());
+        }
 
         if (applyWithdrawFee) {
             // auto pay withdrawal fee
@@ -2690,7 +2692,10 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
                 throw new PlatformApiDataValidationException(dataValidationErrors);
             }
         }
-        validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_ACTIVATE, activationDate);
+        if (!isMigration) {
+            validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_ACTIVATE, activationDate);
+        }
+
 
         return actualChanges;
     }

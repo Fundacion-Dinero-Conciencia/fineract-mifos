@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.fineract.infrastructure.configuration.domain.ConfigurationDomainService;
+import org.apache.fineract.infrastructure.configuration.service.ConfigurationReadPlatformService;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
@@ -111,6 +113,7 @@ public final class LoanTransactionValidator {
     private final CalendarInstanceRepository calendarInstanceRepository;
     private final LoanDownPaymentTransactionValidator loanDownPaymentTransactionValidator;
     private final AccountAssociationsRepository accountAssociationsRepository;
+    private final ConfigurationDomainService configurationDomainService;
 
     private void throwExceptionIfValidationWarningsExist(final List<ApiParameterError> dataValidationErrors) {
         if (!dataValidationErrors.isEmpty()) {
@@ -130,8 +133,8 @@ public final class LoanTransactionValidator {
 
         LoanApplicationValidator.validateOrThrow("loan.disbursement", baseDataValidator -> {
             final JsonElement element = this.fromApiJsonHelper.parse(json);
-            final LocalDate actualDisbursementDate = this.fromApiJsonHelper.extractLocalDateNamed("actualDisbursementDate", element);
-            baseDataValidator.reset().parameter("actualDisbursementDate").value(actualDisbursementDate).notNull();
+            final LocalDate actualDisbursementDate = this.fromApiJsonHelper.extractLocalDateNamed(LoanApiConstants.actualDisbursementDateParameterName, element);
+            baseDataValidator.reset().parameter(LoanApiConstants.actualDisbursementDateParameterName).value(actualDisbursementDate).notNull();
 
             final String note = this.fromApiJsonHelper.extractStringNamed("note", element);
             baseDataValidator.reset().parameter("note").value(note).notExceedingLengthOf(1000);
@@ -847,7 +850,7 @@ public final class LoanTransactionValidator {
     public void validateActivityNotBeforeClientOrGroupTransferDate(final Loan loan, final LoanEvent event, final LocalDate activityDate) {
         if (loan.getClient() != null && loan.getClient().getOfficeJoiningDate() != null) {
             final LocalDate clientOfficeJoiningDate = loan.getClient().getOfficeJoiningDate();
-            if (DateUtils.isBefore(activityDate, clientOfficeJoiningDate)) {
+            if (DateUtils.isBefore(activityDate, clientOfficeJoiningDate) && !configurationDomainService.getDataMigrationEnabled()) {
                 String errorMessage = null;
                 String action = null;
                 String postfix = null;
