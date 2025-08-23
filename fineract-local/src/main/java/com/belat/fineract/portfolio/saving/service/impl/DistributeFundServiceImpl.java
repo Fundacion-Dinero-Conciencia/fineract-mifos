@@ -1,6 +1,8 @@
 package com.belat.fineract.portfolio.saving.service.impl;
 
+import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.dateFormatParamName;
 import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.fundSavingsAccountIdParamName;
+import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.localeParamName;
 import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.transferDateParamName;
 
 import com.google.gson.JsonElement;
@@ -49,7 +51,8 @@ public class DistributeFundServiceImpl {
     }
 
     public void validateParams(final String json) {
-        final Set<String> DISTRIBUTE_FUNDS_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(fundSavingsAccountIdParamName, transferDateParamName));
+        final Set<String> DISTRIBUTE_FUNDS_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(fundSavingsAccountIdParamName,
+                transferDateParamName, dateFormatParamName, localeParamName));
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }

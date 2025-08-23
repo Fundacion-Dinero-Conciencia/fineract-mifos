@@ -327,12 +327,12 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         }
 
 
-        createSavingFundDeposit(loan.getId(), newRepaymentTransaction, new Gson().toJson(installments));
+        createSavingFundDeposit(loan.getId(), newRepaymentTransaction, new Gson().toJson(installments), transactionDate);
 
         return newRepaymentTransaction;
     }
 
-    private void createSavingFundDeposit(final Long loanId, final LoanTransaction newRepaymentTransaction, String installments) {
+    private void createSavingFundDeposit(final Long loanId, final LoanTransaction newRepaymentTransaction, String installments, LocalDate date) {
         Map<String, BigDecimal> portionsMap = new LinkedHashMap<>();
         portionsMap.put("I", newRepaymentTransaction.getInterestPortion());
         portionsMap.put("A", newRepaymentTransaction.getPenaltyChargesPortion());
@@ -349,7 +349,7 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
             if (value != null) {
                 // Create deposit data
                 JsonObject depositJson = createSavingFundDepositData(value,
-                        entry.getKey().concat(" - ").concat(String.valueOf(newRepaymentTransaction.getId())), installments );
+                        entry.getKey().concat(" - ").concat(String.valueOf(newRepaymentTransaction.getId())), installments, date);
 
                 JsonCommand depositCommand = JsonCommand.from(String.valueOf(depositJson), JsonParser.parseString(depositJson.toString()),
                         new FromJsonHelper());
@@ -360,12 +360,12 @@ public class LoanAccountDomainServiceJpa implements LoanAccountDomainService {
         }
     }
 
-    private JsonObject createSavingFundDepositData(final BigDecimal amount, final String note, String installments) {
+    private JsonObject createSavingFundDepositData(final BigDecimal amount, final String note, String installments, LocalDate date) {
         JsonObject accountJson = new JsonObject();
         accountJson.addProperty("transactionAmount", amount);
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
         accountJson.addProperty("locale", Locale.ENGLISH.toString());
-        accountJson.addProperty("transactionDate", DateUtils.getBusinessLocalDate().format(DateUtils.DEFAULT_DATE_FORMATTER));
+        accountJson.addProperty("transactionDate", date.format(DateUtils.DEFAULT_DATE_FORMATTER));
         accountJson.addProperty("note", note);
         GlobalConfigurationPropertyData configurationPropertyData = configurationReadPlatformService.retrieveGlobalConfiguration("default-internal-transfer-payment-type");
         if (!configurationPropertyData.isEnabled()) {
