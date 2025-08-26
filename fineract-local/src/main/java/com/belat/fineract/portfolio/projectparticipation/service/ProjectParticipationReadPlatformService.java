@@ -2,6 +2,7 @@ package com.belat.fineract.portfolio.projectparticipation.service;
 
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationOdsAreaData;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationDetailData;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface ProjectParticipationReadPlatformService {
 
     List<ProjectParticipationData> retrieveByClientId(Long clientId, Integer statusCode, Integer page, Integer size);
 
-    Page<ProjectParticipationData> retrieveByFiltersPageable(Long clientId, Long projectId, Integer statusCode, Integer page, Integer size);
+    Page<ProjectParticipationDetailData> retrieveByFiltersPageable(Long clientId, Long projectId, Integer statusCode, Integer page, Integer size);
 
     List<ProjectParticipationOdsAreaData> retrieveOdsAndAreaByClientId(Long clientId, Integer statusCode);
 

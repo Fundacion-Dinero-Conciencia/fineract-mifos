@@ -4,6 +4,7 @@ import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectR
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationOdsAreaData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationStatusEnum;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationDetailData;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipation;
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
 import com.belat.fineract.portfolio.projectparticipation.mapper.ProjectParticipationMapper;
@@ -21,6 +22,8 @@ import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepositoryWrapper;
 import org.apache.fineract.portfolio.savings.service.SavingsAccountReadPlatformService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProjectParticipationReadPlatformServiceImpl implements ProjectParticipationReadPlatformService {
 
+    private static final Logger log = LoggerFactory.getLogger(ProjectParticipationReadPlatformServiceImpl.class);
     private final ProjectParticipationRepository projectParticipationRepository;
     private final ProjectParticipationMapper projectParticipationMapper;
     private final InvestmentProjectReadPlatformService investmentProjectReadPlatformService;
@@ -112,27 +116,33 @@ public class ProjectParticipationReadPlatformServiceImpl implements ProjectParti
     }
 
     @Override
-    public Page<ProjectParticipationData> retrieveByFiltersPageable(Long clientId, Long projectId, Integer statusCode, Integer page, Integer size) {
+    public Page<ProjectParticipationDetailData> retrieveByFiltersPageable(Long clientId, Long projectId, Integer statusCode, Integer page, Integer size) {
         Pageable pageable = (size != null)
                 ? PageRequest.of(page, size)
                 : Pageable.unpaged();
 
-        Page<ProjectParticipation> projectsParticipation = null;
+        Page<ProjectParticipationDetailData> projectsParticipation = null;
         if (clientId != null) {
-            projectsParticipation = projectParticipationRepository.retrieveByClientId(clientId, statusCode, pageable);
+            projectsParticipation = projectParticipationRepository.findProjectParticipationByClientId(clientId, statusCode, pageable);
         } else if (projectId != null) {
-            projectsParticipation = projectParticipationRepository.retrieveByProjectId(projectId, statusCode, pageable);
+            projectsParticipation = projectParticipationRepository.findProjectParticipationByProjectId(clientId, statusCode, pageable);
         }
 
         if (projectsParticipation == null) {
             return Page.empty();
         }
 
-        return projectsParticipation.map(projectParticipation -> {
-            ProjectParticipationData projectsData = projectParticipationMapper.map(projectParticipation);
-            factoryData(projectsData, projectParticipation, new ArrayList<>());
-            return projectsData;
+        // get loan for each project participation
+        projectsParticipation.forEach(pp -> {
+            String loanAccount = pp.getNotePromissoryNoteNumber().split("_")[0];
+            Loan loan = loanRepository.findLoanAccountByAccountNumber(loanAccount);
+            if (loan != null) {
+                pp.setLoan(new ProjectParticipationDetailData.LoanData(
+                        loan.getId(), loan.getAccountNumber(), loan.getSummary(), loan.getRepaymentScheduleInstallments()));
+            }
         });
+
+        return projectsParticipation;
     }
 
 
