@@ -41,6 +41,8 @@ import org.apache.fineract.infrastructure.codes.domain.CodeValue;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.domain.AbstractAuditableWithUTCDateTimeCustom;
 import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
+import org.apache.fineract.organisation.monetary.domain.Money;
+import org.apache.fineract.organisation.monetary.domain.MoneyHelper;
 import org.apache.fineract.portfolio.client.domain.Client;
 import org.apache.fineract.portfolio.loanaccount.domain.Loan;
 
@@ -144,6 +146,9 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
     @JoinColumn(name = "credit_type_id", referencedColumnName = "id")
     private CodeValue creditType;
 
+    @Column(name = "amount_commission_paid", nullable = false)
+    private BigDecimal amountCommissionPaid;
+
     public void modifyApplication(final JsonCommand command, final Map<String, Object> actualChanges) {
         if (command.isChangeInBigDecimalParameterNamed(InvestmentProjectConstants.amountParamName, getAmount())) {
             final BigDecimal newValue = command.bigDecimalValueOfParameterNamed(InvestmentProjectConstants.amountParamName);
@@ -237,6 +242,10 @@ public class InvestmentProject extends AbstractAuditableWithUTCDateTimeCustom<Lo
         } else {
             return null;
         }
+    }
+
+    public BigDecimal getAmountDue() {
+        return Money.of(this.loan.getCurrency(), this.amountToBeFinanced.subtract(this.amountToBeDelivered), MoneyHelper.getMathContext()).getAmount();
     }
 
 

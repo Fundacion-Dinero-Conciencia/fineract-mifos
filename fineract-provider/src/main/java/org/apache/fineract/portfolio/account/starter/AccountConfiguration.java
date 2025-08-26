@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.account.starter;
 
+import com.belat.fineract.portfolio.investmentproject.domain.InvestmentProjectRepository;
 import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectReadPlatformService;
 import com.belat.fineract.portfolio.loanrelations.service.LoanRelationshipsReadPlatformService;
 import com.belat.fineract.portfolio.projectparticipation.service.impl.ProjectParticipationWritePlatformServiceImpl;
@@ -100,13 +101,13 @@ public class AccountConfiguration {
             GSIMRepositoy gsimRepository, ConfigurationDomainService configurationDomainService, ExternalIdFactory externalIdFactory,
             FineractProperties fineractProperties, AccountAssociationsReadPlatformServiceImpl accountAssociationsReadPlatformService,
             PromissoryNoteWritePlatformService promissoryNoteWritePlatformService, ProjectParticipationWritePlatformServiceImpl projectParticipationWritePlatformService,
-            InvestmentProjectReadPlatformService investmentProjectReadPlatformService,
-            CodeValueRepositoryWrapper codeValueRepositoryWrapper, LoanRelationshipsReadPlatformService loanRelationshipsReadPlatformService) {
+            InvestmentProjectReadPlatformService investmentProjectReadPlatformService, CodeValueRepositoryWrapper codeValueRepositoryWrapper,
+            LoanRelationshipsReadPlatformService loanRelationshipsReadPlatformService, InvestmentProjectRepository investmentProjectRepository) {
         return new AccountTransfersWritePlatformServiceImpl(accountTransfersDataValidator, accountTransferAssembler,
                 accountTransferRepository, savingsAccountAssembler, savingsAccountDomainService, loanAccountAssembler,
                 loanAccountDomainService, savingsAccountWritePlatformService, accountTransferDetailRepository, loanReadPlatformService,
                 gsimRepository, configurationDomainService, externalIdFactory, fineractProperties, accountAssociationsReadPlatformService,
-                promissoryNoteWritePlatformService, projectParticipationWritePlatformService, investmentProjectReadPlatformService, codeValueRepositoryWrapper, loanRelationshipsReadPlatformService);
+                promissoryNoteWritePlatformService, projectParticipationWritePlatformService, investmentProjectReadPlatformService, codeValueRepositoryWrapper, loanRelationshipsReadPlatformService, investmentProjectRepository);
     }
 
     @Bean

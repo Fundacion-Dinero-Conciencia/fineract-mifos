@@ -1239,7 +1239,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
     }
 
     public SavingsAccountTransaction withdraw(final SavingsAccountTransactionDTO transactionDTO, final boolean applyWithdrawFee,
-            final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo) {
+                                              final boolean backdatedTxnsAllowedTill, final Long relaxingDaysConfigForPivotDate, String refNo, Boolean isMigrationEnabled) {
         if (!isTransactionsAllowed()) {
 
             final String defaultUserMessage = "Transaction is not allowed. Account is not active.";
@@ -1291,7 +1291,9 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         }
         validatePivotDateTransaction(transactionDTO.getTransactionDate(), backdatedTxnsAllowedTill, relaxingDaysConfigForPivotDate,
                 "savingsaccount");
-        validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_WITHDRAWAL, transactionDTO.getTransactionDate());
+        if (!isMigrationEnabled) {
+            validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_WITHDRAWAL, transactionDTO.getTransactionDate());
+        }
 
         if (applyWithdrawFee) {
             // auto pay withdrawal fee
@@ -2254,7 +2256,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         return this.nominalAnnualInterestRateOverdraft;
     }
 
-    public Map<String, Object> approveApplication(final AppUser currentUser, final JsonCommand command) {
+    public Map<String, Object> approveApplication(final AppUser currentUser, final JsonCommand command, Boolean isMigration) {
         final Map<String, Object> actualChanges = new LinkedHashMap<>();
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -2304,7 +2306,9 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
                 throw new PlatformApiDataValidationException(dataValidationErrors);
             }
         }
-        validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_APPLICATION_APPROVED, approvedOn);
+        if (!isMigration) {
+            validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_APPLICATION_APPROVED, approvedOn);
+        }
 
         // FIXME - kw - support field officer history for savings accounts
         // if (this.fieldOfficer != null) {
@@ -2606,7 +2610,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         return actualChanges;
     }
 
-    public Map<String, Object> activate(final AppUser currentUser, final JsonCommand command) {
+    public Map<String, Object> activate(final AppUser currentUser, final JsonCommand command, Boolean isMigration) {
         final Map<String, Object> actualChanges = new LinkedHashMap<>();
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
@@ -2647,7 +2651,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         /*
          * if (annualFeeSettingsSet()) { updateToNextAnnualFeeDueDateFrom(getActivationLocalDate()); }
          */
-        if (this.client != null && this.client.isActivatedAfter(activationDate)) {
+        if (this.client != null && this.client.isActivatedAfter(activationDate) && !isMigration) {
             final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(command.extractLocale());
             final String dateAsString = formatter.format(this.client.getActivationDate());
             baseDataValidator.reset().parameter(SavingsApiConstants.activatedOnDateParamName).value(dateAsString)
@@ -2657,7 +2661,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
             }
         }
 
-        if (this.group != null && this.group.isActivatedAfter(activationDate)) {
+        if (this.group != null && this.group.isActivatedAfter(activationDate) && !isMigration) {
             final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(command.extractLocale());
             final String dateAsString = formatter.format(this.client.getActivationDate());
             baseDataValidator.reset().parameter(SavingsApiConstants.activatedOnDateParamName).value(dateAsString)
@@ -2668,7 +2672,7 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
         }
 
         final LocalDate approvalDate = getApprovedOnDate();
-        if (DateUtils.isBefore(activationDate, approvalDate)) {
+        if (DateUtils.isBefore(activationDate, approvalDate) && !isMigration) {
             final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(command.extractLocale());
             final String dateAsString = formatter.format(approvalDate);
 
@@ -2688,7 +2692,10 @@ public class SavingsAccount extends AbstractAuditableWithUTCDateTimeCustom<Long>
                 throw new PlatformApiDataValidationException(dataValidationErrors);
             }
         }
-        validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_ACTIVATE, activationDate);
+        if (!isMigration) {
+            validateActivityNotBeforeClientOrGroupTransferDate(SavingsEvent.SAVINGS_ACTIVATE, activationDate);
+        }
+
 
         return actualChanges;
     }

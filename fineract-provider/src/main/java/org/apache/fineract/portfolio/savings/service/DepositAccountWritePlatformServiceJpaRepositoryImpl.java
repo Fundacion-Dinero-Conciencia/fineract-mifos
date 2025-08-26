@@ -158,7 +158,7 @@ public class DepositAccountWritePlatformServiceJpaRepositoryImpl implements Depo
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
 
-        final Map<String, Object> changes = account.activate(user, command);
+        final Map<String, Object> changes = account.activate(user, command, false);
         Money activationChargeAmount = getActivationCharge(account);
         if (!changes.isEmpty()) {
             final Locale locale = command.extractLocale();
@@ -265,7 +265,7 @@ public class DepositAccountWritePlatformServiceJpaRepositoryImpl implements Depo
         final Set<Long> existingReversedTransactionIds = new HashSet<>();
         updateExistingTransactionsDetails(account, existingTransactionIds, existingReversedTransactionIds);
 
-        final Map<String, Object> changes = account.activate(user, command);
+        final Map<String, Object> changes = account.activate(user, command, false);
 
         if (!changes.isEmpty()) {
             final Locale locale = command.extractLocale();
@@ -674,7 +674,7 @@ public class DepositAccountWritePlatformServiceJpaRepositoryImpl implements Depo
         } else {
             final SavingsAccountTransactionDTO transactionDTO = new SavingsAccountTransactionDTO(fmt, transactionDate, transactionAmount,
                     paymentDetail, null, accountType);
-            transaction = account.withdraw(transactionDTO, true, false, relaxingDaysConfigForPivotDate, refNo.toString());
+            transaction = account.withdraw(transactionDTO, true, false, relaxingDaysConfigForPivotDate, refNo.toString(), false);
         }
         final Long newtransactionId = saveTransactionToGenerateTransactionId(transaction);
         boolean isInterestTransfer = false;

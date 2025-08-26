@@ -678,8 +678,8 @@ public class FixedDepositAccount extends SavingsAccount {
     }
 
     @Override
-    public Map<String, Object> activate(final AppUser currentUser, final JsonCommand command) {
-        final Map<String, Object> actualChanges = super.activate(currentUser, command);
+    public Map<String, Object> activate(final AppUser currentUser, final JsonCommand command, Boolean isMigration) {
+        final Map<String, Object> actualChanges = super.activate(currentUser, command, isMigration);
 
         // if (isAccountLocked(calculateMaturityDate())) {
         // final List<ApiParameterError> dataValidationErrors = new

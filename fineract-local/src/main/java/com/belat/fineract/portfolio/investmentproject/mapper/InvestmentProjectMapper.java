@@ -31,6 +31,7 @@ public interface InvestmentProjectMapper {
     @Mapping(target = "availableTotalAmount", ignore = true)
     @Mapping(target = "occupancyPercentage", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "amountCommissionPaid", source = "amountCommissionPaid")
     InvestmentProjectData map(InvestmentProject source);
 
     List<InvestmentProjectData> map(List<InvestmentProject> sources);

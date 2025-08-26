@@ -1,10 +1,14 @@
 package com.belat.fineract.portfolio.saving.service.impl;
 
+import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.dateFormatParamName;
 import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.fundSavingsAccountIdParamName;
+import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.localeParamName;
+import static com.belat.fineract.portfolio.saving.api.DistributeFundConstants.transferDateParamName;
 
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,8 +41,9 @@ public class DistributeFundServiceImpl {
         context.authenticatedUser();
         validateParams(command.json());
         Long accountId = command.longValueOfParameterNamed(fundSavingsAccountIdParamName);
+        final LocalDate transferDate = command.dateValueOfParameterNamed(transferDateParamName);
         Map<String, Object> changes = null;
-        changes = distributeFundWritePlatformService.distributeFunds(accountId);
+        changes = distributeFundWritePlatformService.distributeFunds(accountId, transferDate);
 
         return new CommandProcessingResultBuilder() //
                 .with(changes) //
@@ -46,7 +51,8 @@ public class DistributeFundServiceImpl {
     }
 
     public void validateParams(final String json) {
-        final Set<String> DISTRIBUTE_FUNDS_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(fundSavingsAccountIdParamName));
+        final Set<String> DISTRIBUTE_FUNDS_REQUEST_DATA_PARAMETERS = new HashSet<>(Arrays.asList(fundSavingsAccountIdParamName,
+                transferDateParamName, dateFormatParamName, localeParamName));
         if (StringUtils.isBlank(json)) {
             throw new InvalidJsonException();
         }

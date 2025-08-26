@@ -45,6 +45,7 @@ public class InvestmentProjectData {
     private String littleSocioEnvironmentalDescription;
     private String detailedSocioEnvironmentalDescription;
     private CodeValueData creditType;
+    private BigDecimal amountCommissionPaid;
 
     @Data
     @AllArgsConstructor
