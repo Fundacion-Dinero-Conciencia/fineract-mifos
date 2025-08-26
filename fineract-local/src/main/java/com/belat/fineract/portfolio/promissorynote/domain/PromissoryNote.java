@@ -76,4 +76,7 @@ public class PromissoryNote extends AbstractAuditableWithUTCDateTimeCustom<Long>
     @Column(name = "percentage_investment_agent")
     private BigDecimal percentageInvestmentAgent;
 
+    @Column(name = "project_participation_id")
+    private Long projectParticipationId;
+
 }

@@ -2,6 +2,7 @@ package com.belat.fineract.portfolio.projectparticipation.api;
 
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationData;
 import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationOdsAreaData;
+import com.belat.fineract.portfolio.projectparticipation.data.ProjectParticipationDetailData;
 import com.belat.fineract.portfolio.projectparticipation.service.ProjectParticipationReadPlatformService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -113,7 +114,7 @@ public class ProjectParticipationApiResource {
 
         platformUserRightsContext.isAuthenticated();
 
-        final Page<ProjectParticipationData> projectParticipationData = projectParticipationReadPlatformService
+        final Page<ProjectParticipationDetailData> projectParticipationData = projectParticipationReadPlatformService
                         .retrieveByFiltersPageable(participantId, projectId, statusCode, page, size);
 
         return apiJsonSerializerService.serialize(projectParticipationData);
