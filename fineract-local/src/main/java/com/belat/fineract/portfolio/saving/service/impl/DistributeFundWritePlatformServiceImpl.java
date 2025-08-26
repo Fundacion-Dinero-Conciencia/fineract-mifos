@@ -94,20 +94,9 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
 
             BigDecimal transactionAmount = Money.of(savingBelat.getCurrency(), tr.getAmount()).getAmount();
 
-            // Commission CPD (devolución)
-            if (percentageInvestmentReturn.doubleValue() > 0 && tr.getTransactionType().isCurrentInterest()) {
-                BigDecimal amountEarned = Money.of(savingBelat.getCurrency(), transactionAmount.multiply(percentageInvestmentReturn.divide(BigDecimal.valueOf(100), mc))).getAmount();
-                transactionAmount = Money.of(savingBelat.getCurrency(), transactionAmount.subtract(amountEarned)).getAmount();
-
-                if (amountEarned.doubleValue() > 0) {
-                    Long transactionPercentage = sendTransaction(savingsAccountFund, savingBelat, amountEarned,
-                            DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods), null, transferDate);
-                    transactionsList.add(transactionPercentage);
-                }
-
-            }
 
             for (PromissoryNote item : accountsToDistribute) {
+
                 BigDecimal amountToSend = Money.of(item.getInvestorSavingsAccount().getCurrency(), transactionAmount.multiply(item.getPercentageShare().divide(BigDecimal.valueOf(100), mc))).getAmount();
                 BigDecimal amountCAI = BigDecimal.ZERO;
                 // Commission CAI (agente inversiones)
@@ -134,6 +123,19 @@ public class DistributeFundWritePlatformServiceImpl implements DistributeFundWri
                 String description = DistributeFundConstants.PAYMENT_FUND_INVESTMENT.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods);
                 Long transactionId = sendTransaction(savingsAccountFund, item.getInvestorSavingsAccount(), amountToSend, description, tr.getTransactionType().getValue(), transferDate);
                 transactionsList.add(transactionId);
+
+                // Commission CPD (devolución)
+                if (percentageInvestmentReturn.doubleValue() > 0 && tr.getTransactionType().isCurrentInterest()) {
+                    BigDecimal amountEarned = Money.of(savingBelat.getCurrency(), amountToSend.multiply(percentageInvestmentReturn.divide(BigDecimal.valueOf(100), mc))).getAmount();
+                    transactionAmount = Money.of(savingBelat.getCurrency(), amountToSend.subtract(amountEarned)).getAmount();
+
+                    if (amountEarned.doubleValue() > 0) {
+                        Long transactionPercentage = sendTransaction(item.getInvestorSavingsAccount(), savingBelat, amountEarned,
+                                DistributeFundConstants.COMMISSION_CPD.concat("-" + savingsAccountFund.getId()).concat(paymentPeriods), null, transferDate);
+                        transactionsList.add(transactionPercentage);
+                    }
+
+                }
             }
             tr.setWasDistribute(true);
             tr.setDistributeDate(DateUtils.getBusinessLocalDate());
