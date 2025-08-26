@@ -93,4 +93,5 @@
   <include relativeToChangelogFile="true" file="parts/9069_add_configuration_migration.xml"/>
   <include relativeToChangelogFile="true" file="parts/9070_add_default_payment_type_configuration.xml"/>
   <include relativeToChangelogFile="true" file="parts/9071_add_investment_project_column.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9072_add_colum_m_client.xml"/>
 </databaseChangeLog>
