@@ -78,9 +78,11 @@ public class PdfGeneratorWritePlatformServiceImpl implements PdfGeneratorWritePl
             throw new GeneralPlatformDomainRuleException("error.msg.client.identifier.not.found", "Client identifier not found");
         }
 
+        String inversionist = client.getDisplayName();
+
         Map<String, Object> data = new HashMap<>();
         data.put("date", formattedDate);
-        data.put("inversionist", client.getDisplayName());
+        data.put("inversionist", inversionist.contains("&") ? inversionist.replace("&", "&amp;") : inversionist);
         data.put("documentNumber", clientIdentifier.documentKey());
         data.put("amount", amount);
 
@@ -127,11 +129,14 @@ public class PdfGeneratorWritePlatformServiceImpl implements PdfGeneratorWritePl
             throw new GeneralPlatformDomainRuleException("error.msg.client.identifier.not.found", "Client identifier not found");
         }
 
+        String enterprise = investmentProject.getName();
+        String inversionist = client.getDisplayName();
+
         Map<String, Object> data = new HashMap<>();
         data.put("date", formattedDate);
-        data.put("inversionist", client.getDisplayName());
+        data.put("inversionist", inversionist.contains("&") ? inversionist.replace("&", "&amp;") : inversionist);
         data.put("documentNumber", clientIdentifier.documentKey());
-        data.put("enterprise", investmentProject.getName());
+        data.put("enterprise", enterprise.contains("&") ? enterprise.replace("&", "&amp;") : enterprise);
         data.put("amount", amount);
 
         //Generate html
