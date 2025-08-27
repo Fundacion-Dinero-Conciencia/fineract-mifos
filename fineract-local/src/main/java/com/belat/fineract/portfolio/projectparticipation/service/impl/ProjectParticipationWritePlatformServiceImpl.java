@@ -72,7 +72,7 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
             throw new GeneralPlatformDomainRuleException("err.msg.amount.is.higher.than.project.max.amount", "Amount is higher than project max amount");
         }
 
-        BigDecimal projectAmount = investmentProject.getAmount();
+        BigDecimal projectAmount = investmentProject.getAmountToBeFinanced();
         BigDecimal projectParticipationAmount = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(projectId);
         BigDecimal availableAmount = projectAmount;
 
@@ -116,7 +116,7 @@ public class ProjectParticipationWritePlatformServiceImpl implements ProjectPart
         ProjectParticipation projectParticipation = projectParticipationRepository.findById(id)
                 .orElseThrow(() -> new ProjectParticipationNotFoundException(id));
 
-        BigDecimal projectAmount = projectParticipation.getInvestmentProject().getAmount();
+        BigDecimal projectAmount = projectParticipation.getInvestmentProject().getAmountToBeFinanced();
         BigDecimal projectParticipationAmount = projectParticipationRepository
                 .retrieveTotalParticipationAmountByProjectId(projectParticipation.getInvestmentProject().getId());
         BigDecimal availableAmount = projectAmount.subtract(projectParticipationAmount);

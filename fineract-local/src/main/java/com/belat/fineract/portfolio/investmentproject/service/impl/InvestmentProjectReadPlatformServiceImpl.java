@@ -200,7 +200,7 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         projectsData.add(projectData);
 
         BigDecimal projectParticipation = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(project.getId());
-        BigDecimal projectAmount = project.getAmount();
+        BigDecimal projectAmount = project.getAmountToBeFinanced();
         BigDecimal occupancyPercentage = projectParticipation.multiply(BigDecimal.valueOf(100)).divide(projectAmount, 2,
                 RoundingMode.HALF_UP);
 
