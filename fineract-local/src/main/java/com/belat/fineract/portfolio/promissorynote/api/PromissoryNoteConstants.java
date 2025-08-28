@@ -28,5 +28,6 @@ public final class PromissoryNoteConstants {
     public static final String currencyCodeParamName = "currencyCode";
     public static final String investmentAgentParamName = "investmentAgentId";
     public static final String percentageInvestmentAgentParamName = "percentageInvestmentAgent";
+    public static final String projectParticipationIdParamName = "projectParticipationId";
 
 }

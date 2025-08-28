@@ -52,4 +52,5 @@ public class AccountTransferRequest implements Serializable {
     private BigDecimal amount;
     private Long projectId;
     private BigDecimal commission;
+    private Long projectParticipationId;
 }
