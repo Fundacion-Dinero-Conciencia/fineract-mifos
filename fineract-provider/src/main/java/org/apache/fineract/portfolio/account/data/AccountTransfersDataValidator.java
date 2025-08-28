@@ -56,7 +56,8 @@ public class AccountTransfersDataValidator {
             AccountTransfersApiConstants.transferAmountParamName, AccountTransfersApiConstants.transferDescriptionParamName,
             AccountTransfersApiConstants.transferIsInvestmentParamName, AccountTransfersApiConstants.investmentAgentIdParamName,
             AccountTransfersApiConstants.percentageInvestmentAgentParamName, AccountTransfersApiConstants.amountProjectParamName,
-            AccountTransfersApiConstants.projectIdParamName, PaymentDetailConstants.paymentTypeParamName, AccountTransfersApiConstants.commissionParamName));
+            AccountTransfersApiConstants.projectIdParamName, PaymentDetailConstants.paymentTypeParamName,
+            AccountTransfersApiConstants.commissionParamName, AccountTransfersApiConstants.projectParticipationIdParamName));
 
     @Autowired
     public AccountTransfersDataValidator(final FromJsonHelper fromApiJsonHelper,
@@ -97,6 +98,11 @@ public class AccountTransfersDataValidator {
                 .extractStringNamed(AccountTransfersApiConstants.transferDescriptionParamName, element);
         baseDataValidator.reset().parameter(AccountTransfersApiConstants.transferDescriptionParamName).value(transactionDescription)
                 .notBlank().notExceedingLengthOf(200);
+
+        final Long projectParticipationId = this.fromApiJsonHelper
+                .extractLongNamed(AccountTransfersApiConstants.projectParticipationIdParamName, element);
+        baseDataValidator.reset().parameter(AccountTransfersApiConstants.projectParticipationIdParamName)
+                .value(projectParticipationId).notNull();
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
