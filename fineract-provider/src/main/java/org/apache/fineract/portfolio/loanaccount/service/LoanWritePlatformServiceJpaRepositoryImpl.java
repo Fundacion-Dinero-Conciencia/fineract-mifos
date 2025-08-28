@@ -262,7 +262,8 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         final LocalDate nextPossibleRepaymentDate = loan.getNextPossibleRepaymentDateForRescheduling();
         final LocalDate rescheduledRepaymentDate = command.localDateValueOfParameterNamed("adjustRepaymentDate");
-        final LocalDate actualDisbursementDate = command.localDateValueOfParameterNamed("actualDisbursementDate");
+        final LocalDate actualDisbursementDate = command.localDateValueOfParameterNamed(LoanApiConstants.actualDisbursementDateParameterName);
+        
         if (!loan.isMultiDisburmentLoan()) {
             loan.setActualDisbursementDate(actualDisbursementDate);
         }
@@ -467,7 +468,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         journalEntryPoster.postJournalEntries(loan, existingTransactionIds, existingReversedTransactionIds);
 
         // Make withdraw to saving fund
-        createSavingWithdrawTransaction(loan.getId(), command.getFromApiJsonHelper(), amountToDisburse.getAmount());
+        createSavingWithdrawTransaction(loan.getId(), command.getFromApiJsonHelper(), actualDisbursementDate, amountToDisburse.getAmount());
 
         loanAccrualTransactionBusinessEventService.raiseBusinessEventForAccrualTransactions(loan, existingTransactionIds);
 
@@ -485,21 +486,21 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 .build();
     }
 
-    private void createSavingWithdrawTransaction(final Long loanId, final FromJsonHelper jsonHelper, BigDecimal amount) {
+    private void createSavingWithdrawTransaction(final Long loanId, final FromJsonHelper jsonHelper, final LocalDate date, BigDecimal amount) {
         AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loanId,
                 AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue());
 
         // Build saving withdraw data
-        JsonObject savingJson = createSavingWithdrawData(amount);
+        JsonObject savingJson = createSavingWithdrawData(amount, date);
 
         JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()), jsonHelper);
 
         savingsAccountWritePlatformService.withdrawal(accountAssociations.linkedSavingsAccount().getId(), savingCommand);
     }
 
-    private JsonObject createSavingWithdrawData(final BigDecimal amount) {
+    private JsonObject createSavingWithdrawData(final BigDecimal amount, LocalDate date) {
         JsonObject accountJson = new JsonObject();
-        accountJson.addProperty("transactionDate", DateUtils.getBusinessLocalDate().format(DateUtils.DEFAULT_DATE_FORMATTER));
+        accountJson.addProperty("transactionDate", date.format(DateUtils.DEFAULT_DATE_FORMATTER));
         accountJson.addProperty("dateFormat", DateUtils.DEFAULT_DATE_FORMAT);
         accountJson.addProperty("locale", Locale.ENGLISH.toString());
         accountJson.addProperty("transactionAmount", amount);
@@ -546,6 +547,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         loan.updateSummaryWithTotalFeeChargesDueAtDisbursement(loan.deriveSumTotalOfChargesDueAtDisbursement());
         loan.updateLoanRepaymentPeriodsDerivedFields(actualDisbursementDate1);
+
         loanTransactionValidator.validateActivityNotBeforeClientOrGroupTransferDate(loan, LoanEvent.LOAN_DISBURSED,
                 actualDisbursementDate1);
         loanDisbursementService.handleDisbursementTransaction(loan, actualDisbursementDate1, paymentDetail1);
@@ -3087,7 +3089,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             String dateStr = rootForDate.get(LoanApiConstants.dateOfCreationParamName).asText();
             format = root.get(LoanApiConstants.dateFormatParameterName).asText();
             locale = root.get(LoanApiConstants.localeParameterName).asText();
-            date = OffsetDateTime.parse(dateStr).toLocalDate();
+            date = LocalDate.parse(dateStr);
         } catch (Exception e) {
             date = DateUtils.getBusinessLocalDate();
         }
@@ -3108,6 +3110,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             jsonMap.put("loanTermFrequency", loan.getTermFrequency());
             jsonMap.put("repaymentEvery", loan.repaymentScheduleDetail().getRepayEvery());
             jsonMap.put("repaymentFrequencyType", loan.repaymentScheduleDetail().getRepaymentPeriodFrequencyType().getValue());
+            jsonMap.put("transactionProcessingStrategyCode","mifos-standard-strategy");
 
 
         } catch (Exception e) {
@@ -3147,7 +3150,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
             // Build saving data
             JsonObject savingJson = loanFundService.createSavingAccountData(null, loan.getClientId(),
-                    null, loan.getCurrencyCode(), formatter);
+                    null, loan.getCurrencyCode(), date.format(formatter), locale, format);
 
             JsonCommand savingCommand = JsonCommand.from(String.valueOf(savingJson), JsonParser.parseString(savingJson.toString()),
                     command.getFromApiJsonHelper());
