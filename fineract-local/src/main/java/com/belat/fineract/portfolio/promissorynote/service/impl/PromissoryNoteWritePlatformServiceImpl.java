@@ -19,6 +19,8 @@
 package com.belat.fineract.portfolio.promissorynote.service.impl;
 
 import com.belat.fineract.organisation.staff.service.StaffReadPlatformServiceLocal;
+import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
+import com.belat.fineract.portfolio.projectparticipation.exception.ProjectParticipationNotFoundException;
 import com.belat.fineract.portfolio.promissorynote.api.PromissoryNoteConstants;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNote;
 import com.belat.fineract.portfolio.promissorynote.domain.PromissoryNoteRepository;
@@ -60,6 +62,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
     private final PromissoryNoteRepository noteRepository;
     private final SavingsAccountRepository savingsAccountRepository;
     private final StaffReadPlatformServiceLocal staffReadService;
+    private final ProjectParticipationRepository projectParticipationRepository;
 
     @Override
     @Transactional(rollbackOn = Exception.class)
@@ -136,6 +139,7 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
         promissoryNote.setPromissoryNoteNumber(promissoryNote.getFundSavingsAccount().getAccountNumber());
         promissoryNote.setInvestmentAgent(getInvestmentAgentFromJson(element));
         promissoryNote.setPercentageInvestmentAgent(getPercentageInvestmentAgent(element));
+        promissoryNote.setProjectParticipationId(getProjectParticipationIdFromJson(element));
 
         if (!Objects.equals(promissoryNote.getFundSavingsAccount().getCurrency().getCode(),
                 promissoryNote.getInvestorSavingsAccount().getCurrency().getCode())) {
@@ -171,6 +175,13 @@ public class PromissoryNoteWritePlatformServiceImpl implements PromissoryNoteWri
             return null;
         }
         return staffReadService.getById(investmentAgentId);
+    }
+
+    private Long getProjectParticipationIdFromJson(JsonElement element) {
+        final Long projectParticipationId = fromApiJsonHelper.extractLongNamed(PromissoryNoteConstants.projectParticipationIdParamName, element);
+         var projectParticipation = projectParticipationRepository.findById(projectParticipationId)
+                 .orElseThrow(() -> new ProjectParticipationNotFoundException(projectParticipationId));
+         return projectParticipation.getId();
     }
 
     private BigDecimal getPercentageInvestmentAgent(JsonElement element) {

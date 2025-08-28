@@ -48,6 +48,7 @@ public final class AccountTransfersApiConstants {
     public static final String amountProjectParamName = "amount";
     public static final String commissionParamName = "commission";
     public static final String projectIdParamName = "projectId";
+    public static final String projectParticipationIdParamName = "projectParticipationId";
 
     /**
      * These parameters will match the class level parameters of {@link AccountTransferData}. Where possible, we try to

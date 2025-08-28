@@ -143,7 +143,8 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
             // TODO -> it´s possible relation to investment transaction with project using projectId getting name
             Long projectId = jsonCommand.longValueOfParameterNamed(AccountTransfersApiConstants.projectIdParamName);
             BigDecimal amount = jsonCommand.bigDecimalValueOfParameterNamed(amountProjectParamName);
-            changes.put("transaction".concat(String.valueOf((i + 1))), create(jsonCommand).getSavingsId().toString());
+            var result = create(jsonCommand);
+            changes.put("transaction".concat(String.valueOf((i + 1))), result.getSavingsId().toString());
             updateStatusProject(projectId, amount);
         }
         return new CommandProcessingResultBuilder().with(changes).build();
@@ -169,6 +170,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         final Integer toAccountTypeId = command.integerValueSansLocaleOfParameterNamed(toAccountTypeParamName);
         final PortfolioAccountType toAccountType = PortfolioAccountType.fromInt(toAccountTypeId);
         final Long investmentAgentId = command.longValueOfParameterNamed(AccountTransfersApiConstants.investmentAgentIdParamName);
+        final Long projectParticipationId = command.longValueOfParameterNamed(AccountTransfersApiConstants.projectParticipationIdParamName);
         final Integer transferType = command.integerValueOfParameterNamed(PaymentDetailConstants.paymentTypeParamName);
         final BigDecimal percentageInvestmentAgent = command
                 .bigDecimalValueOfParameterNamed(AccountTransfersApiConstants.percentageInvestmentAgentParamName);
@@ -247,6 +249,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
                     data.put("currencyCode", toSavingsAccount.getCurrency().getCode());
                     data.put("investmentAgentId", investmentAgentId);
                     data.put("percentageInvestmentAgent", percentageInvestmentAgent);
+                    data.put("projectParticipationId", projectParticipationId);
                     promissoryNoteWritePlatformService.addPromissoryNote(JsonCommand.from(new Gson().toJson(data)));
                 }
 
