@@ -184,6 +184,11 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     }
 
     @Override
+    public InvestmentProject retrieveByLinkedLoanId(Long loanId) {
+        return investmentProjectRepository.retrieveOneByLoanId(loanId);
+    }
+
+    @Override
     public List<InvestmentProjectData> retrieveFiltered() {
         List<InvestmentProject> projects = investmentProjectRepository.retrieveByPositionActiveAndStatus();
         List<InvestmentProjectData> projectsData = new ArrayList<>();

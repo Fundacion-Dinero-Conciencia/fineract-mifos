@@ -827,7 +827,7 @@ public class AccountTransfersWritePlatformServiceImpl implements AccountTransfer
         LoanRelationshipsData loanRelationshipsData = loanRelationshipsReadPlatformService.getLoanRelationshipsDataBySubLoanId(loanId);
 
         if (loanRelationshipsData != null) {
-            InvestmentProject investmentProject = this.investmentProjectReadPlatformService.retrieveInvestmentById(loanRelationshipsData.getLoanSimulationId());
+            InvestmentProject investmentProject = this.investmentProjectReadPlatformService.retrieveByLinkedLoanId(loanRelationshipsData.getLoanSimulationId());
             BigDecimal commissionAmount = Money.of(clientAccount.getCurrency(), investmentProject.getAmountToBeFinanced().subtract(investmentProject.getAmountToBeDelivered())).getAmount();
             BigDecimal amountCommissionPaid = Optional.ofNullable(investmentProject.getAmountCommissionPaid()).orElse(BigDecimal.ZERO);
             BigDecimal totalDue = commissionAmount.subtract(amountCommissionPaid);
