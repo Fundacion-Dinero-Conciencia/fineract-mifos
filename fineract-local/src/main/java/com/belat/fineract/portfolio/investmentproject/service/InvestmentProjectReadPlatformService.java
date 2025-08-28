@@ -25,5 +25,7 @@ public interface InvestmentProjectReadPlatformService {
 
     InvestmentProject retrieveInvestmentById(Long id);
 
+    InvestmentProject retrieveByLinkedLoanId(Long loanId);
+
     List<InvestmentProjectData> retrieveFiltered();
 }

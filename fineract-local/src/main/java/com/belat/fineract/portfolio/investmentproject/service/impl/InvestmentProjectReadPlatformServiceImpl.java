@@ -15,6 +15,7 @@ import com.belat.fineract.portfolio.investmentproject.service.InvestmentProjectR
 import com.belat.fineract.portfolio.projectparticipation.domain.ProjectParticipationRepository;
 import com.belat.fineract.useradministration.domain.AppUserRepositoryV2;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.fineract.infrastructure.documentmanagement.data.DocumentData;
 import org.apache.fineract.infrastructure.documentmanagement.data.ImageData;
 import org.apache.fineract.infrastructure.documentmanagement.service.DocumentReadPlatformService;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProjectReadPlatformService {
@@ -182,6 +184,11 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
     }
 
     @Override
+    public InvestmentProject retrieveByLinkedLoanId(Long loanId) {
+        return investmentProjectRepository.retrieveOneByLoanId(loanId);
+    }
+
+    @Override
     public List<InvestmentProjectData> retrieveFiltered() {
         List<InvestmentProject> projects = investmentProjectRepository.retrieveByPositionActiveAndStatus();
         List<InvestmentProjectData> projectsData = new ArrayList<>();
@@ -200,15 +207,22 @@ public class InvestmentProjectReadPlatformServiceImpl implements InvestmentProje
         projectsData.add(projectData);
 
         BigDecimal projectParticipation = projectParticipationRepository.retrieveTotalParticipationAmountByProjectId(project.getId());
-        BigDecimal projectAmount = project.getAmount();
-        BigDecimal occupancyPercentage = projectParticipation.multiply(BigDecimal.valueOf(100)).divide(projectAmount, 2,
-                RoundingMode.HALF_UP);
+        BigDecimal projectAmount = project.getAmountToBeFinanced();
+        if (projectAmount != null) {
+            BigDecimal occupancyPercentage = projectParticipation.multiply(BigDecimal.valueOf(100)).divide(projectAmount, 2,
+                    RoundingMode.HALF_UP);
 
-        projectData.setOccupancyPercentage(occupancyPercentage);
+            projectData.setOccupancyPercentage(occupancyPercentage);
 
-        BigDecimal remainingPercentage = BigDecimal.valueOf(100).subtract(occupancyPercentage);
-        BigDecimal remainingAmount = projectAmount.multiply(remainingPercentage).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        projectData.setAvailableTotalAmount(remainingAmount);
+            BigDecimal remainingPercentage = BigDecimal.valueOf(100).subtract(occupancyPercentage);
+            BigDecimal remainingAmount = projectAmount.multiply(remainingPercentage).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            projectData.setAvailableTotalAmount(remainingAmount);
+        } else {
+            log.info("Project ".concat(project.getName()).concat(" does not have configured amount to be financed and delivered"));
+            projectData.setOccupancyPercentage(BigDecimal.valueOf(100));
+            projectData.setAvailableTotalAmount(BigDecimal.ZERO);
+        }
+
 
     }
 
