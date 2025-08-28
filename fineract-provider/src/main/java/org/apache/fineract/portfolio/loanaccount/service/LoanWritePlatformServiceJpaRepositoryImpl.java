@@ -290,7 +290,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         Money amountBeforeAdjust = loan.getPrincipal();
         final Locale locale = command.extractLocale();
         final DateTimeFormatter fmt = DateTimeFormatter.ofPattern(command.dateFormat()).withLocale(locale);
-
+        Money amountToDisburse = null;
         if (loan.canDisburse()) {
             // Get netDisbursalAmount from disbursal screen field.
             final BigDecimal netDisbursalAmount = command
@@ -299,7 +299,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 loan.setNetDisbursalAmount(netDisbursalAmount);
             }
             Money disburseAmount = loanDisbursementService.adjustDisburseAmount(loan, command, actualDisbursementDate);
-            Money amountToDisburse = disburseAmount.copy();
+            amountToDisburse = disburseAmount.copy();
             boolean recalculateSchedule = amountBeforeAdjust.isNotEqualTo(loan.getPrincipal());
             final ExternalId txnExternalId = externalIdFactory.createFromCommand(command, LoanApiConstants.externalIdParameterName);
 
@@ -466,7 +466,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         journalEntryPoster.postJournalEntries(loan, existingTransactionIds, existingReversedTransactionIds);
 
         // Make withdraw to saving fund
-        createSavingWithdrawTransaction(loan, command.getFromApiJsonHelper(), actualDisbursementDate, command.bigDecimalValueOfParameterNamed(LoanApiConstants.TRANSACTION_AMOUNT_PARAMNAME));
+        createSavingWithdrawTransaction(loan.getId(), command.getFromApiJsonHelper(), actualDisbursementDate, amountToDisburse.getAmount());
 
         loanAccrualTransactionBusinessEventService.raiseBusinessEventForAccrualTransactions(loan, existingTransactionIds);
 
@@ -484,8 +484,8 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 .build();
     }
 
-    private void createSavingWithdrawTransaction(final Loan loan, final FromJsonHelper jsonHelper, final LocalDate date, final BigDecimal amount) {
-        AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loan.getId(),
+    private void createSavingWithdrawTransaction(final Long loanId, final FromJsonHelper jsonHelper, final LocalDate date, BigDecimal amount) {
+        AccountAssociations accountAssociations = accountAssociationsRepository.findByLoanIdAndType(loanId,
                 AccountAssociationType.LINKED_ACCOUNT_ASSOCIATION_FOR_FUND.getValue());
 
         // Build saving withdraw data
