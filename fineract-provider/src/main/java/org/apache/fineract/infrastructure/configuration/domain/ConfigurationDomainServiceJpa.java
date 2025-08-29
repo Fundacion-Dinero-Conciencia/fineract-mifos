@@ -578,4 +578,12 @@ public class ConfigurationDomainServiceJpa implements ConfigurationDomainService
         GlobalConfigurationPropertyData propertyData = getGlobalConfigurationPropertyData(GlobalConfigurationConstants.DATA_MIGRATION);
         return propertyData != null && propertyData.isEnabled();
     }
+
+    @Override
+    public BigDecimal getIncreasePercentagePenalty() {
+        GlobalConfigurationPropertyData propertyData = getGlobalConfigurationPropertyData(GlobalConfigurationConstants.INCREASE_PERCENTAGE_PENALTY);
+        String value = propertyData.getStringValue();
+        double valueDouble = value != null && !value.isEmpty() ? Double.parseDouble(value.replace(",", ".")) : 0;
+        return BigDecimal.valueOf(valueDouble);
+    }
 }

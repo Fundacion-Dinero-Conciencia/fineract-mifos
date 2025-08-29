@@ -155,4 +155,6 @@ public interface ConfigurationDomainService {
     Long getDefaultAccountId();
 
     Boolean getDataMigrationEnabled();
+
+    BigDecimal getIncreasePercentagePenalty();
 }

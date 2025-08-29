@@ -931,7 +931,7 @@ public class Loan extends AbstractAuditableWithUTCDateTimeCustom<Long> {
 
         };
         return Money.zero(getCurrency()) //
-                .plus(LoanCharge.percentageOf(percentOf.getAmount(), percentage));
+                .plus(LoanCharge.percentageOf(percentOf.getAmount(), percentage, null));
     }
 
     public Client client() {

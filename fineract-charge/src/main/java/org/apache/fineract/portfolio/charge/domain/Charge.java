@@ -784,4 +784,8 @@ public class Charge extends AbstractPersistableCustom<Long> {
         return Objects.hash(name, amount, currencyCode, chargeAppliesTo, chargeTimeType, chargeCalculation, chargePaymentMode, feeOnDay,
                 feeInterval, feeOnMonth, penalty, active, deleted, minCap, maxCap, feeFrequency, account, taxGroup);
     }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 }
