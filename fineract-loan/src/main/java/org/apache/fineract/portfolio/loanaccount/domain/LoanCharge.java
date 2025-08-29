@@ -235,7 +235,7 @@ public class LoanCharge extends AbstractAuditableWithUTCDateTimeCustom<Long> {
                 this.percentage = chargeAmount;
                 this.amountPercentageAppliedTo = amountPercentageAppliedTo;
                 if (loanCharge.compareTo(BigDecimal.ZERO) == 0) {
-                    loanCharge = percentageOf(this.amountPercentageAppliedTo);
+                    loanCharge = percentageOf(this.amountPercentageAppliedTo, this.loan.getCurrency());
                 }
                 this.amount = minimumAndMaximumCap(loanCharge);
                 this.amountPaid = null;
@@ -343,7 +343,7 @@ public class LoanCharge extends AbstractAuditableWithUTCDateTimeCustom<Long> {
                     this.percentage = amount;
                     this.amountPercentageAppliedTo = loanPrincipal;
                     if (loanCharge.compareTo(BigDecimal.ZERO) == 0) {
-                        loanCharge = percentageOf(this.amountPercentageAppliedTo);
+                        loanCharge = percentageOf(this.amountPercentageAppliedTo, null);
                     }
                     this.amount = minimumAndMaximumCap(loanCharge);
                 break;
@@ -436,7 +436,7 @@ public class LoanCharge extends AbstractAuditableWithUTCDateTimeCustom<Long> {
                                 this.percentage);
                     }
                     if (loanCharge.compareTo(BigDecimal.ZERO) == 0) {
-                        loanCharge = percentageOf(this.amountPercentageAppliedTo);
+                        loanCharge = percentageOf(this.amountPercentageAppliedTo, null);
                     }
                     this.amount = minimumAndMaximumCap(loanCharge);
                     this.amountOutstanding = calculateOutstanding();
@@ -542,11 +542,11 @@ public class LoanCharge extends AbstractAuditableWithUTCDateTimeCustom<Long> {
         return this.amount.subtract(totalAccountedFor);
     }
 
-    public BigDecimal percentageOf(final BigDecimal value) {
-        return percentageOf(value, this.percentage);
+    public BigDecimal percentageOf(final BigDecimal value, MonetaryCurrency currency) {
+        return percentageOf(value, this.percentage, currency);
     }
 
-    public static BigDecimal percentageOf(final BigDecimal value, final BigDecimal percentage) {
+    public static BigDecimal percentageOf(final BigDecimal value, final BigDecimal percentage, MonetaryCurrency currency) {
 
         BigDecimal percentageOf = BigDecimal.ZERO;
 
@@ -554,6 +554,9 @@ public class LoanCharge extends AbstractAuditableWithUTCDateTimeCustom<Long> {
             final MathContext mc = MoneyHelper.getMathContext();
             final BigDecimal multiplicand = percentage.divide(BigDecimal.valueOf(100L), mc);
             percentageOf = value.multiply(multiplicand, mc);
+            if (currency != null) {
+                percentageOf = Money.of(currency, percentageOf).getAmount();
+            }
         }
         return percentageOf;
     }

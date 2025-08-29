@@ -296,7 +296,7 @@ public class LoanImportHandler implements ImportHandler {
                 if (chargeOneAmountTypeEnum.getValue().equalsIgnoreCase("1")) {
                     chargeAmount = amountOrPercentage;
                 } else {
-                    chargeAmount = LoanCharge.percentageOf(principal, amountOrPercentage);
+                    chargeAmount = LoanCharge.percentageOf(principal, amountOrPercentage, null);
                 }
 
                 charges.add(new LoanChargeData(chargeOneId, ImportHandlerUtils.readAsDate(LoanConstants.CHARGE_DUE_DATE_1, row),
@@ -318,7 +318,7 @@ public class LoanImportHandler implements ImportHandler {
                 if (chargeTwoTimeTypeEnum.getValue().equalsIgnoreCase("1")) {
                     chargeAmount = amountOrPercentage;
                 } else {
-                    chargeAmount = LoanCharge.percentageOf(principal, amountOrPercentage);
+                    chargeAmount = LoanCharge.percentageOf(principal, amountOrPercentage, null);
                 }
 
                 charges.add(new LoanChargeData(chargeTwoId, ImportHandlerUtils.readAsDate(LoanConstants.CHARGE_DUE_DATE_2, row),

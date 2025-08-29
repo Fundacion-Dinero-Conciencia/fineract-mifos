@@ -246,13 +246,13 @@ public class LoanChargeAssembler {
             throw new LoanChargeWithoutMandatoryFieldException("loanCharge", "dueDate", defaultUserMessage, chargeDefinition.getId(),
                     chargeDefinition.getName());
         }
-        return createNewFromJson(loan, chargeDefinition, command, dueDate);
+        return createNewFromJson(loan, chargeDefinition, command, dueDate, null);
     }
 
     public LoanCharge createNewFromJson(final Loan loan, final Charge chargeDefinition, final JsonCommand command,
-            final LocalDate dueDate) {
+                                        final LocalDate dueDate, BigDecimal increasedAmount) {
         final Locale locale = command.extractLocale();
-        final BigDecimal amount = command.bigDecimalValueOfParameterNamed("amount", locale);
+        final BigDecimal amount = increasedAmount != null ? increasedAmount : command.bigDecimalValueOfParameterNamed("amount", locale);
 
         final ChargeTimeType chargeTime = null;
         final ChargeCalculationType chargeCalculation = null;

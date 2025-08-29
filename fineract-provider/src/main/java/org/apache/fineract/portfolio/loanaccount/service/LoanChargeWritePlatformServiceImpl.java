@@ -1128,7 +1128,7 @@ public class LoanChargeWritePlatformServiceImpl implements LoanChargeWritePlatfo
     private LoanOverdueDTO applyChargeToOverdueLoanInstallment(final Loan loan, final Long loanChargeId, final Integer periodNumber,
             final JsonCommand command) {
         boolean runInterestRecalculation = false;
-        final Charge chargeDefinition = this.chargeRepository.findOneWithNotFoundDetection(loanChargeId);
+        Charge chargeDefinition = this.chargeRepository.findOneWithNotFoundDetection(loanChargeId);
 
         Collection<Integer> frequencyNumbers = loanChargeReadPlatformService.retrieveOverdueInstallmentChargeFrequencyNumber(loan,
                 chargeDefinition, periodNumber);
@@ -1167,11 +1167,18 @@ public class LoanChargeWritePlatformServiceImpl implements LoanChargeWritePlatfo
             installment = loan.fetchRepaymentScheduleInstallment(periodNumber);
             lastChargeAppliedDate = installment.getDueDate();
             businessEventNotifierService.notifyPreBusinessEvent(new LoanApplyOverdueChargeBusinessEvent(loan));
-
+            int i = 1;
+            BigDecimal normalRate = chargeDefinition.getAmount();
+            final BigDecimal percentageIncrease = BigDecimal.ONE.add(this.configurationDomainService.getIncreasePercentagePenalty());
+            BigDecimal increasedRate = normalRate.multiply(percentageIncrease);
             for (Map.Entry<Integer, LocalDate> entry : scheduleDates.entrySet()) {
-
-                final LoanCharge loanCharge = loanChargeAssembler.createNewFromJson(loan, chargeDefinition, command, entry.getValue());
-
+                if (i >= 15) {
+                    chargeDefinition.setAmount(increasedRate);
+                } else {
+                    chargeDefinition.setAmount(normalRate);
+                }
+                LoanCharge loanCharge = loanChargeAssembler.createNewFromJson(loan, chargeDefinition, command, entry.getValue(), chargeDefinition.getAmount());
+                //loanCharge.get
                 if (BigDecimal.ZERO.compareTo(loanCharge.amount()) == 0) {
                     continue;
                 }
@@ -1187,6 +1194,9 @@ public class LoanChargeWritePlatformServiceImpl implements LoanChargeWritePlatfo
                 if (DateUtils.isAfter(entry.getValue(), lastChargeAppliedDate)) {
                     lastChargeAppliedDate = entry.getValue();
                 }
+                i++;
+                chargeDefinition.setAmount(normalRate);
+                this.loanChargeRepository.save(loanCharge);
             }
             businessEventNotifierService.notifyPostBusinessEvent(new LoanApplyOverdueChargeBusinessEvent(loan));
             businessEventNotifierService.notifyPostBusinessEvent(new LoanBalanceChangedBusinessEvent(loan));

@@ -95,4 +95,5 @@
   <include relativeToChangelogFile="true" file="parts/9071_add_investment_project_column.xml"/>
   <include relativeToChangelogFile="true" file="parts/9072_add_colum_m_client.xml"/>
   <include relativeToChangelogFile="true" file="parts/9073_add_project_participation_id_to_promissory_note.xml"/>
+  <include relativeToChangelogFile="true" file="parts/9074_add_configuration_increase_percentage.xml"/>
 </databaseChangeLog>
